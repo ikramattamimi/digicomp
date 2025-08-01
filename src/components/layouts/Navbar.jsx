@@ -1,5 +1,4 @@
 import React from 'react';
-import DarkMode from './DarkMode.jsx';
 import { 
   Navbar, 
   NavbarBrand, 
@@ -10,7 +9,8 @@ import {
   Dropdown,
   DropdownDivider,
   DropdownHeader,
-  DropdownItem
+  DropdownItem,
+  DarkThemeToggle
 } from 'flowbite-react';
 import { Bell, Search, Settings, User, HelpCircle, LogOut, ChevronLeft, Menu } from 'lucide-react';
 
@@ -45,7 +45,7 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
       <div className="flex items-center gap-3 md:order-2">
         
         {/* Dark Mode Toggle */}
-        <DarkMode />
+        <DarkThemeToggle />
 
         {/* Search Button */}
         <button 
