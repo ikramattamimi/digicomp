@@ -1,0 +1,6 @@
+import React from 'react';
+// ...existing code...
+const IndicatorPage = () => {
+  // ...existing code...
+};
+export default IndicatorPage;

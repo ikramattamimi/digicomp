@@ -113,24 +113,14 @@ const Sidebar = ({ collapsed }) => {
             >
               Indikator
             </SidebarItem>
-            <SidebarCollapse icon={() => <Users size={20} />} label="Staff">
-              <SidebarItem
-                as={NavLink}
-                to="/staff/atasan"
-                icon={() => <UserCheck size={18} />}
-                active={location.pathname.startsWith("/staff/atasan")}
-              >
-                Atasan
-              </SidebarItem>
-              <SidebarItem
-                as={NavLink}
-                to="/staff/bawahan"
-                icon={() => <UserMinus size={18} />}
-                active={location.pathname.startsWith("/staff/bawahan")}
-              >
-                Bawahan
-              </SidebarItem>
-            </SidebarCollapse>
+            <SidebarItem
+              as={NavLink}
+              to="/staff"
+              icon={() => <UserCheck size={20} />}
+              active={location.pathname.startsWith("/staff")}
+            >
+              Staff
+            </SidebarItem>
           </SidebarItemGroup>
         </SidebarItems>
 

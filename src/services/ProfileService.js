@@ -4,9 +4,10 @@ class ProfileService {
   async getAll() {
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, subdirectorats(name)')
       .eq('is_active', true)
       .is('deleted_at', null)
+      .order('name', { ascending: true })
     if (error) throw error
     return data
   }

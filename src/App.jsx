@@ -7,12 +7,11 @@ import {
 
 import AdminLayout from "./components/layouts/AdminLayout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import SubDirektoratPage from "./pages/SubDirektoratPage.jsx";
-import KompetensiPage from "./pages/KompetensiPage.jsx";
-import IndikatorPage from "./pages/IndikatorPage.jsx";
-import AtasanPage from "./pages/AtasanPage.jsx";
-import BawahanPage from "./pages/BawahanPage.jsx";
-import PenilaianPage from "./pages/PenilaianPage.jsx";
+import SubDirectoratePage from "./pages/SubDirectoratePage.jsx";
+import CompetencyPage from "./pages/CompetencyPage.jsx";
+import IndicatorPage from "./pages/IndicatorPage.jsx";
+import StaffPage from "./pages/StaffPage.jsx";
+import AssessmentPage from "./pages/AssessmentPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function App() {
@@ -21,12 +20,11 @@ function App() {
       <>
         <Route path="/" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="sub-direktorat" element={<SubDirektoratPage />} />
-          <Route path="kompetensi" element={<KompetensiPage />} />
-          <Route path="indikator" element={<IndikatorPage />} />
-          <Route path="staff/atasan" element={<AtasanPage />} />
-          <Route path="staff/bawahan" element={<BawahanPage />} />
-          <Route path="penilaian" element={<PenilaianPage />} />
+          <Route path="sub-directorate" element={<SubDirectoratePage />} />
+          <Route path="competency" element={<CompetencyPage />} />
+          <Route path="indicator" element={<IndicatorPage />} />
+          <Route path="staff" element={<StaffPage />} />
+          <Route path="assessment" element={<AssessmentPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </>

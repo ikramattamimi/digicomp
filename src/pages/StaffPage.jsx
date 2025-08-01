@@ -2,16 +2,15 @@ import React from 'react';
 import { Card } from 'flowbite-react';
 import StaffHeader from '../components/staff/Header.jsx';
 import StaffTable from '../components/staff/StaffTable.jsx';
-
-const SupervisorPage = () => {
+const StaffPage = () => {
   return (
     <div className="page">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <StaffHeader />
+        {/* <StaffHeader /> */}
 
         {/* Content */}
-        <Card className="mb-6 bg-white dark:bg-gray-800">
+        <Card className="mb-6 bg-white dark:bg-gray-800">          
           <StaffTable />
         </Card>
       </div>
@@ -19,4 +18,4 @@ const SupervisorPage = () => {
   );
 };
 
-export default SupervisorPage;
+export default StaffPage;

@@ -7,6 +7,7 @@ class AuthService {
       email,
       password,
     })
+    console.log('User registered:', signUpData)
     if (signUpError) throw signUpError
     const userId = signUpData.user?.id
     if (!userId) throw new Error('User ID not found after registration')

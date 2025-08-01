@@ -1,0 +1,6 @@
+import React from 'react';
+// ...existing code...
+const SubDirectoratePage = () => {
+  // ...existing code...
+};
+export default SubDirectoratePage;

@@ -1,0 +1,6 @@
+import React from 'react';
+// ...existing code...
+const CompetencyPage = () => {
+  // ...existing code...
+};
+export default CompetencyPage;
