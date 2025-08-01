@@ -24,7 +24,7 @@ Admin dashboard berbasis React, Vite, dan Flowbite untuk manajemen penilaian kin
 ## Cara Clone & Setup
 
 ```bash
-git clone https://github.com/your-username/digicomp.git
+git clone https://github.com/ikramattamimi/digicomp.git
 cd digicomp
 npm install
 npm run dev
@@ -41,6 +41,15 @@ npm run dev
 ## Struktur Folder
 
 - `src/pages/` - Halaman utama aplikasi
-- `src/components/` - Komponen UI (Sidebar, Navbar, Card, dsb)
+- `src/components/` - Komponen UI, dipisah per modul:
+  - `assessment/` - Komponen modul penilaian
+  - `directorate/` - Komponen modul sub-direktorat
+  - `competency/` - Komponen modul kompetensi
+  - `indicator/` - Komponen modul indikator
+  - `staff/` - Komponen modul staff (atasan/bawahan)
+  - `settings/` - Komponen modul pengaturan
+  - `products/` - Komponen modul produk
+  - `common/` - Komponen bersama (spinner, alert, dll)
+  - `layouts/` - Komponen layout (Sidebar, Navbar, dll)
 - `src/assets/` - Gambar/icon
-- `public/` - Static files
+- `public/` - Berkas statis
