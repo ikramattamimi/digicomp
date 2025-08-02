@@ -6,6 +6,15 @@ class SubDirectoratService {
     const { data, error } = await supabase
       .from('subdirectorats')
       .select('*')
+      .is('deleted_at', null)
+    if (error) throw error
+    return data
+  }
+
+  async getActive() {
+    const { data, error } = await supabase
+      .from('subdirectorats')
+      .select('*')
       .eq('is_active', true)
       .is('deleted_at', null)
     if (error) throw error
