@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, Select } from 'flowbite-react';
 
-const StaffModal = ({ show, onClose, modalType, supervisor, onChange, onSave, error }) => (
+const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onChange, onSave, error }) => (
   <Modal show={show} onClose={onClose}>
     <ModalHeader>
       {modalType === 'add' ? 'Add New Supervisor' : 'Edit Supervisor'}
@@ -75,16 +75,22 @@ const StaffModal = ({ show, onClose, modalType, supervisor, onChange, onSave, er
             <option value="BAWAHAN">BAWAHAN</option>
           </Select>
         </div>
+
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="subdirectorat_id" value="Subdirectorate ID" />
+            <Label htmlFor="is_active" value="Active" />
           </div>
-          <TextInput
-            id="subdirectorat_id"
-            value={supervisor.subdirectorat_id || ''}
-            onChange={e => onChange({ ...supervisor, subdirectorat_id: e.target.value })}
-            placeholder="Enter subdirectorate ID"
-          />
+            <Select
+              id="subdirectorat_id"
+              value={supervisor.subdirectorat_id || ''}
+              onChange={e => onChange({ ...supervisor, subdirectorat_id: e.target.value })}
+              required
+              >
+              <option value={0}>Select sub directorate</option>
+              {subDirectorat.map((sup) => (
+              <option value={sup.id}>{sup.name}</option>
+              ))}
+            </Select>
         </div>
         <div>
           <div className="mb-2 block">
@@ -96,20 +102,6 @@ const StaffModal = ({ show, onClose, modalType, supervisor, onChange, onSave, er
             onChange={e => onChange({ ...supervisor, supervisor_id: e.target.value })}
             placeholder="Enter supervisor ID"
           />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="is_active" value="Active" />
-          </div>
-          <Select
-            id="is_active"
-            value={supervisor.is_active === false ? 'false' : 'true'}
-            onChange={e => onChange({ ...supervisor, is_active: e.target.value === 'true' })}
-            required
-          >
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-          </Select>
         </div>
       </div>
     </ModalBody>

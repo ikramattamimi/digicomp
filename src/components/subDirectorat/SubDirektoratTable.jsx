@@ -11,110 +11,73 @@ import {
   Select,
   Checkbox,
 } from "flowbite-react";
-import { Search, Plus, Pencil, Trash2, UserCheck, RefreshCw } from "lucide-react";
-import ProfileService from "../../services/ProfileService";
+import { Search, Plus, Pencil, Trash2, UserCheck, RefreshCw, Building } from "lucide-react";
 import SubdirectoratService from "../../services/SubdirectoratsService";
-
-import AuthService from "../../services/AuthService";
-import StaffModal from "./StaffModal";
+import SubDirektoratModal from "./SubDirektoratModal";
 import ErrorModal from "./ErrorModal";
 
-const StaffTable = () => {
+const SubDirektoratTable = () => {
   const [subDirektorat, setSubDirektorat] = useState([]);
-  const [supervisors, setSupervisors] = useState([]);
-  const [filteredSupervisors, setFilteredSupervisors] = useState([]);
+  const [filteredSubDirektorat, setFilteredSubDirektorat] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
-  const [currentSupervisor, setCurrentSupervisor] = useState({
+  const [currentSubDirektorat, setCurrentSubDirektorat] = useState({
     name: "",
-    email: "",
+    status: "",
   });
   const [modalError, setModalError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchSupervisors = async () => {
+    const fetchSubDirectorat = async () => {
       try {
-        const dataSubDirektorat = await SubdirectoratService.getActive();
-        setSubDirektorat(dataSubDirektorat)
-
-        const data = await ProfileService.getAll();
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        const data = await SubdirectoratService.getAll();
+        setSubDirektorat(data);
+        setFilteredSubDirektorat(data);
       } catch (err) {
-        console.error("Failed to fetch supervisors:", err);
-        setErrorMessage(err?.message || "Failed to load supervisors");
+        console.error("Failed to fetch subDirektorat:", err);
+        setErrorMessage(err?.message || "Failed to load subdirektorat");
         setShowErrorModal(true);
       }
     };
-    fetchSupervisors();
+    fetchSubDirectorat();
   }, []);
 
   // Fungsi refresh supervisor
   const handleRefresh = async () => {
     try {
-      const data = await ProfileService.getAll();
-      setSupervisors(data);
-      setFilteredSupervisors(data);
+      const data = await SubdirectoratService.getAll();
+      setSubDirektorat(data);
+      setFilteredSubDirektorat(data);
       setErrorMessage("");
       setShowErrorModal(false);
     } catch (err) {
-      setErrorMessage(err?.message || "Failed to load supervisors");
-      setShowErrorModal(true);
-    }
-  };
-
-   // Fungsi filter by sub directorat supervisor
-  const handleFilterSubdirectorat = async (id) => {
-    try {
-      if(id != "*"){
-        const data = await ProfileService.getBySubDirectorat(id);
-      setSupervisors(data);
-      setFilteredSupervisors(data);
-      setErrorMessage("");
-      setShowErrorModal(false);
-      }else{
-        handleRefresh()
-      }
-      
-    } catch (err) {
-      setErrorMessage(err?.message || "Failed to load supervisors");
+      setErrorMessage(err?.message || "Failed to load subdirektorat");
       setShowErrorModal(true);
     }
   };
 
   // Filter and search functionality
   useEffect(() => {
-    let filtered = supervisors;
+    let filtered = subDirektorat;
 
     if (searchTerm) {
       filtered = filtered.filter(
         (sup) =>
-          sup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          sup.email.toLowerCase().includes(searchTerm.toLowerCase())
+          sup.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    setFilteredSupervisors(filtered);
-  }, [supervisors, searchTerm]);
-
-  // Set ID to Competency Name
-  const setToName = (id) => {
-    const bobObject = subDirektorat.find(obj => obj.id === id);
-    const bobId = bobObject ? bobObject.name : undefined;
-
-    return(
-      bobId
-    )
-  };
+    setFilteredSubDirektorat(filtered);
+  }, [subDirektorat, searchTerm]);
 
   // Handle row selection
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedRows(filteredSupervisors.map((sup) => sup.id));
+      setSelectedRows(filteredSubDirektorat.map((sup) => sup.id));
     } else {
       setSelectedRows([]);
     }
@@ -131,73 +94,63 @@ const StaffTable = () => {
   // Modal handlers
   const handleAdd = () => {
     setModalType("add");
-    setCurrentSupervisor({
+    setCurrentSubDirektorat({
       name: "",
-      email: "",
-      department: "",
-      status: "Active",
-      password: "",
+      status: "",
     });
     setShowModal(true);
   };
 
   const handleEdit = (supervisor) => {
     setModalType("edit");
-    setCurrentSupervisor(supervisor);
+    setCurrentSubDirektorat(supervisor);
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, status) => {
     try {
-      await ProfileService.delete(id);
-      setSupervisors(supervisors.filter((sup) => sup.id !== id));
+      if(status != true){
+        await SubdirectoratService.delete(id, status);
+        handleRefresh()
+      }else{
+        setErrorMessage("Set status to inactive for delete");
+        setShowErrorModal(true);
+      }
+      
     } catch (err) {
-      console.error("Failed to delete supervisor:", err);
-      setErrorMessage(err?.message || "Failed to delete supervisor");
+      console.error("Failed to delete subdirektorat:", err);
+      setErrorMessage(err?.message || "Failed to delete subdirektorat");
       setShowErrorModal(true);
     }
   };
 
   const handleModalChange = (updated) => {
-    setCurrentSupervisor(updated);
+    setCurrentSubDirektorat(updated);
   };
 
   const handleSave = async () => {
     setModalError("");
     try {
       if (modalType === "add") {
-        await AuthService.registerStaff({
-          email: currentSupervisor.email,
-          password: currentSupervisor.password || "defaultPassword123",
-          profile: {
-            name: currentSupervisor.name,
-            nrp: currentSupervisor.nrp,
-            position: currentSupervisor.position,
-            position_type: currentSupervisor.position_type,
-            subdirectorat_id: currentSupervisor.subdirectorat_id,
-            supervisor_id: currentSupervisor.supervisor_id,
-          },
+        await SubdirectoratService.create({
+          name: currentSubDirektorat.name,
+          is_active: "true",
         });
-        const data = await ProfileService.getAll();
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        const data = await SubdirectoratService.getAll();
+        setSubDirektorat(data);
+        setFilteredSubDirektorat(data);
       } else {
-        await ProfileService.update(currentSupervisor.id, {
-          name: currentSupervisor.name,
-          nrp: currentSupervisor.nrp,
-          email: currentSupervisor.email,
-          position: currentSupervisor.position,
-          position_type: currentSupervisor.position_type,
-          subdirectorat_id: currentSupervisor.subdirectorat_id,
-          supervisor_id: currentSupervisor.supervisor_id,
+        await SubdirectoratService.update(currentSubDirektorat.id, {
+          name: currentSubDirektorat.name,
+          is_active: currentSubDirektorat.is_active,
         });
-        const data = await ProfileService.getAll();
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        const data = await SubdirectoratService.getAll();
+        setSubDirektorat(data);
+        setFilteredSubDirektorat(data);
       }
       setShowModal(false);
     } catch (err) {
-      setModalError(err?.message || "Failed to save supervisor");
+      setModalError(err?.message || "Failed to save subdirektorat");
       setShowModal(true);
     }
   };
@@ -207,8 +160,8 @@ const StaffTable = () => {
       {/* Header with Search and Filters */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
-          <UserCheck className="mr-3 text-blue-600 dark:text-blue-400" />
-          Staff Atasan
+          <Building className="mr-3 text-blue-600 dark:text-blue-400" />
+          Sub Direktorat
         </h1>
         <div className="flex gap-3">
           <Button
@@ -226,7 +179,7 @@ const StaffTable = () => {
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Supervisor
+            Add Sub Direktorat
           </Button>
         </div>
       </div>
@@ -236,18 +189,10 @@ const StaffTable = () => {
         <div className="flex-1">
           <TextInput
             icon={Search}
-            placeholder="Search by name or email..."
+            placeholder="Search by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </div>
-        <div className="w-full sm:w-48">
-          <Select onChange={e => handleFilterSubdirectorat(e.target.value)}>
-            <option value="*">All Sub Direktorat</option>
-              {subDirektorat.map((sup) => (
-              <option value={sup.id}>{sup.name}</option>
-              ))}
-          </Select>
         </div>
       </div>
 
@@ -271,24 +216,19 @@ const StaffTable = () => {
               <TableHeadCell className="w-4">
                 <Checkbox
                   checked={
-                    selectedRows.length === filteredSupervisors.length &&
-                    filteredSupervisors.length > 0
+                    selectedRows.length === filteredSubDirektorat.length &&
+                    filteredSubDirektorat.length > 0
                   }
                   onChange={(e) => handleSelectAll(e.target.checked)}
                 />
               </TableHeadCell>
               <TableHeadCell>Name</TableHeadCell>
-              <TableHeadCell>Email</TableHeadCell>
-              <TableHeadCell>NRP</TableHeadCell>
-              <TableHeadCell>Position</TableHeadCell>
-              <TableHeadCell>Position Type</TableHeadCell>
-              <TableHeadCell>Subdirectorate</TableHeadCell>
-              <TableHeadCell>Supervisor ID</TableHeadCell>
+              <TableHeadCell>Status</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
             </TableRow>
           </TableHead>
           <TableBody className="divide-y">
-            {filteredSupervisors.map((sup) => (
+            {filteredSubDirektorat.map((sup) => (
               <TableRow
                 key={sup.id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -302,12 +242,17 @@ const StaffTable = () => {
                 <TableCell className="font-medium text-gray-900 dark:text-white">
                   {sup.name}
                 </TableCell>
-                <TableCell>{sup.email}</TableCell>
-                <TableCell>{sup.nrp}</TableCell>
-                <TableCell>{sup.position}</TableCell>
-                <TableCell>{sup.position_type}</TableCell>
-                <TableCell>{setToName(sup.subdirectorat_id)}</TableCell>
-                <TableCell>{sup.supervisor_id}</TableCell>
+                <TableCell>
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      sup.is_active
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                    }`}
+                  >
+                    {sup.is_active ? "Active" : "Inactive"}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
@@ -322,7 +267,7 @@ const StaffTable = () => {
                     <Button
                       size="xs"
                       color="red"
-                      onClick={() => handleDelete(sup.id)}
+                      onClick={() => handleDelete(sup.id, sup.is_active)}
                       className="flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -335,23 +280,22 @@ const StaffTable = () => {
           </TableBody>
         </Table>
 
-        {filteredSupervisors.length === 0 && (
+        {filteredSubDirektorat.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            No supervisors found.
+            No subDirektorat found.
           </div>
         )}
       </div>
 
       {/* Modal for Add/Edit */}
-      <StaffModal
+      <SubDirektoratModal
         show={showModal}
         onClose={() => {
           setShowModal(false);
           setModalError("");
         }}
         modalType={modalType}
-        supervisor={currentSupervisor}
-        subDirectorat={subDirektorat}
+        subDirektorat={currentSubDirektorat}
         onChange={handleModalChange}
         onSave={handleSave}
         error={modalError}
@@ -365,4 +309,4 @@ const StaffTable = () => {
   );
 };
 
-export default StaffTable;
+export default SubDirektoratTable;

@@ -12,6 +12,15 @@ class ProfileService {
     return data
   }
 
+  async getBySubDirectorat(subdirectorat) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('subdirectorat_id', subdirectorat)
+    if (error) throw error
+    return data
+  }
+
   async getById(id) {
     const { data, error } = await supabase
       .from('profiles')

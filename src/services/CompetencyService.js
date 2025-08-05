@@ -1,11 +1,20 @@
 import { supabase } from './SupabaseClient'
 
 class CompetencyService {
-  async getAll() {
+  async getActive() {
     const { data, error } = await supabase
       .from('competencies')
       .select('*')
       .eq('is_active', true)
+      .is('deleted_at', null)
+    if (error) throw error
+    return data
+  }
+
+  async getAll() {
+    const { data, error } = await supabase
+      .from('competencies')
+      .select('*')
       .is('deleted_at', null)
     if (error) throw error
     return data

@@ -5,7 +5,6 @@ class IndicatorService {
     const { data, error } = await supabase
       .from('indicators')
       .select('*')
-      .eq('is_active', true)
       .is('deleted_at', null)
     if (error) throw error
     return data

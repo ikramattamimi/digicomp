@@ -20,9 +20,9 @@ function App() {
       <>
         <Route path="/" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="sub-directorate" element={<SubDirectoratePage />} />
-          <Route path="competency" element={<CompetencyPage />} />
-          <Route path="indicator" element={<IndicatorPage />} />
+          <Route path="sub-direktorat" element={<SubDirectoratePage />} />
+          <Route path="kompetensi" element={<CompetencyPage />} />
+          <Route path="indikator" element={<IndicatorPage />} />
           <Route path="staff" element={<StaffPage />} />
           <Route path="assessment" element={<AssessmentPage />} />
         </Route>
