@@ -2,7 +2,7 @@
 // Shows all assessments with filtering, search, and management actions
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Card, 
   Button, 
@@ -31,6 +31,9 @@ import { ASSESSMENT_STATUS } from '../constants/assessmentConstants';
 import { LoadingSpinner, ErrorAlert } from '../components/common';
 
 const AssessmentListPage = () => {
+  // Navigation
+  const navigate = useNavigate();
+
   // State management
   const [assessments, setAssessments] = useState([]);
   const [filteredAssessments, setFilteredAssessments] = useState([]);
@@ -154,7 +157,7 @@ const AssessmentListPage = () => {
           activeAssessments={stats.active}
           totalParticipants={stats.participants}
           dueSoon={stats.dueSoon}
-          onCreateClick={() => window.location.href = '/penilaian/create'}
+          onCreateClick={() => navigate('/penilaian/create')}
           onFilterClick={() => setStatusFilter(statusFilter === 'all' ? 'draft' : 'all')}
           onExportClick={() => console.log('Export clicked')}
           loading={loading}
@@ -201,8 +204,8 @@ const AssessmentListPage = () => {
         {/* <Card className="bg-transparent" theme={{root: {children: "p-1"}}}> */}
           <AssessmentTable 
             assessments={filteredAssessments}
-            onView={(assessment) => window.location.href = `/penilaian/${assessment.id}`}
-            onEdit={(assessment) => window.location.href = `/penilaian/${assessment.id}/edit`}
+            onView={(assessment) => navigate(`/penilaian/${assessment.id}`)}
+            onEdit={(assessment) => navigate(`/penilaian/${assessment.id}/edit`)}
             onDelete={handleDelete}
             onDuplicate={(assessment) => console.log('Duplicate:', assessment)}
             loading={loading}

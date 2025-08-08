@@ -198,7 +198,7 @@ const AssessmentParticipantPage = () => {
               `${formatAssessmentPeriod(assessment.start_date, assessment.end_date)}` : 
               'Kelola peserta penilaian dan pantau progres mereka'
             }
-            showExportButton={true}
+            showExportButton={false}
             exportLabel="Ekspor Peserta"
             onExportClick={handleExportParticipants}
             customActions={[

@@ -354,8 +354,8 @@ export const AssessmentListHeader = (props) => (
     title="Penilaian"
     subtitle="Kelola periode penilaian dan pantau progres"
     showCreateButton={true}
-    showFilterButton={true}
-    showExportButton={true}
+    showFilterButton={false}
+    showExportButton={false}
     createButtonText="Buat Penilaian"
     stats={[
       {
@@ -414,7 +414,7 @@ export const AssessmentDetailHeader = (props) => (
     subtitle={props.assessmentSubtitle}
     status={props.status}
     statusConfig={props.statusConfig}
-    showExportButton={true}
+    showExportButton={false}
     customActions={[
       {
         type: 'button',
