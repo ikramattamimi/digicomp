@@ -353,11 +353,22 @@ class AssessmentParticipantService {
       .from('assessment_participants')
       .select('id')
       .eq('assessment_id', assessmentId)
-      .or(`subject_profile_id.eq.${userId},assessor_profile_id.eq.${userId}`)
-      .is('deleted_at', null);
+      .eq(`subject_profile_id`, userId);
     
     if (error) throw error;
-    return data.length > 0;
+    return data;
+  }
+
+  // Restore multiple participants (soft delete)
+  async restoreMultiple(participantIds) {
+    const { data, error } = await supabase
+      .from('assessment_participants')
+      .update({ deleted_at: null })
+      .in('id', participantIds)
+      .select();
+
+    if (error) throw error;
+    return data;
   }
 
   // Get participant statistics for assessment

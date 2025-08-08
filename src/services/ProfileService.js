@@ -1,15 +1,33 @@
 import { supabase } from './SupabaseClient'
 
 class ProfileService {
-  async getAll() {
-    const { data, error } = await supabase
+  async getAll(filters = {}) {
+    let query = supabase
       .from('profiles')
       .select('*, subdirectorats(name)')
-      .eq('is_active', true)
-      .is('deleted_at', null)
-      .order('name', { ascending: true })
-    if (error) throw error
-    return data
+      .order('name', { ascending: true });
+
+    // Apply filters
+    if (filters.is_active !== undefined) {
+      query = query.eq('is_active', filters.is_active);
+    } else {
+      query = query.eq('is_active', true);
+    }
+
+    if (filters.position_type) {
+      query = query.eq('position_type', filters.position_type);
+    }
+
+    if (filters.subdirectorat_id) {
+      query = query.eq('subdirectorat_id', filters.subdirectorat_id);
+    }
+
+    // Always exclude soft deleted
+    query = query.is('deleted_at', null);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
   }
 
   async getBySubDirectorat(subdirectorat) {
