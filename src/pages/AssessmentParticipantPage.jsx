@@ -5,7 +5,7 @@ import { ArrowLeft, Users, UserPlus, Upload, Download, Settings, Home, FileText 
 import ParticipantTable from '../components/assessment/ParticipantTable';
 import ParticipantModal from '../components/assessment/ParticipantModal';
 import BulkParticipantSelector from '../components/assessment/BulkParticipantSelector';
-import AssessmentService from '../services/assessmentService';
+import AssessmentService from '../services/AssessmentService';
 import AssessmentParticipantService from '../services/AssessmentParticipantService';
 import ErrorAlert from '../components/common/ErrorAlert';
 import AssessmentHeader from '../components/assessment/AssessmentHeader';

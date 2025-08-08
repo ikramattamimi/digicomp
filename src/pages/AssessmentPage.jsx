@@ -23,7 +23,7 @@ import {
   Edit,
   Eye
 } from 'lucide-react';
-import AssessmentService from '../services/assessmentService';
+import AssessmentService from '../services/AssessmentService';
 import { AssessmentListHeader } from '../components/assessment/AssessmentHeader';
 import AssessmentTable from '../components/assessment/AssessmentTable';
 import AssessmentStatusBadge from '../components/assessment/AssessmentStatusBadge';

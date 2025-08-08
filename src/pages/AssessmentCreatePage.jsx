@@ -23,7 +23,7 @@ import {
   Users,
   Award,
 } from "lucide-react";
-import AssessmentService from "../services/assessmentService";
+import AssessmentService from "../services/AssessmentService";
 import CompetencyService from "../services/CompetencyService";
 import AssessmentCompetencyService from "../services/AssessmentCompetencyService";
 import CompetencySelector from "../components/assessment/CompetencySelector";
