@@ -17,7 +17,7 @@ import {
   Eye,
   FileText,
 } from "lucide-react";
-import AssessmentService from "../services/assessmentService";
+import AssessmentService from "../services/AssessmentService";
 import AssessmentParticipantService from "../services/AssessmentParticipantService";
 import AssessmentStatusBadge from "../components/assessment/AssessmentStatusBadge";
 import ParticipantTable from "../components/assessment/ParticipantTable";
