@@ -45,7 +45,7 @@ class AssessmentParticipantService {
     return data;
   }
 
-  // Get participants for specific assessment
+  // Get participants for specific assessment with enhanced data
   async getByAssessmentId(assessmentId) {
     const { data, error } = await supabase
       .from('assessment_participants')
@@ -77,10 +77,17 @@ class AssessmentParticipantService {
     
     if (error) throw error;
     
-    // Add response_type to each participant
+    // Enhance data with additional computed fields
     return data.map(participant => ({
       ...participant,
-      response_type: getResponseType(participant.subject_profile_id, participant.assessor_profile_id)
+      subject_name: participant.subject_profile?.name,
+      subject_nrp: participant.subject_profile?.nrp,
+      assessor_name: participant.assessor_profile?.name,
+      assessor_position: participant.assessor_profile?.position,
+      response_type: getResponseType(participant.subject_profile_id, participant.assessor_profile_id),
+      status: participant.status || 'pending',
+      progress: participant.progress || 0,
+      last_activity: participant.updated_at || participant.created_at
     }));
   }
 

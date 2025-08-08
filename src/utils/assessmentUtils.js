@@ -112,8 +112,16 @@ export const validateAssessmentDates = (startDate, endDate) => {
  * @returns {string} Formatted period string
  */
 export const formatAssessmentPeriod = (startDate, endDate) => {
-  const start = new Date(startDate).toLocaleDateString('id-ID');
-  const end = new Date(endDate).toLocaleDateString('id-ID');
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+  const start = formatDate(startDate);
+  const end = formatDate(endDate);
   return `${start} - ${end}`;
 };
 
@@ -156,4 +164,72 @@ export const filterAssessmentsByPermission = (assessments, userId, userRole) => 
       p.subject_profile_id === userId || p.assessor_profile_id === userId
     )
   );
+};
+
+/**
+ * Validates assessment weight values
+ * @param {number} selfWeight - Self assessment weight (0-1)
+ * @param {number} supervisorWeight - Supervisor assessment weight (0-1)
+ * @returns {Object} Validation result with isValid boolean and errorMessage string
+ */
+export const validateAssessmentWeights = (selfWeight, supervisorWeight) => {
+  const self = parseFloat(selfWeight);
+  const supervisor = parseFloat(supervisorWeight);
+  
+  if (isNaN(self) || self < 0 || self > 1) {
+    return {
+      isValid: false,
+      errorMessage: 'Self weight must be between 0 and 1'
+    };
+  }
+  
+  if (isNaN(supervisor) || supervisor < 0 || supervisor > 1) {
+    return {
+      isValid: false,
+      errorMessage: 'Supervisor weight must be between 0 and 1'
+    };
+  }
+  
+  const total = self + supervisor;
+  if (Math.abs(total - 1.0) > 0.001) {
+    return {
+      isValid: false,
+      errorMessage: `Total weight must equal 1.0 (100%). Current total: ${total.toFixed(3)}`
+    };
+  }
+  
+  return {
+    isValid: true,
+    errorMessage: null
+  };
+};
+
+/**
+ * Calculates weighted final score using custom weights
+ * @param {number} selfScore - Average score from self assessment
+ * @param {number} supervisorScore - Average score from supervisor assessment
+ * @param {number} selfWeight - Weight for self assessment (default: 0.3)
+ * @param {number} supervisorWeight - Weight for supervisor assessment (default: 0.7)
+ * @returns {number} Weighted final score rounded to 2 decimal places
+ */
+export const calculateCustomWeightedScore = (
+  selfScore, 
+  supervisorScore, 
+  selfWeight = ASSESSMENT_WEIGHTS.SELF, 
+  supervisorWeight = ASSESSMENT_WEIGHTS.SUPERVISOR
+) => {
+  if (selfScore === null || selfScore === undefined) selfScore = 0;
+  if (supervisorScore === null || supervisorScore === undefined) supervisorScore = 0;
+  
+  const weighted = (selfScore * selfWeight) + (supervisorScore * supervisorWeight);
+  return Math.round(weighted * 100) / 100; // Round to 2 decimal places
+};
+
+/**
+ * Formats weight values for display
+ * @param {number} weight - Weight value (0-1)
+ * @returns {string} Formatted weight as percentage
+ */
+export const formatWeight = (weight) => {
+  return `${((weight || 0) * 100).toFixed(0)}%`;
 };

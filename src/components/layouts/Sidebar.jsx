@@ -78,9 +78,9 @@ const Sidebar = ({ collapsed }) => {
             </div>
             <SidebarItem
               as={NavLink}
-              to="/penilaian"
+              to="/assessments"
               icon={() => <ClipboardCheck size={20} />}
-              active={location.pathname.startsWith("/penilaian")}
+              active={location.pathname.startsWith("/assessments")}
             >
               Penilaian
             </SidebarItem>

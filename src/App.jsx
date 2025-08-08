@@ -12,6 +12,10 @@ import CompetencyPage from "./pages/CompetencyPage.jsx";
 import IndicatorPage from "./pages/IndicatorPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import AssessmentPage from "./pages/AssessmentPage.jsx";
+import AssessmentCreatePage from "./pages/AssessmentCreatePage.jsx";
+import AssessmentEditPage from "./pages/AssessmentEditPage.jsx";
+import AssessmentDetailPage from "./pages/AssessmentDetailPage.jsx";
+import AssessmentParticipantPage from "./pages/AssessmentParticipantPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function App() {
@@ -24,7 +28,14 @@ function App() {
           <Route path="kompetensi" element={<CompetencyPage />} />
           <Route path="indikator" element={<IndicatorPage />} />
           <Route path="staff" element={<StaffPage />} />
-          <Route path="assessment" element={<AssessmentPage />} />
+          
+          {/* Assessment Routes */}
+          {/* <Route path="assessment" element={<AssessmentPage />} /> */}
+          <Route path="penilaian" element={<AssessmentPage />} />
+          <Route path="penilaian/create" element={<AssessmentCreatePage />} />
+          <Route path="penilaian/:id" element={<AssessmentDetailPage />} />
+          <Route path="penilaian/:id/edit" element={<AssessmentEditPage />} />
+          <Route path="penilaian/:assessmentId/participants" element={<AssessmentParticipantPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </>
@@ -32,7 +43,7 @@ function App() {
   );
 
   return (
-    <RouterProvider router={router} />
+      <RouterProvider router={router} />
   );
 }
 
