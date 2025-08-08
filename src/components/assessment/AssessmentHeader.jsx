@@ -442,4 +442,18 @@ export const AssessmentCreateHeader = (props) => (
   />
 );
 
+export const AssessmentEditHeader = (props) => (
+  <AssessmentHeader
+    breadcrumbs={[
+      { label: 'Dashboard', href: '/', icon: Home },
+      { label: 'Penilaian', href: '/penilaian', icon: FileText },
+      { label: props.assessmentTitle || 'Edit Penilaian', icon: Settings }
+    ]}
+    title='Edit Penilaian'
+    subtitle='Ubah detail penilaian dan kompetensi'
+    showExportButton={false}
+    {...props}
+  />
+);
+
 export default AssessmentHeader;
