@@ -1,17 +1,11 @@
 // Assessment Detail Page - View assessment details and manage participants
 // Shows assessment info, competencies, participants, and actions
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { 
-  Card, 
-  Button, 
-  Badge,
-  Tabs,
-  Alert
-} from 'flowbite-react';
-import { 
-  ClipboardCheck, 
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { Card, Button, Badge, Tabs, Alert, TabItem } from "flowbite-react";
+import {
+  ClipboardCheck,
   ArrowLeft,
   Edit,
   Users,
@@ -21,28 +15,28 @@ import {
   CheckCircle,
   Settings,
   Eye,
-  FileText
-} from 'lucide-react';
-import AssessmentService from '../services/assessmentService';
-import AssessmentParticipantService from '../services/AssessmentParticipantService';
-import AssessmentStatusBadge from '../components/assessment/AssessmentStatusBadge';
-import ParticipantTable from '../components/assessment/ParticipantTable';
-import { formatAssessmentPeriod } from '../utils/assessmentUtils';
-import { ASSESSMENT_STATUS } from '../constants/assessmentConstants';
-import { LoadingSpinner, ErrorAlert } from '../components/common';
-import { AssessmentDetailHeader } from '../components/assessment/AssessmentHeader';
+  FileText,
+} from "lucide-react";
+import AssessmentService from "../services/assessmentService";
+import AssessmentParticipantService from "../services/AssessmentParticipantService";
+import AssessmentStatusBadge from "../components/assessment/AssessmentStatusBadge";
+import ParticipantTable from "../components/assessment/ParticipantTable";
+import { formatAssessmentPeriod } from "../utils/assessmentUtils";
+import { ASSESSMENT_STATUS } from "../constants/assessmentConstants";
+import { LoadingSpinner, ErrorAlert } from "../components/common";
+import { AssessmentDetailHeader } from "../components/assessment/AssessmentHeader";
 
 const AssessmentDetailPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  
+
   // State management
   const [assessment, setAssessment] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [participantStats, setParticipantStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Load all assessment related data
   const loadAssessmentData = useCallback(async () => {
@@ -55,16 +49,16 @@ const AssessmentDetailPage = () => {
       setAssessment(assessmentData);
 
       // Load participants
-      const participantData = await AssessmentParticipantService.getByAssessmentId(id);
+      const participantData =
+        await AssessmentParticipantService.getByAssessmentId(id);
       setParticipants(participantData);
 
       // Load participant statistics
       const stats = await AssessmentParticipantService.getParticipantStats(id);
       setParticipantStats(stats);
-
     } catch (err) {
-      console.error('Failed to load assessment data:', err);
-      setError(err.message || 'Failed to load assessment data');
+      console.error("Failed to load assessment data:", err);
+      setError(err.message || "Failed to load assessment data");
     } finally {
       setLoading(false);
     }
@@ -83,7 +77,7 @@ const AssessmentDetailPage = () => {
       await AssessmentService.publish(id);
       await loadAssessmentData(); // Refresh data
     } catch (err) {
-      setError(err.message || 'Failed to publish assessment');
+      setError(err.message || "Failed to publish assessment");
     }
   };
 
@@ -92,13 +86,13 @@ const AssessmentDetailPage = () => {
       await AssessmentService.complete(id);
       await loadAssessmentData(); // Refresh data
     } catch (err) {
-      setError(err.message || 'Failed to complete assessment');
+      setError(err.message || "Failed to complete assessment");
     }
   };
 
   // Navigation handlers
   const handleBack = () => {
-    navigate('/penilaian');
+    navigate("/penilaian");
   };
 
   const handleEdit = () => {
@@ -119,7 +113,11 @@ const AssessmentDetailPage = () => {
   };
 
   const canPublish = () => {
-    return assessment && assessment.status === ASSESSMENT_STATUS.DRAFT && participants.length > 0;
+    return (
+      assessment &&
+      assessment.status === ASSESSMENT_STATUS.DRAFT &&
+      participants.length > 0
+    );
   };
 
   const canComplete = () => {
@@ -131,7 +129,7 @@ const AssessmentDetailPage = () => {
     return (
       <div className="page">
         <div className="max-w-7xl mx-auto">
-          <LoadingSpinner message="Loading assessment details..." />
+          <LoadingSpinner message="Memuat detail penilaian..." />
         </div>
       </div>
     );
@@ -144,9 +142,7 @@ const AssessmentDetailPage = () => {
         <div className="max-w-7xl mx-auto">
           <ErrorAlert message={error} />
           <div className="mt-4">
-            <Button onClick={handleBack}>
-              Back to Assessments
-            </Button>
+            <Button onClick={handleBack}>Kembali ke Daftar Penilaian</Button>
           </div>
         </div>
       </div>
@@ -156,241 +152,307 @@ const AssessmentDetailPage = () => {
   return (
     <div className="page">
       <div className="max-w-7xl mx-auto">
-
         {/* Page Header - using AssessmentDetailHeader */}
         <AssessmentDetailHeader
           assessmentTitle={assessment?.name}
           status={assessment?.status}
           statusConfig={assessment?.statusConfig}
           onEdit={handleEdit}
-          // Custom actions for additional buttons
           customActions={[
             ...(canEdit()
-              ? [{
-            type: 'button',
-            label: 'Edit',
-            icon: Edit,
-            onClick: handleEdit,
-            color: 'gray'
-          }]
+              ? [
+                  {
+                    type: "button",
+                    label: "Ubah",
+                    icon: Edit,
+                    onClick: handleEdit,
+                    color: "gray",
+                  },
+                ]
               : []),
             {
-              type: 'button',
-              label: 'Participants',
+              type: "button",
+              label: "Peserta",
               icon: Users,
               onClick: handleManageParticipants,
-              color: 'gray'
+              color: "gray",
             },
             ...(canPublish()
-              ? [{
-            type: 'button',
-            label: 'Publish',
-            icon: Play,
-            onClick: handlePublish,
-            color: 'blue'
-          }]
+              ? [
+                  {
+                    type: "button",
+                    label: "Publikasikan",
+                    icon: Play,
+                    onClick: handlePublish,
+                    color: "blue",
+                  },
+                ]
               : []),
             ...(canComplete()
-              ? [{
-            type: 'button',
-            label: 'Complete',
-            icon: CheckCircle,
-            onClick: handleComplete,
-            color: 'green'
-          }]
+              ? [
+                  {
+                    type: "button",
+                    label: "Selesaikan",
+                    icon: CheckCircle,
+                    onClick: handleComplete,
+                    color: "green",
+                  },
+                ]
               : []),
             ...(assessment?.status === ASSESSMENT_STATUS.DONE
-              ? [{
-            type: 'button',
-            label: 'Reports',
-            icon: FileText,
-            onClick: handleViewReports,
-            color: 'blue'
-          }]
-              : [])
+              ? [
+                  {
+                    type: "button",
+                    label: "Laporan",
+                    icon: FileText,
+                    onClick: handleViewReports,
+                    color: "blue",
+                  },
+                ]
+              : []),
           ]}
-          // Breadcrumbs and other props can be added if needed
-        >
-        </AssessmentDetailHeader>
+        ></AssessmentDetailHeader>
 
         {error && (
-          <ErrorAlert 
-            message={error} 
-            onClose={() => setError(null)} 
+          <ErrorAlert
+            message={error}
+            onClose={() => setError(null)}
             variant="flowbite"
           />
         )}
 
         {/* Content Tabs */}
-        <Card className="bg-white dark:bg-gray-800 mt-3">
-          <Tabs
-            aria-label="Assessment details tabs"
-            onActiveTabChange={(tab) => setActiveTab(tab)}
+        <Tabs
+          aria-label="Tab detail penilaian"
+          onActiveTabChange={(tab) => setActiveTab(tab)}
+          theme={{
+            base: "mt-5 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm",
+            tablist: {
+              base: "gap-0",
+            },
+            tabitemcontainer: {
+              base: "px-5 pb-3",
+            },
+            tabItem: {
+              variant: {
+                default: {
+                  base: "rounded-t-lg",
+                  active: {
+                    on: "bg-blue-800 text-primary-600 dark:bg-gray-800 dark:text-primary-500",
+                    off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300",
+                  },
+                },
+              },
+            },
+          }}
+        >
+          {/* Overview Tab */}
+          <TabItem
+            active={activeTab === "overview"}
+            title="Ringkasan"
+            icon={Eye}
           >
-            {/* Overview Tab */}
-            <Tabs.Item active={activeTab === 'overview'} title="Overview" icon={Eye}>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                {/* Assessment Information */}
-                <div className="lg:col-span-2">
-                  <Card className="bg-gray-50 dark:bg-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <ClipboardCheck className="mr-2 text-blue-600 dark:text-blue-400" />
-                      Assessment Information
-                    </h3>
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Name:</label>
-                        <p className="text-gray-900 dark:text-white">{assessment?.name}</p>
-                      </div>
-                      
-                      {assessment?.description && (
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description:</label>
-                          <p className="text-gray-900 dark:text-white">{assessment.description}</p>
-                        </div>
-                      )}
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Start Date:</label>
-                          <p className="text-gray-900 dark:text-white">
-                            {new Date(assessment?.start_date).toLocaleDateString('id-ID')}
-                          </p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">End Date:</label>
-                          <p className="text-gray-900 dark:text-white">
-                            {new Date(assessment?.end_date).toLocaleDateString('id-ID')}
-                          </p>
-                        </div>
-                      </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Informasi Penilaian */}
+              <div className="lg:col-span-2">
+                <Card className="bg-gray-50 dark:bg-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <ClipboardCheck className="mr-2 text-blue-600 dark:text-blue-400" />
+                    Informasi Penilaian
+                  </h3>
 
-                      {/* Assessment Weights */}
-                      <div>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Assessment Weights:</label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
-                          <div className="text-gray-900 dark:text-white">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">Self: </span>
-                            {((assessment?.self_weight || 0.3) * 100).toFixed(0)}%
-                          </div>
-                          <div className="text-gray-900 dark:text-white">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">Supervisor: </span>
-                            {((assessment?.supervisor_weight || 0.7) * 100).toFixed(0)}%
-                          </div>
-                        </div>
-                      </div>
-
-                      {assessment?.configuration && (
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Configuration:</label>
-                          <pre className="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-2 rounded border">
-                            {assessment.configuration}
-                          </pre>
-                        </div>
-                      )}
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Nama:
+                      </label>
+                      <p className="text-gray-900 dark:text-white">
+                        {assessment?.name}
+                      </p>
                     </div>
-                  </Card>
-                </div>
 
-                {/* Statistics */}
-                <div>
-                  <Card className="bg-gray-50 dark:bg-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <Users className="mr-2 text-blue-600 dark:text-blue-400" />
-                      Participant Statistics
-                    </h3>
-                    
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">Total Participants:</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          {participantStats.totalParticipants || 0}
-                        </span>
+                    {assessment?.description && (
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Deskripsi:
+                        </label>
+                        <p className="text-gray-900 dark:text-white">
+                          {assessment.description}
+                        </p>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">Unique Subjects:</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          {participantStats.uniqueSubjects || 0}
-                        </span>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Tanggal Mulai:
+                        </label>
+                        <p className="text-gray-900 dark:text-white">
+                          {new Date(assessment?.start_date).toLocaleDateString(
+                            "id-ID"
+                          )}
+                        </p>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">Self Assessments:</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          {participantStats.selfAssessments || 0}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">Supervisor Assessments:</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">
-                          {participantStats.supervisorAssessments || 0}
-                        </span>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Tanggal Selesai:
+                        </label>
+                        <p className="text-gray-900 dark:text-white">
+                          {new Date(assessment?.end_date).toLocaleDateString(
+                            "id-ID"
+                          )}
+                        </p>
                       </div>
                     </div>
-                  </Card>
 
-                  {/* Quick Actions */}
-                  <Card className="mt-4 bg-gray-50 dark:bg-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <Settings className="mr-2 text-blue-600 dark:text-blue-400" />
-                      Quick Actions
-                    </h3>
-                    
-                    <div className="space-y-2">
+                    {/* Bobot Penilaian */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Bobot Penilaian:
+                      </label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
+                        <div className="text-gray-900 dark:text-white">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            Mandiri:{" "}
+                          </span>
+                          {((assessment?.self_weight || 0.3) * 100).toFixed(0)}%
+                        </div>
+                        <div className="text-gray-900 dark:text-white">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            Atasan:{" "}
+                          </span>
+                          {(
+                            (assessment?.supervisor_weight || 0.7) * 100
+                          ).toFixed(0)}
+                          %
+                        </div>
+                      </div>
+                    </div>
+
+                    {assessment?.configuration && (
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Konfigurasi:
+                        </label>
+                        <pre className="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-2 rounded border">
+                          {assessment.configuration}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </div>
+
+              {/* Statistik */}
+              <div>
+                <Card className="bg-gray-50 dark:bg-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <Users className="mr-2 text-blue-600 dark:text-blue-400" />
+                    Statistik Peserta
+                  </h3>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-700 dark:text-gray-300">
+                        Total Peserta:
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {participantStats.totalParticipants || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700 dark:text-gray-300">
+                        Subjek Unik:
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {participantStats.uniqueSubjects || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700 dark:text-gray-300">
+                        Penilaian Mandiri:
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {participantStats.selfAssessments || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700 dark:text-gray-300">
+                        Penilaian Atasan:
+                      </span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {participantStats.supervisorAssessments || 0}
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Aksi Cepat */}
+                <Card className="mt-4 bg-gray-50 dark:bg-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <Settings className="mr-2 text-blue-600 dark:text-blue-400" />
+                    Aksi Cepat
+                  </h3>
+
+                  <div className="space-y-2">
+                    <Button
+                      color="gray"
+                      onClick={handleManageParticipants}
+                      className="w-full justify-start"
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      Kelola Peserta
+                    </Button>
+
+                    {canEdit() && (
                       <Button
                         color="gray"
-                        onClick={handleManageParticipants}
+                        onClick={handleEdit}
                         className="w-full justify-start"
                       >
-                        <Users className="w-4 h-4 mr-2" />
-                        Manage Participants
+                        <Edit className="w-4 h-4 mr-2" />
+                        Ubah Penilaian
                       </Button>
-                      
-                      {canEdit() && (
-                        <Button
-                          color="gray"
-                          onClick={handleEdit}
-                          className="w-full justify-start"
-                        >
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit Assessment
-                        </Button>
-                      )}
-                      
-                      {assessment?.status === ASSESSMENT_STATUS.DONE && (
-                        <Button
-                          color="blue"
-                          onClick={handleViewReports}
-                          className="w-full justify-start"
-                        >
-                          <FileText className="w-4 h-4 mr-2" />
-                          View Reports
-                        </Button>
-                      )}
-                    </div>
-                  </Card>
-                </div>
+                    )}
+
+                    {assessment?.status === ASSESSMENT_STATUS.DONE && (
+                      <Button
+                        color="blue"
+                        onClick={handleViewReports}
+                        className="w-full justify-start"
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Lihat Laporan
+                      </Button>
+                    )}
+                  </div>
+                </Card>
               </div>
-            </Tabs.Item>
+            </div>
+          </TabItem>
 
-            {/* Competencies Tab */}
-            <Tabs.Item title="Competencies" icon={Award}>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Assessment Competencies
-                  </h3>
-                  <Badge color="blue">
-                    {assessment?.assessment_competencies?.length || 0} Competencies
-                  </Badge>
-                </div>
+          {/* Kompetensi Tab */}
+          <TabItem title="Kompetensi" icon={Award}>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Kompetensi Penilaian
+                </h3>
+                <Badge color="blue">
+                  {assessment?.assessment_competencies?.length || 0} Kompetensi
+                </Badge>
+              </div>
 
-                {assessment?.assessment_competencies && assessment.assessment_competencies.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {assessment.assessment_competencies.map((ac) => (
+              {assessment?.assessment_competencies &&
+              assessment.assessment_competencies.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {assessment.assessment_competencies.map(
+                    (ac) =>
                       ac.competencies && (
-                        <Card key={ac.id} className="bg-gray-50 dark:bg-gray-700">
+                        <Card
+                          key={ac.id}
+                          className="bg-gray-50 dark:bg-gray-700"
+                        >
                           <h4 className="font-semibold text-gray-900 dark:text-white">
                             {ac.competencies.name}
                           </h4>
@@ -399,44 +461,50 @@ const AssessmentDetailPage = () => {
                               {ac.competencies.description}
                             </p>
                           )}
-                          
-                          {ac.competencies.indicators && ac.competencies.indicators.length > 0 && (
-                            <div className="mt-3">
-                              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Indicators ({ac.competencies.indicators.length}):
-                              </p>
-                              <ul className="space-y-1">
-                                {ac.competencies.indicators.map((indicator) => (
-                                  <li key={indicator.id} className="text-sm text-gray-600 dark:text-gray-400">
-                                    • {indicator.name}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+
+                          {ac.competencies.indicators &&
+                            ac.competencies.indicators.length > 0 && (
+                              <div className="mt-3">
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                  Indikator (
+                                  {ac.competencies.indicators.length}):
+                                </p>
+                                <ul className="space-y-1">
+                                  {ac.competencies.indicators.map(
+                                    (indicator) => (
+                                      <li
+                                        key={indicator.id}
+                                        className="text-sm text-gray-600 dark:text-gray-400"
+                                      >
+                                        • {indicator.name}
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
                         </Card>
                       )
-                    ))}
-                  </div>
-                ) : (
-                  <Alert color="warning">
-                    <span className="font-medium">No competencies selected!</span> 
-                    This assessment has no competencies assigned. Please edit the assessment to add competencies.
-                  </Alert>
-                )}
-              </div>
-            </Tabs.Item>
+                  )}
+                </div>
+              ) : (
+                <Alert color="warning">
+                  <span className="font-medium">Belum ada kompetensi!</span>
+                  Penilaian ini belum memiliki kompetensi. Silakan ubah penilaian untuk menambah kompetensi.
+                </Alert>
+              )}
+            </div>
+          </TabItem>
 
-            {/* Participants Tab */}
-            <Tabs.Item title="Participants" icon={Users}>
-              <ParticipantTable 
-                participants={participants}
-                assessmentId={id}
-                onRefresh={loadAssessmentData}
-              />
-            </Tabs.Item>
-          </Tabs>
-        </Card>
+          {/* Peserta Tab */}
+          <TabItem title="Peserta" icon={Users}>
+            <ParticipantTable
+              participants={participants}
+              assessmentId={id}
+              onRefresh={loadAssessmentData}
+            />
+          </TabItem>
+        </Tabs>
       </div>
     </div>
   );
