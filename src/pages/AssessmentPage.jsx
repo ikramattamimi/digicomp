@@ -131,7 +131,7 @@ const AssessmentListPage = () => {
   if (loading) {
     return (
       <div className="page">
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto">
           <AssessmentListHeader 
             loading={true}
             totalAssessments={0}
@@ -147,7 +147,7 @@ const AssessmentListPage = () => {
 
   return (
     <div className="page">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Enhanced Header with Statistics */}
         <AssessmentListHeader 
           totalAssessments={stats.total}
@@ -198,7 +198,7 @@ const AssessmentListPage = () => {
         {/* </Card> */}
 
         {/* Assessment Table */}
-        <Card className="bg-transparent" theme={{root: {children: "p-1"}}}>
+        {/* <Card className="bg-transparent" theme={{root: {children: "p-1"}}}> */}
           <AssessmentTable 
             assessments={filteredAssessments}
             onView={(assessment) => window.location.href = `/penilaian/${assessment.id}`}
@@ -207,7 +207,7 @@ const AssessmentListPage = () => {
             onDuplicate={(assessment) => console.log('Duplicate:', assessment)}
             loading={loading}
           />
-        </Card>
+        {/* </Card> */}
       </div>
     </div>
   );

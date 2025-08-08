@@ -398,259 +398,257 @@ const ParticipantTable = ({
       </div>
 
       {/* Table */}
-      <Card className="bg-white dark:bg-gray-800">
-        <div className="overflow-x-auto">
-          <Table hoverable>
-            <TableHead>
-              {/* Nama Peserta */}
-              <TableHeadCell
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={() => handleSort("subject_name")}
-              >
-                <div className="flex items-center">
-                  Nama Peserta {getSortIcon("subject_name")}
-                </div>
-              </TableHeadCell>
+      <div className="table-container">
+        <Table hoverable>
+          <TableHead>
+            {/* Nama Peserta */}
+            <TableHeadCell
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+              onClick={() => handleSort("subject_name")}
+            >
+              <div className="flex items-center">
+                Nama Peserta {getSortIcon("subject_name")}
+              </div>
+            </TableHeadCell>
 
-              {/* Supervisor */}
-              <TableHeadCell
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={() => handleSort("supervisor_name")}
-              >
-                <div className="flex items-center">
-                  Supervisor {getSortIcon("supervisor_name")}
-                </div>
-              </TableHeadCell>
-              
-              {/* Assessment Info */}
-              {showAssessmentInfo && (
-                <TableHeadCell>Info Penilaian</TableHeadCell>
-              )}
+            {/* Supervisor */}
+            <TableHeadCell
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+              onClick={() => handleSort("supervisor_name")}
+            >
+              <div className="flex items-center">
+                Supervisor {getSortIcon("supervisor_name")}
+              </div>
+            </TableHeadCell>
+            
+            {/* Assessment Info */}
+            {showAssessmentInfo && (
+              <TableHeadCell>Info Penilaian</TableHeadCell>
+            )}
 
-              {/* Status */}
-              <TableHeadCell
-                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={() => handleSort("status")}
-              >
-                <div className="flex items-center">
-                  Status {getSortIcon("status")}
-                </div>
-              </TableHeadCell>
+            {/* Status */}
+            <TableHeadCell
+              className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+              onClick={() => handleSort("status")}
+            >
+              <div className="flex items-center">
+                Status {getSortIcon("status")}
+              </div>
+            </TableHeadCell>
 
-              {/* Self Assessment */}
-              <TableHeadCell>Penilaian Diri</TableHeadCell>
+            {/* Self Assessment */}
+            <TableHeadCell>Penilaian Diri</TableHeadCell>
 
-              {/* Supervisor Assessment */}
-              <TableHeadCell>Penilaian Atasan</TableHeadCell>
+            {/* Supervisor Assessment */}
+            <TableHeadCell>Penilaian Atasan</TableHeadCell>
 
-              {/* Progress */}
-              <TableHeadCell>Progress</TableHeadCell>
+            {/* Progress */}
+            <TableHeadCell>Progress</TableHeadCell>
 
-              {/* Actions */}
-              <TableHeadCell>
-                <span className="sr-only">Actions</span>
-              </TableHeadCell>
-            </TableHead>
+            {/* Actions */}
+            <TableHeadCell>
+              <span className="sr-only">Actions</span>
+            </TableHeadCell>
+          </TableHead>
 
 
-            <TableBody className="divide-y">
-              {filteredAndSortedParticipants.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={showAssessmentInfo ? 8 : 7}
-                    className="text-center py-8"
-                  >
-                    <div className="flex flex-col items-center text-gray-500 dark:text-gray-400">
-                      <Users className="w-8 h-8 mb-2 opacity-50" />
-                      <p>Tidak ada peserta ditemukan</p>
-                      {searchTerm && (
-                        <p className="text-sm">
-                          Coba ubah kriteria pencarian Anda
-                        </p>
-                      )}
+          <TableBody className="divide-y">
+            {filteredAndSortedParticipants.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={showAssessmentInfo ? 8 : 7}
+                  className="text-center py-8"
+                >
+                  <div className="flex flex-col items-center text-gray-500 dark:text-gray-400">
+                    <Users className="w-8 h-8 mb-2 opacity-50" />
+                    <p>Tidak ada peserta ditemukan</p>
+                    {searchTerm && (
+                      <p className="text-sm">
+                        Coba ubah kriteria pencarian Anda
+                      </p>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredAndSortedParticipants.map((participant) => (
+                <TableRow
+                  key={participant.id}
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                >
+                  {/* Nama Peserta */}
+                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                    <div className="flex items-center">
+                      <Avatar
+                        img={participant.subject_avatar}
+                        alt={participant.subject_name}
+                        size="sm"
+                        className="mr-3"
+                      />
+                      <div>
+                        <div className="font-medium">
+                          {participant.subject_name}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {participant.subject_email}
+                        </div>
+                      </div>
                     </div>
                   </TableCell>
-                </TableRow>
-              ) : (
-                filteredAndSortedParticipants.map((participant) => (
-                  <TableRow
-                    key={participant.id}
-                    className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                  >
-                    {/* Nama Peserta */}
-                    <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+
+                  {/* Supervisor Info */}
+                  <TableCell>
+                    {participant.supervisor_name ? (
                       <div className="flex items-center">
                         <Avatar
-                          img={participant.subject_avatar}
-                          alt={participant.subject_name}
+                          img={participant.supervisor_avatar}
+                          alt={participant.supervisor_name}
                           size="sm"
                           className="mr-3"
                         />
                         <div>
                           <div className="font-medium">
-                            {participant.subject_name}
+                            {participant.supervisor_name}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {participant.subject_email}
+                            {participant.supervisor_email}
                           </div>
                         </div>
                       </div>
-                    </TableCell>
-
-                    {/* Supervisor Info */}
-                    <TableCell>
-                      {participant.supervisor_name ? (
-                        <div className="flex items-center">
-                          <Avatar
-                            img={participant.supervisor_avatar}
-                            alt={participant.supervisor_name}
-                            size="sm"
-                            className="mr-3"
-                          />
-                          <div>
-                            <div className="font-medium">
-                              {participant.supervisor_name}
-                            </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {participant.supervisor_email}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm italic">
-                          Belum ditentukan
-                        </span>
-                      )}
-                    </TableCell>
-
-                    {/* Assessment Info */}
-                    {showAssessmentInfo && (
-                      <TableCell>
-                        <div className="space-y-1">
-                          <div className="text-sm font-medium">
-                            {participant.assessment_title}
-                          </div>
-                          <AssessmentStatusBadge
-                            status={participant.assessment_status}
-                          />
-                          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            {new Date(
-                              participant.assessment_due_date
-                            ).toLocaleDateString('id-ID')}
-                          </div>
-                        </div>
-                      </TableCell>
+                    ) : (
+                      <span className="text-gray-400 text-sm italic">
+                        Belum ditentukan
+                      </span>
                     )}
+                  </TableCell>
 
-                    {/* Status */}
+                  {/* Assessment Info */}
+                  {showAssessmentInfo && (
                     <TableCell>
-                      {getStatusBadge(getParticipantStatus(participant))}
-                    </TableCell>
-
-                    {/* Self Assessment */}
-                    <TableCell>
-                      {participant.self_assessment ? (
-                        getAssessmentStatusBadge(
-                          participant.self_assessment.response_submitted ? "completed" : "not_started",
-                          participant.self_assessment.submission_date
-                        )
-                      ) : (
-                        <Badge color="gray" size="sm" className="flex items-center gap-1">
-                          <XCircle className="w-3 h-3" />
-                          Tidak Ada
-                        </Badge>
-                      )}
-                    </TableCell>
-
-                    {/* Supervisor Assessment */}
-                    <TableCell>
-                      {participant.supervisor_assessment ? (
-                        getAssessmentStatusBadge(
-                          participant.supervisor_assessment.response_submitted ? "completed" : "not_started",
-                          participant.supervisor_assessment.submission_date
-                        )
-                      ) : (
-                        <Badge color="gray" size="sm" className="flex items-center gap-1">
-                          <XCircle className="w-3 h-3" />
-                          Tidak Ada
-                        </Badge>
-                      )}
-                    </TableCell>
-
-                    {/* Progress */}
-                    <TableCell>
-                      <div className="w-full">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
-                            {getCompletionPercentage(participant)}%
-                          </span>
+                      <div className="space-y-1">
+                        <div className="text-sm font-medium">
+                          {participant.assessment_title}
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{
-                              width: `${getCompletionPercentage(participant)}%`,
-                            }}
-                          ></div>
+                        <AssessmentStatusBadge
+                          status={participant.assessment_status}
+                        />
+                        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          {new Date(
+                            participant.assessment_due_date
+                          ).toLocaleDateString('id-ID')}
                         </div>
                       </div>
                     </TableCell>
+                  )}
 
-                    {/* Actions */}
-                    <TableCell>
-                      <Dropdown
-                        arrowIcon={false}
-                        inline
-                        label={
-                          <Button color="gray" size="sm">
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        }
+                  {/* Status */}
+                  <TableCell>
+                    {getStatusBadge(getParticipantStatus(participant))}
+                  </TableCell>
+
+                  {/* Self Assessment */}
+                  <TableCell>
+                    {participant.self_assessment ? (
+                      getAssessmentStatusBadge(
+                        participant.self_assessment.response_submitted ? "completed" : "not_started",
+                        participant.self_assessment.submission_date
+                      )
+                    ) : (
+                      <Badge color="gray" size="sm" className="flex items-center gap-1">
+                        <XCircle className="w-3 h-3" />
+                        Tidak Ada
+                      </Badge>
+                    )}
+                  </TableCell>
+
+                  {/* Supervisor Assessment */}
+                  <TableCell>
+                    {participant.supervisor_assessment ? (
+                      getAssessmentStatusBadge(
+                        participant.supervisor_assessment.response_submitted ? "completed" : "not_started",
+                        participant.supervisor_assessment.submission_date
+                      )
+                    ) : (
+                      <Badge color="gray" size="sm" className="flex items-center gap-1">
+                        <XCircle className="w-3 h-3" />
+                        Tidak Ada
+                      </Badge>
+                    )}
+                  </TableCell>
+
+                  {/* Progress */}
+                  <TableCell>
+                    <div className="w-full">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {getCompletionPercentage(participant)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{
+                            width: `${getCompletionPercentage(participant)}%`,
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell>
+                    <Dropdown
+                      arrowIcon={false}
+                      inline
+                      label={
+                        <Button color="gray" size="sm">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      }
+                    >
+                      <DropdownItem
+                        icon={Eye}
+                        onClick={() => onView?.(participant)}
                       >
+                        View Details
+                      </DropdownItem>
+
+                      {canEdit && (
                         <DropdownItem
-                          icon={Eye}
-                          onClick={() => onView?.(participant)}
+                          icon={Edit}
+                          onClick={() => onEdit?.(participant)}
                         >
-                          View Details
+                          Edit Participant
                         </DropdownItem>
+                      )}
 
-                        {canEdit && (
-                          <DropdownItem
-                            icon={Edit}
-                            onClick={() => onEdit?.(participant)}
-                          >
-                            Edit Participant
-                          </DropdownItem>
-                        )}
+                      <DropdownItem
+                        icon={Mail}
+                        onClick={() => onSendReminder?.(participant)}
+                      >
+                        Send Reminder
+                      </DropdownItem>
 
+                      <DropdownDivider />
+
+                      {canDelete && (
                         <DropdownItem
-                          icon={Mail}
-                          onClick={() => onSendReminder?.(participant)}
+                          icon={Trash}
+                          onClick={() => onDelete?.(participant)}
+                          className="text-red-600 dark:text-red-400"
                         >
-                          Send Reminder
+                          Remove Participant
                         </DropdownItem>
-
-                        <DropdownDivider />
-
-                        {canDelete && (
-                          <DropdownItem
-                            icon={Trash}
-                            onClick={() => onDelete?.(participant)}
-                            className="text-red-600 dark:text-red-400"
-                          >
-                            Remove Participant
-                          </DropdownItem>
-                        )}
-                      </Dropdown>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </Card>
+                      )}
+                    </Dropdown>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Results Summary */}
       {filteredAndSortedParticipants.length > 0 && (

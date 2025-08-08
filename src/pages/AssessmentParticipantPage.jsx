@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Card, Button, Alert, Spinner } from 'flowbite-react';
 import { ArrowLeft, Users, UserPlus, Upload, Download, Settings, Home, FileText } from 'lucide-react';
 import ParticipantTable from '../components/assessment/ParticipantTable';
@@ -13,7 +13,6 @@ import { formatAssessmentPeriod } from '../utils/assessmentUtils';
 
 const AssessmentParticipantPage = () => {
   const { assessmentId } = useParams();
-  const navigate = useNavigate();
   
   // State management
   const [assessment, setAssessment] = useState(null);
@@ -23,13 +22,7 @@ const AssessmentParticipantPage = () => {
   const [showParticipantModal, setShowParticipantModal] = useState(false);
   const [showBulkSelector, setShowBulkSelector] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [stats, setStats] = useState({
-    total: 0,
-    selfAssessment: 0,
-    supervisorAssessment: 0,
-    completed: 0,
-    pending: 0
-  });
+
 
   // Load assessment and participants
   useEffect(() => {
@@ -45,9 +38,6 @@ const AssessmentParticipantPage = () => {
         // Load participants
         const participantsData = await AssessmentParticipantService.getByAssessmentId(assessmentId);
         setParticipants(participantsData);
-
-        // Calculate stats
-        calculateStats(participantsData);
 
       } catch (err) {
         console.error('Error loading assessment data:', err);
@@ -73,37 +63,12 @@ const AssessmentParticipantPage = () => {
       const participantsData = await AssessmentParticipantService.getByAssessmentId(assessmentId);
       setParticipants(participantsData);
 
-      // Calculate stats
-      calculateStats(participantsData);
-
     } catch (err) {
       console.error('Error loading assessment data:', err);
       setError('Failed to load assessment data. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const calculateStats = (participantsData) => {
-    const selfAssessments = participantsData.filter(p => p.subject_profile_id === p.assessor_profile_id);
-    const supervisorAssessments = participantsData.filter(p => p.subject_profile_id !== p.assessor_profile_id);
-    
-    // This would need actual response data to calculate completed vs pending
-    const completed = participantsData.filter(p => p.status === 'completed').length;
-    const pending = participantsData.filter(p => p.status === 'pending').length;
-
-    setStats({
-      total: participantsData.length,
-      selfAssessment: selfAssessments.length,
-      supervisorAssessment: supervisorAssessments.length,
-      completed,
-      pending
-    });
-  };
-
-  const handleAddParticipant = () => {
-    setSelectedParticipant(null);
-    setShowParticipantModal(true);
   };
 
   const handleEditParticipant = (participant) => {
@@ -213,7 +178,7 @@ const AssessmentParticipantPage = () => {
 
   return (
     <div className="page">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto">
         
         {/* Page Header */}
         <div className="mb-6">
@@ -244,65 +209,6 @@ const AssessmentParticipantPage = () => {
                 color: 'blue',
                 onClick: () => setShowBulkSelector(true)
               },
-              // {
-              //   type: 'button',
-              //   label: 'Tambah Peserta (Manual)',
-              //   icon: UserPlus,
-              //   color: 'blue',
-              //   onClick: handleAddParticipant
-              // }
-            ]}
-            stats={[
-              // {
-              //   label: 'Total Peserta',
-              //   value: stats.total,
-              //   icon: Users,
-              //   bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-              //   borderColor: 'border-blue-200 dark:border-blue-800',
-              //   iconColor: 'text-blue-600 dark:text-blue-400',
-              //   labelColor: 'text-blue-600 dark:text-blue-400',
-              //   valueColor: 'text-blue-900 dark:text-blue-300'
-              // },
-              // {
-              //   label: 'Penilaian Diri',
-              //   value: stats.selfAssessment,
-              //   icon: Users,
-              //   bgColor: 'bg-green-50 dark:bg-green-900/20',
-              //   borderColor: 'border-green-200 dark:border-green-800',
-              //   iconColor: 'text-green-600 dark:text-green-400',
-              //   labelColor: 'text-green-600 dark:text-green-400',
-              //   valueColor: 'text-green-900 dark:text-green-300'
-              // },
-              // {
-              //   label: 'Penilaian Atasan',
-              //   value: stats.supervisorAssessment,
-              //   icon: Users,
-              //   bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-              //   borderColor: 'border-purple-200 dark:border-purple-800',
-              //   iconColor: 'text-purple-600 dark:text-purple-400',
-              //   labelColor: 'text-purple-600 dark:text-purple-400',
-              //   valueColor: 'text-purple-900 dark:text-purple-300'
-              // },
-              // {
-              //   label: 'Selesai',
-              //   value: stats.completed,
-              //   icon: Users,
-              //   bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
-              //   borderColor: 'border-yellow-200 dark:border-yellow-800',
-              //   iconColor: 'text-yellow-600 dark:text-yellow-400',
-              //   labelColor: 'text-yellow-600 dark:text-yellow-400',
-              //   valueColor: 'text-yellow-900 dark:text-yellow-300'
-              // },
-              // {
-              //   label: 'Belum Selesai',
-              //   value: stats.pending,
-              //   icon: Users,
-              //   bgColor: 'bg-red-50 dark:bg-red-900/20',
-              //   borderColor: 'border-red-200 dark:border-red-800',
-              //   iconColor: 'text-red-600 dark:text-red-400',
-              //   labelColor: 'text-red-600 dark:text-red-400',
-              //   valueColor: 'text-red-900 dark:text-red-300'
-              // }
             ]}
             loading={loading}
           />

@@ -71,9 +71,9 @@ const AssessmentTable = ({ assessments, loading, onDelete, onPublish, onComplete
   });
 
   // Get competency count for assessment
-  const getCompetencyCount = (assessment) => {
-    return assessment.assessment_competencies?.length || 0;
-  };
+  // const getCompetencyCount = (assessment) => {
+  //   return assessment.assessment_competencies?.length || 0;
+  // };
 
   // Check if assessment can be published
   const canPublish = (assessment) => {
@@ -129,7 +129,7 @@ const AssessmentTable = ({ assessments, loading, onDelete, onPublish, onComplete
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="table-container">
       <Table hoverable>
         <TableHead>
           <TableRow className="bg-gray-400 border-b border-gray-600 dark:bg-gray-700">
