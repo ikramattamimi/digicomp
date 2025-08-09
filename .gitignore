@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+docs/db_schema.sql
+docs/development_plan.md
