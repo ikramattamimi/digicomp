@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import {
   Table,
   TableBody,
@@ -19,7 +19,7 @@ import AuthService from "../../services/AuthService";
 import StaffModal from "./StaffModal";
 import ErrorModal from "./ErrorModal";
 
-const StaffTable = () => {
+const StaffTable = forwardRef((props, ref) => {
   const [subDirektorat, setSubDirektorat] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
@@ -202,37 +202,16 @@ const StaffTable = () => {
     }
   };
 
-  return (
-    <div className="space-y-4">
-      {/* Header with Search and Filters */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
-          <UserCheck className="mr-3 text-blue-600 dark:text-blue-400" />
-          Staff Atasan
-        </h1>
-        <div className="flex gap-3">
-          <Button
-            color="gray"
-            onClick={handleRefresh}
-            className="flex items-center gap-2"
-            title="Refresh"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </Button>
-          <Button
-            onClick={handleAdd}
-            color="blue"
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add Supervisor
-          </Button>
-        </div>
-      </div>
+  // Expose handlers to parent via ref
+  useImperativeHandle(ref, () => ({
+    handleAdd,
+    handleRefresh,
+  }));
 
+  return (
+    <div className="space-y-5 mt-5">
       {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+      <div className="flex flex-col sm:flex-row gap-4 rounded-lg">
         <div className="flex-1">
           <TextInput
             icon={Search}
@@ -264,7 +243,7 @@ const StaffTable = () => {
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div className="table-container">
         <Table>
           <TableHead>
             <TableRow className="bg-gray-50 dark:bg-gray-700">
@@ -363,6 +342,6 @@ const StaffTable = () => {
       />
     </div>
   );
-};
+});
 
 export default StaffTable;

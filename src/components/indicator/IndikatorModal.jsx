@@ -16,7 +16,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
       <div className="space-y-6">
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="name" value="Name" />
+            <Label htmlFor="name">Name</Label>
           </div>
           <TextInput
             id="name"
@@ -28,7 +28,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="description" value="Description" />
+            <Label htmlFor="description">Description</Label>
           </div>
           <TextInput
             id="description"
@@ -40,7 +40,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="description" value="Description" />
+            <Label htmlFor="statement">Statement</Label>
           </div>
           <TextInput
             id="statement"
@@ -52,7 +52,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="is_active" value="Active" />
+            <Label htmlFor="competency">Competency</Label>
           </div>
           <Select
             id="competency"
@@ -68,7 +68,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="is_active" value="Active" />
+            <Label htmlFor="is_active">Active</Label>
           </div>
           <Select
             id="is_active"

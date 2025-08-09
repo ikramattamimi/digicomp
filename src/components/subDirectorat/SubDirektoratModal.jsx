@@ -15,7 +15,7 @@ const  SubDirektoratModal = ({ show, onClose, modalType, subDirektorat, onChange
       <div className="space-y-6">
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="name" value="Name" />
+            <Label htmlFor="name">Name</Label>
           </div>
           <TextInput
             id="name"
@@ -27,7 +27,7 @@ const  SubDirektoratModal = ({ show, onClose, modalType, subDirektorat, onChange
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="is_active" value="Active" />
+            <Label htmlFor="is_active">Active</Label>
           </div>
           <Select
             id="is_active"

@@ -36,7 +36,7 @@ import {
   RATING_TYPE
 } from '../constants/assessmentConstants';
 import { LoadingSpinner, ErrorAlert } from '../components/common';
-import { AssessmentEditHeader } from '../components/assessment/AssessmentHeader';
+import { AssessmentEditHeader } from '../components/common/PageHeader';
 
 const AssessmentEditPage = () => {
   const navigate = useNavigate();

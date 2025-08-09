@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const AssessmentHeader = ({
+const PageHeader = ({
   // Page Configuration
   title,
   subtitle,
@@ -350,7 +350,7 @@ const AssessmentHeader = ({
 
 // Pre-configured header variants for common use cases
 export const AssessmentListHeader = (props) => (
-  <AssessmentHeader
+  <PageHeader
     title="Penilaian"
     subtitle="Kelola periode penilaian dan pantau progres"
     showCreateButton={true}
@@ -404,7 +404,7 @@ export const AssessmentListHeader = (props) => (
 );
 
 export const AssessmentDetailHeader = (props) => (
-  <AssessmentHeader
+  <PageHeader
     breadcrumbs={[
       { label: 'Dashboard', href: '/', icon: Home },
       { label: 'Penilaian', href: '/penilaian', icon: FileText },
@@ -429,7 +429,7 @@ export const AssessmentDetailHeader = (props) => (
 );
 
 export const AssessmentCreateHeader = (props) => (
-  <AssessmentHeader
+  <PageHeader
     breadcrumbs={[
       { label: 'Dashboard', href: '/', icon: Home },
       { label: 'Penilaian', href: '/penilaian', icon: FileText },
@@ -443,7 +443,7 @@ export const AssessmentCreateHeader = (props) => (
 );
 
 export const AssessmentEditHeader = (props) => (
-  <AssessmentHeader
+  <PageHeader
     breadcrumbs={[
       { label: 'Dashboard', href: '/', icon: Home },
       { label: 'Penilaian', href: '/penilaian', icon: FileText },
@@ -456,4 +456,4 @@ export const AssessmentEditHeader = (props) => (
   />
 );
 
-export default AssessmentHeader;
+export default PageHeader;

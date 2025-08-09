@@ -8,7 +8,7 @@ import BulkParticipantSelector from '../components/assessment/BulkParticipantSel
 import AssessmentService from '../services/AssessmentService';
 import AssessmentParticipantService from '../services/AssessmentParticipantService';
 import ErrorAlert from '../components/common/ErrorAlert';
-import AssessmentHeader from '../components/assessment/AssessmentHeader';
+import PageHeader from '../components/common/PageHeader';
 import { formatAssessmentPeriod } from '../utils/assessmentUtils';
 
 const AssessmentParticipantPage = () => {
@@ -182,7 +182,7 @@ const AssessmentParticipantPage = () => {
         
         {/* Page Header */}
         <div className="mb-6">
-          <AssessmentHeader
+          <PageHeader
             breadcrumbs={[
               { label: 'Dashboard', href: '/', icon: Home },
               { label: 'Penilaian', href: '/penilaian', icon: FileText },

@@ -36,7 +36,7 @@ import {
   ASSESSMENT_WEIGHTS,
   RATING_TYPE
 } from "../constants/assessmentConstants";
-import { AssessmentCreateHeader } from "../components/assessment/AssessmentHeader";
+import { AssessmentCreateHeader } from "../components/common/PageHeader";
 
 const AssessmentCreatePage = () => {
   const navigate = useNavigate();

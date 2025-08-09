@@ -24,7 +24,7 @@ import ParticipantTable from "../components/assessment/ParticipantTable";
 import { formatAssessmentPeriod } from "../utils/assessmentUtils";
 import { ASSESSMENT_STATUS } from "../constants/assessmentConstants";
 import { LoadingSpinner, ErrorAlert } from "../components/common";
-import { AssessmentDetailHeader } from "../components/assessment/AssessmentHeader";
+import { AssessmentDetailHeader } from "../components/common/PageHeader";
 
 const AssessmentDetailPage = () => {
   const navigate = useNavigate();

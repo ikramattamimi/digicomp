@@ -24,7 +24,7 @@ import {
   Eye
 } from 'lucide-react';
 import AssessmentService from '../services/AssessmentService';
-import { AssessmentListHeader } from '../components/assessment/AssessmentHeader';
+import { AssessmentListHeader } from '../components/common/PageHeader';
 import AssessmentTable from '../components/assessment/AssessmentTable';
 import AssessmentStatusBadge from '../components/assessment/AssessmentStatusBadge';
 import { ASSESSMENT_STATUS } from '../constants/assessmentConstants';

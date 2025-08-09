@@ -15,7 +15,7 @@ const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onCha
       <div className="space-y-6">
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="name" value="Name" />
+            <Label htmlFor="name">Name</Label>
           </div>
           <TextInput
             id="name"
@@ -27,7 +27,7 @@ const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onCha
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="email" value="Email" />
+            <Label htmlFor="email">Email</Label>
           </div>
           <TextInput
             id="email"
@@ -40,7 +40,7 @@ const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onCha
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="nrp" value="NRP" />
+            <Label htmlFor="nrp">NRP</Label>
           </div>
           <TextInput
             id="nrp"
@@ -51,7 +51,7 @@ const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onCha
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="position" value="Position" />
+            <Label htmlFor="position">Position</Label>
           </div>
           <TextInput
             id="position"
@@ -62,7 +62,7 @@ const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onCha
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="position_type" value="Position Type" />
+            <Label htmlFor="position_type">Position Type</Label>
           </div>
           <Select
             id="position_type"
@@ -78,7 +78,7 @@ const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onCha
 
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="is_active" value="Active" />
+            <Label htmlFor="is_active">Active</Label>
           </div>
             <Select
               id="subdirectorat_id"
@@ -94,7 +94,7 @@ const StaffModal = ({ show, onClose, modalType, supervisor, subDirectorat, onCha
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="supervisor_id" value="Supervisor ID" />
+            <Label htmlFor="supervisor_id">Supervisor ID</Label>
           </div>
           <TextInput
             id="supervisor_id"
