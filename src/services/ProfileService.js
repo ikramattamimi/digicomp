@@ -12,6 +12,39 @@ class ProfileService {
     return data
   }
 
+  async getAdmin() {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*, subdirectorats(name)')
+      .eq('position_type', "ADMIN")
+      .is('deleted_at', null)
+      .order('name', { ascending: true })
+    if (error) throw error
+    return data
+  }
+
+  async getMyAccount(uuid) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', uuid)
+      .is('deleted_at', null)
+      .single()
+    if (error) throw error
+    return data
+  }
+
+  async getStaff() {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*, subdirectorats(name)')
+      .or('position_type.eq.BAWAHAN, position_type.eq.ATASAN')
+      .is('deleted_at', null)
+      .order('name', { ascending: true })
+    if (error) throw error
+    return data
+  }
+
   async getBySubDirectorat(subdirectorat) {
     const { data, error } = await supabase
       .from('profiles')

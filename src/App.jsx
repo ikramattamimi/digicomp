@@ -13,6 +13,8 @@ import IndicatorPage from "./pages/IndicatorPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx";
 import AssessmentPage from "./pages/AssessmentPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
+import AccountPage from "./pages/AccountPage.jsx";
 
 function App() {
   const router = createBrowserRouter(
@@ -24,6 +26,8 @@ function App() {
           <Route path="kompetensi" element={<CompetencyPage />} />
           <Route path="indikator" element={<IndicatorPage />} />
           <Route path="staff" element={<StaffPage />} />
+          <Route path="admin" element={<AdminPage />} />
+          <Route path="akun" element={<AccountPage />} />
           <Route path="assessment" element={<AssessmentPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />

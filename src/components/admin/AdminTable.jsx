@@ -20,22 +20,18 @@ import {
   RefreshCw,
 } from "lucide-react";
 import ProfileService from "../../services/ProfileService";
-import SubdirectoratService from "../../services/SubdirectoratsService";
-
 import AuthService from "../../services/AuthService";
-import StaffModal from "./StaffModal";
+import AdminModal from "./AdminModal";
 import ErrorModal from "./ErrorModal";
 
-const StaffTable = () => {
-  const [subDirektorat, setSubDirektorat] = useState([]);
-  const [supervisors, setSupervisors] = useState([]);
-  const [filteredSupervisors, setFilteredSupervisors] = useState([]);
+const AdminTable = () => {
+  const [Admins, setAdmins] = useState([]);
+  const [filteredAdmins, setFilteredAdmins] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [showSupervisorForm, setShowSupervisorForm] = useState("hidden");
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
-  const [currentSupervisor, setCurrentSupervisor] = useState({
+  const [currentAdmin, setCurrentAdmin] = useState({
     name: "",
     email: "",
   });
@@ -44,58 +40,37 @@ const StaffTable = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchSupervisors = async () => {
+    const fetchAdmins = async () => {
       try {
-        const dataSubDirektorat = await SubdirectoratService.getActive();
-        setSubDirektorat(dataSubDirektorat);
-
-        const data = await ProfileService.getStaff();
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        const data = await ProfileService.getAdmin();
+        setAdmins(data);
+        setFilteredAdmins(data);
       } catch (err) {
-        console.error("Failed to fetch supervisors:", err);
-        setErrorMessage(err?.message || "Failed to load supervisors");
+        console.error("Failed to fetch admins:", err);
+        setErrorMessage(err?.message || "Failed to load admins");
         setShowErrorModal(true);
       }
     };
-    fetchSupervisors();
+    fetchAdmins();
   }, []);
 
-  // Fungsi refresh supervisor
+  // Fungsi refresh admin
   const handleRefresh = async () => {
     try {
-      const data = await ProfileService.getStaff();
-      setSupervisors(data);
-      setFilteredSupervisors(data);
+      const data = await ProfileService.getAdmin();
+      setAdmins(data);
+      setFilteredAdmins(data);
       setErrorMessage("");
       setShowErrorModal(false);
     } catch (err) {
-      setErrorMessage(err?.message || "Failed to load supervisors");
-      setShowErrorModal(true);
-    }
-  };
-
-  // Fungsi filter by sub directorat
-  const handleFilterSubdirectorat = async (id) => {
-    try {
-      if (id != "*") {
-        const data = await ProfileService.getBySubDirectorat(id);
-        setSupervisors(data);
-        setFilteredSupervisors(data);
-        setErrorMessage("");
-        setShowErrorModal(false);
-      } else {
-        handleRefresh();
-      }
-    } catch (err) {
-      setErrorMessage(err?.message || "Failed to load supervisors");
+      setErrorMessage(err?.message || "Failed to load admins");
       setShowErrorModal(true);
     }
   };
 
   // Filter and search functionality
   useEffect(() => {
-    let filtered = supervisors;
+    let filtered = Admins;
 
     if (searchTerm) {
       filtered = filtered.filter(
@@ -105,28 +80,13 @@ const StaffTable = () => {
       );
     }
 
-    setFilteredSupervisors(filtered);
-  }, [supervisors, searchTerm]);
-
-  // Set ID to Competency Name
-  const setToName = (id) => {
-    const bobObject = subDirektorat.find((obj) => obj.id === id);
-    const bobId = bobObject ? bobObject.name : undefined;
-
-    return bobId;
-  };
-
-  const setToNameSupervisor = (id) => {
-    const bobObject = supervisors.find((obj) => obj.id === id);
-    const bobId = bobObject ? bobObject.name : undefined;
-
-    return bobId;
-  };
+    setFilteredAdmins(filtered);
+  }, [Admins, searchTerm]);
 
   // Handle row selection
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedRows(filteredSupervisors.map((sup) => sup.id));
+      setSelectedRows(filteredAdmins.map((sup) => sup.id));
     } else {
       setSelectedRows([]);
     }
@@ -143,7 +103,7 @@ const StaffTable = () => {
   // Modal handlers
   const handleAdd = () => {
     setModalType("add");
-    setCurrentSupervisor({
+    setCurrentAdmin({
       name: "",
       email: "",
       department: "",
@@ -153,37 +113,30 @@ const StaffTable = () => {
     setShowModal(true);
   };
 
-  const handleEdit = (supervisor) => {
-    if (supervisor.position_type == "BAWAHAN") {
-      setShowSupervisorForm("show");
-    } else {
-      setShowSupervisorForm("hidden");
-    }
+  const handleEdit = (admin) => {
     setModalType("edit");
-    setCurrentSupervisor(supervisor);
+    setCurrentAdmin(admin);
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, status) => {
     try {
-      await ProfileService.delete(id);
-      setSupervisors(supervisors.filter((sup) => sup.id !== id));
+      if (status != true) {
+        await ProfileService.delete(id);
+        handleRefresh();
+      } else {
+        setErrorMessage("Set status to inactive for delete");
+        setShowErrorModal(true);
+      }
     } catch (err) {
-      console.error("Failed to delete supervisor:", err);
-      setErrorMessage(err?.message || "Failed to delete supervisor");
+      console.error("Failed to delete admin:", err);
+      setErrorMessage(err?.message || "Failed to delete admin");
       setShowErrorModal(true);
     }
   };
 
-  const handleModalChange = (updated, element) => {
-    setCurrentSupervisor(updated);
-    if (updated.position_type == "BAWAHAN" && element != null) {
-      element.style.display = "block";
-    } else if (updated.position_type == "ATASAN" && element != null) {
-      const newsupervisorid = { ...updated, supervisor_id: null };
-      setCurrentSupervisor(newsupervisorid);
-      element.style.display = "none";
-    }
+  const handleModalChange = (updated) => {
+    setCurrentAdmin(updated);
   };
 
   const handleSave = async () => {
@@ -191,43 +144,37 @@ const StaffTable = () => {
     try {
       if (modalType === "add") {
         await AuthService.registerStaff({
-          email: currentSupervisor.email,
-          password: currentSupervisor.password,
+          email: currentAdmin.email,
+          password: currentAdmin.password,
           profile: {
-            name: currentSupervisor.name,
-            nrp: currentSupervisor.nrp,
-            position: currentSupervisor.position,
-            position_type: currentSupervisor.position_type,
-            subdirectorat_id: currentSupervisor.subdirectorat_id,
-            supervisor_id: currentSupervisor.supervisor_id,
+            name: currentAdmin.name,
+            position_type: "ADMIN",
+            is_active: "true",
           },
         });
-        const data = await ProfileService.getStaff();
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        const data = await ProfileService.getAdmin();
+        setAdmins(data);
+        setFilteredAdmins(data);
       } else {
-        if (currentSupervisor.password != "") {
+        if (currentAdmin.password != "") {
           await AuthService.changeUserPasswordAsAdmin(
-            currentSupervisor.id,
-            currentSupervisor.password
+            currentAdmin.id,
+            currentAdmin.password
           );
         }
-        await ProfileService.update(currentSupervisor.id, {
-          name: currentSupervisor.name,
-          nrp: currentSupervisor.nrp,
-          email: currentSupervisor.email,
-          position: currentSupervisor.position,
-          position_type: currentSupervisor.position_type,
-          subdirectorat_id: currentSupervisor.subdirectorat_id,
-          supervisor_id: currentSupervisor.supervisor_id,
+        await ProfileService.update(currentAdmin.id, {
+          name: currentAdmin.name,
+          email: currentAdmin.email,
+          position_type: "ADMIN",
+          is_active: currentAdmin.is_active,
         });
-        const data = await ProfileService.getStaff();
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        const data = await ProfileService.getAdmin();
+        setAdmins(data);
+        setFilteredAdmins(data);
       }
       setShowModal(false);
     } catch (err) {
-      setModalError(err?.message || "Failed to save supervisor");
+      setModalError(err?.message || "Failed to save admin");
       setShowModal(true);
     }
   };
@@ -238,7 +185,7 @@ const StaffTable = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
           <UserCheck className="mr-3 text-blue-600 dark:text-blue-400" />
-          Staff
+          Admin
         </h1>
         <div className="flex gap-3">
           <Button
@@ -256,7 +203,7 @@ const StaffTable = () => {
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Staff
+            Add Admin
           </Button>
         </div>
       </div>
@@ -270,14 +217,6 @@ const StaffTable = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </div>
-        <div className="w-full sm:w-48">
-          <Select onChange={(e) => handleFilterSubdirectorat(e.target.value)}>
-            <option value="*">All Sub Direktorat</option>
-            {subDirektorat.map((sup) => (
-              <option value={sup.id}>{sup.name}</option>
-            ))}
-          </Select>
         </div>
       </div>
 
@@ -301,24 +240,20 @@ const StaffTable = () => {
               <TableHeadCell className="w-4">
                 <Checkbox
                   checked={
-                    selectedRows.length === filteredSupervisors.length &&
-                    filteredSupervisors.length > 0
+                    selectedRows.length === filteredAdmins.length &&
+                    filteredAdmins.length > 0
                   }
                   onChange={(e) => handleSelectAll(e.target.checked)}
                 />
               </TableHeadCell>
               <TableHeadCell>Name</TableHeadCell>
               <TableHeadCell>Email</TableHeadCell>
-              <TableHeadCell>NRP</TableHeadCell>
-              <TableHeadCell>Position</TableHeadCell>
-              <TableHeadCell>Position Type</TableHeadCell>
-              <TableHeadCell>Subdirectorate</TableHeadCell>
-              <TableHeadCell>Supervisor</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
+              <TableHeadCell>Status</TableHeadCell>
             </TableRow>
           </TableHead>
           <TableBody className="divide-y">
-            {filteredSupervisors.map((sup) => (
+            {filteredAdmins.map((sup) => (
               <TableRow
                 key={sup.id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -333,11 +268,17 @@ const StaffTable = () => {
                   {sup.name}
                 </TableCell>
                 <TableCell>{sup.email}</TableCell>
-                <TableCell>{sup.nrp}</TableCell>
-                <TableCell>{sup.position}</TableCell>
-                <TableCell>{sup.position_type}</TableCell>
-                <TableCell>{setToName(sup.subdirectorat_id)}</TableCell>
-                <TableCell>{setToNameSupervisor(sup.supervisor_id)}</TableCell>
+                <TableCell>
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      sup.is_active
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                    }`}
+                  >
+                    {sup.is_active ? "Active" : "Inactive"}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
@@ -352,7 +293,7 @@ const StaffTable = () => {
                     <Button
                       size="xs"
                       color="red"
-                      onClick={() => handleDelete(sup.id)}
+                      onClick={() => handleDelete(sup.id, sup.is_active)}
                       className="flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -365,25 +306,22 @@ const StaffTable = () => {
           </TableBody>
         </Table>
 
-        {filteredSupervisors.length === 0 && (
+        {filteredAdmins.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            No supervisors found.
+            No admins found.
           </div>
         )}
       </div>
 
       {/* Modal for Add/Edit */}
-      <StaffModal
+      <AdminModal
         show={showModal}
         onClose={() => {
           setShowModal(false);
           setModalError("");
         }}
         modalType={modalType}
-        supervisorForm={showSupervisorForm}
-        staff={currentSupervisor}
-        supervisor={supervisors}
-        subDirectorat={subDirektorat}
+        admin={currentAdmin}
         onChange={handleModalChange}
         onSave={handleSave}
         error={modalError}
@@ -397,4 +335,4 @@ const StaffTable = () => {
   );
 };
 
-export default StaffTable;
+export default AdminTable;

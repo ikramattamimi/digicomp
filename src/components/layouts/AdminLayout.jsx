@@ -1,36 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import TopNavbar from "./Navbar.jsx";
 
+import LoginPage from "./LoginPage.jsx";
+import AuthService from "../../services/AuthService";
+
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(true);
+  const [login, setLogin] = useState(false);
 
   const handleCollapse = (value) => setCollapsed(value);
 
-  return (
-    <div className="transition-colors duration-300">
-      {/* Top Navbar */}
-      <div className="fixed top-0 left-0 right-0 z-30">
-        <TopNavbar collapsed={collapsed} setCollapsed={handleCollapse} />
-      </div>
-      
-      {/* Sidebar */}
-      <div
-        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] z-20 transition-all duration-300 `}
-      >
-        <Sidebar collapsed={collapsed} />
-      </div>
+  useEffect(() => {
+    const fetchSupervisors = async () => {
+      try {
+        const checkUser = await AuthService.checkUser();
+        if (checkUser != null) {
+          setLogin(true);
+        } else {
+          setLogin(false);
+        }
+      } catch (err) {
+        console.error("Failed to fetch supervisors:", err);
+        setErrorMessage(err?.message || "Failed to load supervisors");
+        setShowErrorModal(true);
+      }
+    };
+    fetchSupervisors();
+  }, []);
 
-      {/* Main Content */}
-      <div className="flex pt-16">
-        <div className={collapsed ? '' : 'w-[250px]'}></div>
-        <div className="flex-1 min-w-0">
-          <Outlet />
+  if (login == true) {
+    return (
+      <div className="transition-colors duration-300">
+        {/* Top Navbar */}
+        <div className="fixed top-0 left-0 right-0 z-30">
+          <TopNavbar collapsed={collapsed} setCollapsed={handleCollapse} />
+        </div>
+
+        {/* Sidebar */}
+        <div
+          className={`fixed top-16 left-0 h-[calc(100vh-4rem)] z-20 transition-all duration-300 `}
+        >
+          <Sidebar collapsed={collapsed} />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex pt-16">
+          <div className={collapsed ? "" : "w-[250px]"}></div>
+          <div className="flex-1 min-w-0">
+            <Outlet />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div className="transition-colors duration-300">
+        {/* Main Content */}
+        <div className="flex pt-16">
+          <div className="flex-1 min-w-0">
+            <LoginPage />
+          </div>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default AdminLayout;

@@ -1,36 +1,76 @@
-import React from 'react';
-import { 
-  Navbar, 
-  NavbarBrand, 
-  NavbarCollapse, 
-  NavbarLink, 
-  NavbarToggle, 
-  Avatar, 
+import React from "react";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarCollapse,
+  NavbarLink,
+  NavbarToggle,
+  Avatar,
   Dropdown,
   DropdownDivider,
   DropdownHeader,
   DropdownItem,
-  DarkThemeToggle
-} from 'flowbite-react';
-import { Bell, Search, Settings, User, HelpCircle, LogOut, ChevronLeft, Menu } from 'lucide-react';
+  DarkThemeToggle,
+} from "flowbite-react";
+import {
+  Bell,
+  Search,
+  Settings,
+  User,
+  HelpCircle,
+  LogOut,
+  ChevronLeft,
+  Menu,
+} from "lucide-react";
+
+import AuthService from "../../services/AuthService";
+import { useEffect, useState } from "react";
 
 const TopNavbar = ({ collapsed, setCollapsed }) => {
+  const [account, setAccount] = useState([]);
+
+  useEffect(() => {
+    const fetchSupervisors = async () => {
+      try {
+        const checkUser = await AuthService.checkUser();
+        setAccount(checkUser);
+      } catch (err) {
+        console.error("Failed to fetch supervisors:", err);
+        setErrorMessage(err?.message || "Failed to load supervisors");
+        setShowErrorModal(true);
+      }
+    };
+    fetchSupervisors();
+  }, []);
+
+  const handleLogOut = async () => {
+    try {
+      await AuthService.signUserOut();
+    } catch (err) {
+      setModalError(err?.message || "Failed to save supervisor");
+      setShowModal(true);
+    }
+  };
+
   // Data dummy untuk user profile
   const userProfile = {
-    name: "John Doe",
-    email: "john.doe@company.com",
-    role: "Administrator",
+    name: account.name,
+    email: account.email,
+    role: account.position_type,
     avatar: "https://flowbite.com/docs/images/people/profile-picture-5.jpg",
-    department: "Direktorat Teknologi"
+    department: account.subdirectorat_id,
   };
 
   return (
-    <Navbar fluid className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4">
+    <Navbar
+      fluid
+      className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4"
+    >
       <div className="flex items-center justify-between">
         {/* Sidebar Toggle Button */}
         <button
           className="p-2 me-3 text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 transition-colors"
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           onClick={() => setCollapsed(!collapsed)}
         >
           <Menu size={24} />
@@ -43,37 +83,32 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
         </NavbarBrand>
       </div>
       <div className="flex items-center gap-3 md:order-2">
-        
         {/* Dark Mode Toggle */}
         <DarkThemeToggle />
 
         {/* Search Button */}
-        <button 
+        <button
           className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 transition-colors"
           title="Search"
         >
           <Search size={20} />
         </button>
-        
+
         {/* Notifications */}
-        <button 
+        <button
           className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 relative transition-colors"
           title="Notifications"
         >
           <Bell size={20} />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
-        
+
         {/* User Profile Dropdown */}
         <Dropdown
           arrowIcon={false}
           inline
           label={
-            <Avatar
-              alt="User settings"
-              img={userProfile.avatar}
-              rounded
-            />
+            <Avatar alt="User settings" img={userProfile.avatar} rounded />
           }
         >
           <DropdownHeader>
@@ -87,22 +122,16 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
               {userProfile.role} • {userProfile.department}
             </span>
           </DropdownHeader>
-          <DropdownItem icon={User}>
-            Profile
-          </DropdownItem>
-          <DropdownItem icon={Settings}>
-            Settings
-          </DropdownItem>
-          <DropdownItem icon={HelpCircle}>
-            Help Center
-          </DropdownItem>
+          <DropdownItem icon={User}>Profile</DropdownItem>
+          <DropdownItem icon={Settings}>Settings</DropdownItem>
+          <DropdownItem icon={HelpCircle}>Help Center</DropdownItem>
           <DropdownDivider />
-          <DropdownItem icon={LogOut}>
+          <DropdownItem icon={LogOut} onClick={handleLogOut}>
             Sign out
           </DropdownItem>
         </Dropdown>
       </div>
-      
+
       {/* <NavbarCollapse>
         <NavbarLink href="/" active>
           Dashboard
