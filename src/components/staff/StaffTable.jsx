@@ -261,6 +261,22 @@ const StaffTable = () => {
         </div>
       </div>
 
+      <div className="w-full sm:w-48 flex flex-row gap-4 m-5">
+        {subDirektorat.map((sup) => (
+          <Button
+            id={sup.id}
+            color="gray"
+            className="flex items-center gap-2"
+            onClick={() => handleFilterSubdirectorat(sup.id)}
+            value={sup.id}
+          >
+            <p class="whitespace-nowrap">
+              {sup.name}
+            </p>
+          </Button>
+        ))}
+      </div>
+
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
         <div className="flex-1">
@@ -270,14 +286,6 @@ const StaffTable = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </div>
-        <div className="w-full sm:w-48">
-          <Select onChange={(e) => handleFilterSubdirectorat(e.target.value)}>
-            <option value="*">All Sub Direktorat</option>
-            {subDirektorat.map((sup) => (
-              <option value={sup.id}>{sup.name}</option>
-            ))}
-          </Select>
         </div>
       </div>
 
@@ -312,7 +320,6 @@ const StaffTable = () => {
               <TableHeadCell>NRP</TableHeadCell>
               <TableHeadCell>Position</TableHeadCell>
               <TableHeadCell>Position Type</TableHeadCell>
-              <TableHeadCell>Subdirectorate</TableHeadCell>
               <TableHeadCell>Supervisor</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
             </TableRow>
@@ -336,7 +343,6 @@ const StaffTable = () => {
                 <TableCell>{sup.nrp}</TableCell>
                 <TableCell>{sup.position}</TableCell>
                 <TableCell>{sup.position_type}</TableCell>
-                <TableCell>{setToName(sup.subdirectorat_id)}</TableCell>
                 <TableCell>{setToNameSupervisor(sup.supervisor_id)}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">

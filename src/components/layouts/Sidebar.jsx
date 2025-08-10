@@ -144,7 +144,7 @@ const Sidebar = ({ collapsed }) => {
               icon={() => <Target size={20} />}
               active={location.pathname.startsWith("/indikator")}
             >
-              Indikator
+              Sub Dimensi
             </SidebarItem>
             <SidebarItem
               className={admin}

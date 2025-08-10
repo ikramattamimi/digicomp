@@ -43,8 +43,8 @@ const IndikatorTable = () => {
         setIndikator(data);
         setFilteredIndikator(data);
       } catch (err) {
-        console.error("Failed to fetch Indikator:", err);
-        setErrorMessage(err?.message || "Failed to load Indikator");
+        console.error("Failed to fetch Sub Dimensi:", err);
+        setErrorMessage(err?.message || "Failed to load Sub Dimensi");
         setShowErrorModal(true);
       }
     };
@@ -60,7 +60,7 @@ const IndikatorTable = () => {
       setErrorMessage("");
       setShowErrorModal(false);
     } catch (err) {
-      setErrorMessage(err?.message || "Failed to load Indikator");
+      setErrorMessage(err?.message || "Failed to load Sub Dimensi");
       setShowErrorModal(true);
     }
   };
@@ -136,8 +136,8 @@ const IndikatorTable = () => {
       }
       
     } catch (err) {
-      console.error("Failed to delete Indikator:", err);
-      setErrorMessage(err?.message || "Failed to delete Indikator");
+      console.error("Failed to delete Sub Dimensi:", err);
+      setErrorMessage(err?.message || "Failed to delete Sub Dimensi");
       setShowErrorModal(true);
     }
   };
@@ -174,7 +174,7 @@ const IndikatorTable = () => {
       }
       setShowModal(false);
     } catch (err) {
-      setModalError(err?.message || "Failed to save Indikator");
+      setModalError(err?.message || "Failed to save Sub Dimensi");
       setShowModal(true);
     }
   };
@@ -185,7 +185,7 @@ const IndikatorTable = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
           <Target className="mr-3 text-blue-600 dark:text-blue-400" />
-          Indikator
+          Sub Dimensi
         </h1>
         <div className="flex gap-3">
           <Button
@@ -203,7 +203,7 @@ const IndikatorTable = () => {
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Indikator
+            Add Sub Dimensi
           </Button>
         </div>
       </div>
@@ -248,7 +248,7 @@ const IndikatorTable = () => {
               </TableHeadCell>
               <TableHeadCell>Name</TableHeadCell>
               <TableHeadCell>Description</TableHeadCell>
-              <TableHeadCell>Statement</TableHeadCell>
+              <TableHeadCell>Indikator</TableHeadCell>
               <TableHeadCell>Competency</TableHeadCell>
               <TableHeadCell>Status</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
@@ -312,7 +312,7 @@ const IndikatorTable = () => {
 
         {filteredIndikator.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400"> 
-            No Indikator found.
+            No Sub Dimensi found.
           </div>
         )}
       </div>
