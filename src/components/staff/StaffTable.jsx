@@ -27,6 +27,7 @@ import StaffModal from "./StaffModal";
 import ErrorModal from "./ErrorModal";
 
 const StaffTable = () => {
+  const [subDirektoratA, setSubDirektoratA] = useState("");
   const [subDirektorat, setSubDirektorat] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
@@ -80,6 +81,7 @@ const StaffTable = () => {
     try {
       if (id != "*") {
         const data = await ProfileService.getBySubDirectorat(id);
+        setSubDirektoratA(id)
         setSupervisors(data);
         setFilteredSupervisors(data);
         setErrorMessage("");
@@ -265,7 +267,7 @@ const StaffTable = () => {
         {subDirektorat.map((sup) => (
           <Button
             id={sup.id}
-            color="gray"
+            color={subDirektoratA === sup.id ? 'blue' : 'gray'}
             className="flex items-center gap-2"
             onClick={() => handleFilterSubdirectorat(sup.id)}
             value={sup.id}
