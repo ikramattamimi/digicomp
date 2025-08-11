@@ -4,6 +4,8 @@ import StaffHeader from '../components/subDirectorat/Header.jsx';
 import SubDirektoratTable from '../components/subDirectorat/SubDirektoratTable.jsx';
 import PageHeader from '../components/common/PageHeader.jsx';
 import { Building, Home, Plus, RefreshCw } from 'lucide-react';
+import AuthService from "../services/AuthService.js";
+import { useEffect, useState } from "react";
 
 // ...existing code...
 const SubDirectoratePage = () => {
@@ -24,6 +26,17 @@ const SubDirectoratePage = () => {
     }
   };
 
+  const [page, setPage] = useState("hidden");
+    useEffect(() => {
+      const fetchUserData = async () => {
+        const checkUser = await AuthService.checkUser();
+        if (checkUser.position_type == "ADMIN") {
+          setPage("show");
+        }
+      };
+      fetchUserData();
+    }, []);
+  
   return (
       <div className="page">
         <div className="max-w-7xl mx-auto">

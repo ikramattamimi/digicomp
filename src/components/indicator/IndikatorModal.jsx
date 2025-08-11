@@ -5,7 +5,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, S
 const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onChange, onSave, error }) => (
   <Modal show={show} onClose={onClose}>
     <ModalHeader>
-      {modalType === 'add' ? 'Add New Indikator' : 'Edit Indikator'}
+      {modalType === 'add' ? 'Add New Sub Dimensi' : 'Edit Sub Dimensi'}
     </ModalHeader>
     <ModalBody>
       {error && (
@@ -22,7 +22,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
             id="name"
             value={indikator.name}
             onChange={e => onChange({ ...indikator, name: e.target.value })}
-            placeholder="Enter indicator name"
+            placeholder="Enter Sub Dimensi name"
             required
           />
         </div>
@@ -34,7 +34,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
             id="description"
             value={indikator.description}
             onChange={e => onChange({ ...indikator, description: e.target.value })}
-            placeholder="Enter indicator description"
+            placeholder="Enter Sub Dimensi description"
             required
           />
         </div>
@@ -84,7 +84,7 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
     </ModalBody>
     <ModalFooter>
       <Button onClick={onSave}>
-        {modalType === 'add' ? 'Add Indikator' : 'Update Indikator'}
+        {modalType === 'add' ? 'Add Sub Dimensi' : 'Update Sub Dimensi'}
       </Button>
       <Button color="alternative" onClick={onClose}>
         Cancel

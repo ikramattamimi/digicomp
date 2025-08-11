@@ -1,4 +1,4 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,79 +11,82 @@ import {
   Select,
   Checkbox,
 } from "flowbite-react";
-import { Search, Plus, Pencil, Trash2, UserCheck, RefreshCw, Building, Target, Award } from "lucide-react";
-import IndicatorService from "../../services/IndicatorService";
-import CompetencyService from "../../services/CompetencyService";
-import IndikatorModal from "./IndikatorModal";
+import {
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  UserCheck,
+  RefreshCw,
+} from "lucide-react";
+import ProfileService from "../../services/ProfileService";
+import AuthService from "../../services/AuthService";
+import AdminModal from "./AdminModal";
 import ErrorModal from "./ErrorModal";
 
-const IndikatorTable = forwardRef((props, ref) => {
-  const [kompetensi, setKompetensi] = useState([]);
-  const [indikator, setIndikator] = useState([]);
-  const [filteredIndikator, setFilteredIndikator] = useState([]);
+const AdminTable = () => {
+  const [Admins, setAdmins] = useState([]);
+  const [filteredAdmins, setFilteredAdmins] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
-  const [currentIndikator, setCurrentIndikator] = useState({
+  const [currentAdmin, setCurrentAdmin] = useState({
     name: "",
-    status: "",
+    email: "",
   });
   const [modalError, setModalError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchSubDirectorat = async () => {
+    const fetchAdmins = async () => {
       try {
-        const dataKompetensi = await CompetencyService.getActive();
-        setKompetensi(dataKompetensi)
-        
-        const data = await IndicatorService.getAll();
-        setIndikator(data);
-        setFilteredIndikator(data);
+        const data = await ProfileService.getAdmin();
+        setAdmins(data);
+        setFilteredAdmins(data);
       } catch (err) {
-        console.error("Failed to fetch Sub Dimensi:", err);
-        setErrorMessage(err?.message || "Failed to load Sub Dimensi");
+        console.error("Failed to fetch admins:", err);
+        setErrorMessage(err?.message || "Failed to load admins");
         setShowErrorModal(true);
       }
     };
-    fetchSubDirectorat();
+    fetchAdmins();
   }, []);
 
-  // Fungsi refresh supervisor
+  // Fungsi refresh admin
   const handleRefresh = async () => {
     try {
-      const data = await IndicatorService.getAll();
-      setIndikator(data);
-      setFilteredIndikator(data);
+      const data = await ProfileService.getAdmin();
+      setAdmins(data);
+      setFilteredAdmins(data);
       setErrorMessage("");
       setShowErrorModal(false);
     } catch (err) {
-      setErrorMessage(err?.message || "Failed to load Sub Dimensi");
+      setErrorMessage(err?.message || "Failed to load admins");
       setShowErrorModal(true);
     }
   };
 
   // Filter and search functionality
   useEffect(() => {
-    let filtered = indikator;
+    let filtered = Admins;
 
     if (searchTerm) {
       filtered = filtered.filter(
         (sup) =>
-          sup.name.toLowerCase().includes(searchTerm.toLowerCase())||
-          sup.description.toLowerCase().includes(searchTerm.toLowerCase())
+          sup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          sup.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    setFilteredIndikator(filtered);
-  }, [indikator, searchTerm]);
+    setFilteredAdmins(filtered);
+  }, [Admins, searchTerm]);
 
   // Handle row selection
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedRows(filteredIndikator.map((sup) => sup.id));
+      setSelectedRows(filteredAdmins.map((sup) => sup.id));
     } else {
       setSelectedRows([]);
     }
@@ -100,99 +103,117 @@ const IndikatorTable = forwardRef((props, ref) => {
   // Modal handlers
   const handleAdd = () => {
     setModalType("add");
-    setCurrentIndikator({
+    setCurrentAdmin({
       name: "",
-      status: "",
+      email: "",
+      department: "",
+      status: "Active",
+      password: "",
     });
     setShowModal(true);
   };
 
-  // Set ID to Competency Name
-  const setToName = (id) => {
-    const data = kompetensi.find(kompetensi => kompetensi.id === id)
-
-    const bobObject = kompetensi.find(obj => obj.id === id);
-    const bobId = bobObject ? bobObject.name : undefined;
-
-    return(
-      bobId
-    )
-  };
-
-  const handleEdit = (supervisor) => {
+  const handleEdit = (admin) => {
     setModalType("edit");
-    setCurrentIndikator(supervisor);
+    setCurrentAdmin(admin);
     setShowModal(true);
   };
 
   const handleDelete = async (id, status) => {
     try {
-      if(status != true){
-        await IndicatorService.delete(id, status);
-        handleRefresh()
-      }else{
+      if (status != true) {
+        await ProfileService.delete(id);
+        handleRefresh();
+      } else {
         setErrorMessage("Set status to inactive for delete");
         setShowErrorModal(true);
       }
-      
     } catch (err) {
-      console.error("Failed to delete Sub Dimensi:", err);
-      setErrorMessage(err?.message || "Failed to delete Sub Dimensi");
+      console.error("Failed to delete admin:", err);
+      setErrorMessage(err?.message || "Failed to delete admin");
       setShowErrorModal(true);
     }
   };
 
   const handleModalChange = (updated) => {
-    setCurrentIndikator(updated);
+    setCurrentAdmin(updated);
   };
 
   const handleSave = async () => {
     setModalError("");
     try {
       if (modalType === "add") {
-        await IndicatorService.create({
-          name: currentIndikator.name,
-          description: currentIndikator.description,
-          statement_text: currentIndikator.statement_text,
-          competency_id: currentIndikator.competency_id,
-          is_active: "true",
+        await AuthService.registerStaff({
+          email: currentAdmin.email,
+          password: currentAdmin.password,
+          profile: {
+            name: currentAdmin.name,
+            position_type: "ADMIN",
+            is_active: "true",
+          },
         });
-        const data = await IndicatorService.getAll();
-        setIndikator(data);
-        setFilteredIndikator(data);
+        const data = await ProfileService.getAdmin();
+        setAdmins(data);
+        setFilteredAdmins(data);
       } else {
-        await IndicatorService.update(currentIndikator.id, {
-          name: currentIndikator.name,
-          description: currentIndikator.description,
-          statement_text: currentIndikator.statement_text,
-          competency_id: currentIndikator.competency_id,
-          is_active: currentIndikator.is_active,
+        if (currentAdmin.password != "") {
+          await AuthService.changeUserPasswordAsAdmin(
+            currentAdmin.id,
+            currentAdmin.password
+          );
+        }
+        await ProfileService.update(currentAdmin.id, {
+          name: currentAdmin.name,
+          email: currentAdmin.email,
+          position_type: "ADMIN",
+          is_active: currentAdmin.is_active,
         });
-        const data = await IndicatorService.getAll();
-        setIndikator(data);
-        setFilteredIndikator(data);
+        const data = await ProfileService.getAdmin();
+        setAdmins(data);
+        setFilteredAdmins(data);
       }
       setShowModal(false);
     } catch (err) {
-      setModalError(err?.message || "Failed to save Sub Dimensi");
+      setModalError(err?.message || "Failed to save admin");
       setShowModal(true);
     }
   };
 
-  // Expose handlers to parent via ref
-  useImperativeHandle(ref, () => ({
-    handleAdd,
-    handleRefresh,
-  }));
-
   return (
-    <div className="space-y-5 mt-5">
+    <div className="space-y-4">
+      {/* Header with Search and Filters */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+          <UserCheck className="mr-3 text-blue-600 dark:text-blue-400" />
+          Admin
+        </h1>
+        <div className="flex gap-3">
+          <Button
+            color="gray"
+            onClick={handleRefresh}
+            className="flex items-center gap-2"
+            title="Refresh"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
+          <Button
+            onClick={handleAdd}
+            color="blue"
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Admin
+          </Button>
+        </div>
+      </div>
+
       {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
         <div className="flex-1">
           <TextInput
             icon={Search}
-            placeholder="Search by name..."
+            placeholder="Search by name or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -212,29 +233,27 @@ const IndikatorTable = forwardRef((props, ref) => {
       )}
 
       {/* Table */}
-      <div className="table-container">
+      <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
         <Table>
           <TableHead>
             <TableRow className="bg-gray-50 dark:bg-gray-700">
               <TableHeadCell className="w-4">
                 <Checkbox
                   checked={
-                    selectedRows.length === filteredIndikator.length &&
-                    filteredIndikator.length > 0
+                    selectedRows.length === filteredAdmins.length &&
+                    filteredAdmins.length > 0
                   }
                   onChange={(e) => handleSelectAll(e.target.checked)}
                 />
               </TableHeadCell>
               <TableHeadCell>Name</TableHeadCell>
-              <TableHeadCell>Description</TableHeadCell>
-              <TableHeadCell>Indikator</TableHeadCell>
-              <TableHeadCell>Competency</TableHeadCell>
-              <TableHeadCell>Status</TableHeadCell>
+              <TableHeadCell>Email</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
+              <TableHeadCell>Status</TableHeadCell>
             </TableRow>
           </TableHead>
           <TableBody className="divide-y">
-            {filteredIndikator.map((sup) => (
+            {filteredAdmins.map((sup) => (
               <TableRow
                 key={sup.id}
                 className="hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -248,9 +267,7 @@ const IndikatorTable = forwardRef((props, ref) => {
                 <TableCell className="font-medium text-gray-900 dark:text-white">
                   {sup.name}
                 </TableCell>
-                <TableCell>{sup.description}</TableCell>
-                <TableCell>{sup.statement_text}</TableCell>
-                <TableCell>{setToName(sup.competency_id)}</TableCell>
+                <TableCell>{sup.email}</TableCell>
                 <TableCell>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
@@ -289,23 +306,22 @@ const IndikatorTable = forwardRef((props, ref) => {
           </TableBody>
         </Table>
 
-        {filteredIndikator.length === 0 && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400"> 
-            No Sub Dimensi found.
+        {filteredAdmins.length === 0 && (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            No admins found.
           </div>
         )}
       </div>
 
       {/* Modal for Add/Edit */}
-      <IndikatorModal
+      <AdminModal
         show={showModal}
         onClose={() => {
           setShowModal(false);
           setModalError("");
         }}
         modalType={modalType}
-        indikator={currentIndikator}
-        kompetensi={kompetensi}
+        admin={currentAdmin}
         onChange={handleModalChange}
         onSave={handleSave}
         error={modalError}
@@ -317,6 +333,6 @@ const IndikatorTable = forwardRef((props, ref) => {
       />
     </div>
   );
-});
+};
 
-export default IndikatorTable;
+export default AdminTable;

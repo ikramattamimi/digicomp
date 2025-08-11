@@ -17,6 +17,8 @@ import AssessmentEditPage from "./pages/AssessmentEditPage.jsx";
 import AssessmentDetailPage from "./pages/AssessmentDetailPage.jsx";
 import AssessmentParticipantPage from "./pages/AssessmentParticipantPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
+import AccountPage from "./pages/AccountPage.jsx";
 
 function App() {
   const router = createBrowserRouter(
@@ -36,6 +38,9 @@ function App() {
           <Route path="penilaian/:id" element={<AssessmentDetailPage />} />
           <Route path="penilaian/:id/edit" element={<AssessmentEditPage />} />
           <Route path="penilaian/:assessmentId/participants" element={<AssessmentParticipantPage />} />
+          <Route path="admin" element={<AdminPage />} />
+          <Route path="akun" element={<AccountPage />} />
+          <Route path="assessment" element={<AssessmentPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </>

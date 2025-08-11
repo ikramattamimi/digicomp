@@ -11,12 +11,21 @@ import {
   Select,
   Checkbox,
 } from "flowbite-react";
-import { Search, Plus, Pencil, Trash2, UserCheck, RefreshCw, Building } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  UserCheck,
+  RefreshCw,
+  Building,
+} from "lucide-react";
 import SubdirectoratService from "../../services/SubdirectoratsService";
 import SubDirektoratModal from "./SubDirektoratModal";
 import ErrorModal from "./ErrorModal";
 
 const SubDirektoratTable = forwardRef((props, ref) => {
+  const [supervisor, setSupervisor] = useState([]);
   const [subDirektorat, setSubDirektorat] = useState([]);
   const [filteredSubDirektorat, setFilteredSubDirektorat] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,6 +43,10 @@ const SubDirektoratTable = forwardRef((props, ref) => {
   useEffect(() => {
     const fetchSubDirectorat = async () => {
       try {
+        const dataSupervisor = await SubdirectoratService.getSupervisor();
+        setSupervisor(dataSupervisor)
+        console.log(dataSupervisor)
+        
         const data = await SubdirectoratService.getAll();
         setSubDirektorat(data);
         setFilteredSubDirektorat(data);
@@ -45,6 +58,13 @@ const SubDirektoratTable = forwardRef((props, ref) => {
     };
     fetchSubDirectorat();
   }, []);
+
+  const getSupervisor = (id) => {
+    const bobObject = supervisor.find((obj) => obj.subdirectorat_id === id);
+    const bobId = bobObject ? bobObject.name : "-";
+
+    return bobId;
+  };
 
   // Fungsi refresh supervisor
   const handleRefresh = async () => {
@@ -65,9 +85,8 @@ const SubDirektoratTable = forwardRef((props, ref) => {
     let filtered = subDirektorat;
 
     if (searchTerm) {
-      filtered = filtered.filter(
-        (sup) =>
-          sup.name.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter((sup) =>
+        sup.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -109,14 +128,13 @@ const SubDirektoratTable = forwardRef((props, ref) => {
 
   const handleDelete = async (id, status) => {
     try {
-      if(status != true){
+      if (status != true) {
         await SubdirectoratService.delete(id, status);
-        handleRefresh()
-      }else{
+        handleRefresh();
+      } else {
         setErrorMessage("Set status to inactive for delete");
         setShowErrorModal(true);
       }
-      
     } catch (err) {
       console.error("Failed to delete subdirektorat:", err);
       setErrorMessage(err?.message || "Failed to delete subdirektorat");
@@ -165,6 +183,10 @@ const SubDirektoratTable = forwardRef((props, ref) => {
     <div className="space-y-5 mt-5">
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+  
+
+      {/* Search and Filter Bar */}
+      {/* <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"> */}
         <div className="flex-1">
           <TextInput
             icon={Search}
@@ -202,6 +224,7 @@ const SubDirektoratTable = forwardRef((props, ref) => {
                 />
               </TableHeadCell>
               <TableHeadCell>Name</TableHeadCell>
+              <TableHeadCell>Atasan</TableHeadCell>
               <TableHeadCell>Status</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
             </TableRow>
@@ -221,6 +244,7 @@ const SubDirektoratTable = forwardRef((props, ref) => {
                 <TableCell className="font-medium text-gray-900 dark:text-white">
                   {sup.name}
                 </TableCell>
+                <TableCell>{getSupervisor(sup.id)}</TableCell>
                 <TableCell>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${

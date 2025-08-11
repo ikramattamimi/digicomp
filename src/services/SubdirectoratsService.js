@@ -21,6 +21,16 @@ class SubDirectoratService {
     return data
   }
 
+  // Get subdirectorat by Supervisor
+  async getSupervisor() {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('position_type', "ATASAN")
+    if (error) throw error
+    return data
+  }
+
   // Get subdirectorat by id
   async getById(id) {
     const { data, error } = await supabase

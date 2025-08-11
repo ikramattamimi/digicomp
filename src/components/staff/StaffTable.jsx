@@ -11,7 +11,14 @@ import {
   Select,
   Checkbox,
 } from "flowbite-react";
-import { Search, Plus, Pencil, Trash2, UserCheck, RefreshCw } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  UserCheck,
+  RefreshCw,
+} from "lucide-react";
 import ProfileService from "../../services/ProfileService";
 import SubdirectoratService from "../../services/SubdirectoratsService";
 
@@ -20,12 +27,14 @@ import StaffModal from "./StaffModal";
 import ErrorModal from "./ErrorModal";
 
 const StaffTable = forwardRef((props, ref) => {
+  const [subDirektoratA, setSubDirektoratA] = useState("");
   const [subDirektorat, setSubDirektorat] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showSupervisorForm, setShowSupervisorForm] = useState("hidden");
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
   const [currentSupervisor, setCurrentSupervisor] = useState({
     name: "",
@@ -39,9 +48,9 @@ const StaffTable = forwardRef((props, ref) => {
     const fetchSupervisors = async () => {
       try {
         const dataSubDirektorat = await SubdirectoratService.getActive();
-        setSubDirektorat(dataSubDirektorat)
+        setSubDirektorat(dataSubDirektorat);
 
-        const data = await ProfileService.getAll();
+        const data = await ProfileService.getStaff();
         setSupervisors(data);
         setFilteredSupervisors(data);
       } catch (err) {
@@ -56,7 +65,7 @@ const StaffTable = forwardRef((props, ref) => {
   // Fungsi refresh supervisor
   const handleRefresh = async () => {
     try {
-      const data = await ProfileService.getAll();
+      const data = await ProfileService.getStaff();
       setSupervisors(data);
       setFilteredSupervisors(data);
       setErrorMessage("");
@@ -67,19 +76,19 @@ const StaffTable = forwardRef((props, ref) => {
     }
   };
 
-   // Fungsi filter by sub directorat supervisor
+  // Fungsi filter by sub directorat
   const handleFilterSubdirectorat = async (id) => {
     try {
-      if(id != "*"){
+      if (id != "*") {
         const data = await ProfileService.getBySubDirectorat(id);
-      setSupervisors(data);
-      setFilteredSupervisors(data);
-      setErrorMessage("");
-      setShowErrorModal(false);
-      }else{
-        handleRefresh()
+        setSubDirektoratA(id)
+        setSupervisors(data);
+        setFilteredSupervisors(data);
+        setErrorMessage("");
+        setShowErrorModal(false);
+      } else {
+        handleRefresh();
       }
-      
     } catch (err) {
       setErrorMessage(err?.message || "Failed to load supervisors");
       setShowErrorModal(true);
@@ -103,12 +112,17 @@ const StaffTable = forwardRef((props, ref) => {
 
   // Set ID to Competency Name
   const setToName = (id) => {
-    const bobObject = subDirektorat.find(obj => obj.id === id);
+    const bobObject = subDirektorat.find((obj) => obj.id === id);
     const bobId = bobObject ? bobObject.name : undefined;
 
-    return(
-      bobId
-    )
+    return bobId;
+  };
+
+  const setToNameSupervisor = (id) => {
+    const bobObject = supervisors.find((obj) => obj.id === id);
+    const bobId = bobObject ? bobObject.name : undefined;
+
+    return bobId;
   };
 
   // Handle row selection
@@ -142,6 +156,11 @@ const StaffTable = forwardRef((props, ref) => {
   };
 
   const handleEdit = (supervisor) => {
+    if (supervisor.position_type == "BAWAHAN") {
+      setShowSupervisorForm("show");
+    } else {
+      setShowSupervisorForm("hidden");
+    }
     setModalType("edit");
     setCurrentSupervisor(supervisor);
     setShowModal(true);
@@ -158,8 +177,15 @@ const StaffTable = forwardRef((props, ref) => {
     }
   };
 
-  const handleModalChange = (updated) => {
+  const handleModalChange = (updated, element) => {
     setCurrentSupervisor(updated);
+    if (updated.position_type == "BAWAHAN" && element != null) {
+      element.style.display = "block";
+    } else if (updated.position_type == "ATASAN" && element != null) {
+      const newsupervisorid = { ...updated, supervisor_id: null };
+      setCurrentSupervisor(newsupervisorid);
+      element.style.display = "none";
+    }
   };
 
   const handleSave = async () => {
@@ -168,7 +194,7 @@ const StaffTable = forwardRef((props, ref) => {
       if (modalType === "add") {
         await AuthService.registerStaff({
           email: currentSupervisor.email,
-          password: currentSupervisor.password || "defaultPassword123",
+          password: currentSupervisor.password,
           profile: {
             name: currentSupervisor.name,
             nrp: currentSupervisor.nrp,
@@ -178,10 +204,16 @@ const StaffTable = forwardRef((props, ref) => {
             supervisor_id: currentSupervisor.supervisor_id,
           },
         });
-        const data = await ProfileService.getAll();
+        const data = await ProfileService.getStaff();
         setSupervisors(data);
         setFilteredSupervisors(data);
       } else {
+        if (currentSupervisor.password != "") {
+          await AuthService.changeUserPasswordAsAdmin(
+            currentSupervisor.id,
+            currentSupervisor.password
+          );
+        }
         await ProfileService.update(currentSupervisor.id, {
           name: currentSupervisor.name,
           nrp: currentSupervisor.nrp,
@@ -191,7 +223,7 @@ const StaffTable = forwardRef((props, ref) => {
           subdirectorat_id: currentSupervisor.subdirectorat_id,
           supervisor_id: currentSupervisor.supervisor_id,
         });
-        const data = await ProfileService.getAll();
+        const data = await ProfileService.getStaff();
         setSupervisors(data);
         setFilteredSupervisors(data);
       }
@@ -210,6 +242,23 @@ const StaffTable = forwardRef((props, ref) => {
 
   return (
     <div className="space-y-5 mt-5">
+
+      <div className="w-full sm:w-48 flex flex-row gap-4 m-5">
+        {subDirektorat.map((sup) => (
+          <Button
+            id={sup.id}
+            color={subDirektoratA === sup.id ? 'blue' : 'gray'}
+            className="flex items-center gap-2"
+            onClick={() => handleFilterSubdirectorat(sup.id)}
+            value={sup.id}
+          >
+            <p class="whitespace-nowrap">
+              {sup.name}
+            </p>
+          </Button>
+        ))}
+      </div>
+
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4 rounded-lg">
         <div className="flex-1">
@@ -219,14 +268,6 @@ const StaffTable = forwardRef((props, ref) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </div>
-        <div className="w-full sm:w-48">
-          <Select onChange={e => handleFilterSubdirectorat(e.target.value)}>
-            <option value="*">All Sub Direktorat</option>
-              {subDirektorat.map((sup) => (
-              <option value={sup.id}>{sup.name}</option>
-              ))}
-          </Select>
         </div>
       </div>
 
@@ -261,8 +302,7 @@ const StaffTable = forwardRef((props, ref) => {
               <TableHeadCell>NRP</TableHeadCell>
               <TableHeadCell>Position</TableHeadCell>
               <TableHeadCell>Position Type</TableHeadCell>
-              <TableHeadCell>Subdirectorate</TableHeadCell>
-              <TableHeadCell>Supervisor ID</TableHeadCell>
+              <TableHeadCell>Supervisor</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
             </TableRow>
           </TableHead>
@@ -285,8 +325,7 @@ const StaffTable = forwardRef((props, ref) => {
                 <TableCell>{sup.nrp}</TableCell>
                 <TableCell>{sup.position}</TableCell>
                 <TableCell>{sup.position_type}</TableCell>
-                <TableCell>{setToName(sup.subdirectorat_id)}</TableCell>
-                <TableCell>{sup.supervisor_id}</TableCell>
+                <TableCell>{setToNameSupervisor(sup.supervisor_id)}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
@@ -329,7 +368,9 @@ const StaffTable = forwardRef((props, ref) => {
           setModalError("");
         }}
         modalType={modalType}
-        supervisor={currentSupervisor}
+        supervisorForm={showSupervisorForm}
+        staff={currentSupervisor}
+        supervisor={supervisors}
         subDirectorat={subDirektorat}
         onChange={handleModalChange}
         onSave={handleSave}

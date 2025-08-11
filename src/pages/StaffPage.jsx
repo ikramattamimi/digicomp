@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Card } from 'flowbite-react';
 import StaffHeader from '../components/staff/Header.jsx';
 import StaffTable from '../components/staff/StaffTable.jsx';
 import PageHeader from '../components/common/PageHeader.jsx';
 import { Users, Home, Plus, RefreshCw } from 'lucide-react';
+import AuthService from "../services/AuthService.js";
 
 const StaffPage = () => {
   // Ref to access StaffTable's handlers
@@ -23,6 +24,18 @@ const StaffPage = () => {
     }
   };
 
+
+  const [page, setPage] = useState("hidden");
+    useEffect(() => {
+      const fetchUserData = async () => {
+        const checkUser = await AuthService.checkUser();
+        if (checkUser.position_type == "ADMIN") {
+          setPage("show");
+        }
+      };
+      fetchUserData();
+    }, []);
+  
   return (
     <div className="page">
       <div className="max-w-7xl mx-auto">
