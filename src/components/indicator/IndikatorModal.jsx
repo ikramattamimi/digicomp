@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, Select } from 'flowbite-react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, Select, Textarea } from 'flowbite-react';
 
 const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onChange, onSave, error }) => (
   <Modal show={show} onClose={onClose}>
@@ -28,43 +28,16 @@ const  IndikatorModal = ({ show, onClose, modalType, indikator, kompetensi, onCh
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="description">Description</Label>
-          </div>
-          <TextInput
-            id="description"
-            value={indikator.description}
-            onChange={e => onChange({ ...indikator, description: e.target.value })}
-            placeholder="Enter Sub Dimensi description"
-            required
-          />
-        </div>
-        <div>
-          <div className="mb-2 block">
             <Label htmlFor="statement">Statement</Label>
           </div>
-          <TextInput
+          <Textarea
             id="statement"
+            className='h-30'
             value={indikator.statement_text}
             onChange={e => onChange({ ...indikator, statement_text: e.target.value })}
             placeholder="Enter indicator statement"
             required
           />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="competency">Competency</Label>
-          </div>
-          <Select
-            id="competency"
-            value={indikator.competency_id}
-            onChange={e => onChange({ ...indikator, competency_id: e.target.value })}
-            required
-          >
-            <option value={0}>Select competency</option>
-            {kompetensi.map((sup) => (
-              <option value={sup.id}>{sup.name}</option>
-            ))}
-          </Select>
         </div>
         <div>
           <div className="mb-2 block">

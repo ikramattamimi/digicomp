@@ -15,6 +15,7 @@ import { Search, Plus, Pencil, Trash2, UserCheck, RefreshCw, Building, Target, A
 import CompetencyService from "../../services/CompetencyService";
 import KompetensiModal from "./KompetensiModal";
 import ErrorModal from "./ErrorModal";
+import { NavLink } from "react-router-dom";
 
 const KompetensiTable = forwardRef((props, ref) => {
   // Expose handlers to parent via ref
@@ -239,12 +240,13 @@ const KompetensiTable = forwardRef((props, ref) => {
                   <div className="flex gap-2">
                     <Button
                       size="xs"
+                      as={NavLink}
+                      to={"/kompetensi/detail/"+sup.id}
                       color="light"
-                      onClick={() => handleEdit(sup)}
                       className="flex items-center gap-1"
                     >
                       <Pencil className="w-3 h-3" />
-                      Edit
+                      Detail
                     </Button>
                     <Button
                       size="xs"

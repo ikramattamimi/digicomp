@@ -25,19 +25,7 @@ const StaffModal = ({ show, onClose, modalType, supervisorForm, staff, superviso
             required
           />
         </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="email">Email</Label>
-          </div>
-          <TextInput
-            id="email"
-            type="email"
-            value={staff.email || ''}
-            onChange={e => onChange({ ...staff, email: e.target.value })}
-            placeholder="Enter email address"
-            required
-          />
-        </div>
+        
         <div>
           <div className="mb-2 block">
             <Label htmlFor="password" value="password" />

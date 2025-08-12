@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, Select } from 'flowbite-react';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, Select, Textarea } from 'flowbite-react';
 
 const  KompetensiModal = ({ show, onClose, modalType, kompetensi, onChange, onSave, error }) => (
   <Modal show={show} onClose={onClose}>
@@ -29,9 +29,10 @@ const  KompetensiModal = ({ show, onClose, modalType, kompetensi, onChange, onSa
           <div className="mb-2 block">
             <Label htmlFor="description">Description</Label>
           </div>
-          <TextInput
+          <Textarea
             id="description"
             value={kompetensi.description}
+            className='h-30'
             onChange={e => onChange({ ...kompetensi, description: e.target.value })}
             placeholder="Enter competency description"
             required

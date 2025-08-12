@@ -1,9 +1,18 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Card } from 'flowbite-react';
-import StaffHeader from '../components/staff/Header.jsx';
-import StaffTable from '../components/staff/StaffTable.jsx';
-import PageHeader from '../components/common/PageHeader.jsx';
-import { Users, Home, Plus, RefreshCw } from 'lucide-react';
+import React, { useRef, useEffect, useState } from "react";
+import { Card } from "flowbite-react";
+import StaffHeader from "../components/staff/Header.jsx";
+import StaffTable from "../components/staff/StaffTable.jsx";
+import PageHeader from "../components/common/PageHeader.jsx";
+import { Users, Home, Plus, RefreshCw } from "lucide-react";
+import {
+  Tabs,
+  TabItem,
+  Select,
+  Label,
+  TextInput,
+  Button,
+  Textarea,
+} from "flowbite-react";
 import AuthService from "../services/AuthService.js";
 
 const StaffPage = () => {
@@ -24,18 +33,17 @@ const StaffPage = () => {
     }
   };
 
-
   const [page, setPage] = useState("hidden");
-    useEffect(() => {
-      const fetchUserData = async () => {
-        const checkUser = await AuthService.checkUser();
-        if (checkUser.position_type == "ADMIN") {
-          setPage("show");
-        }
-      };
-      fetchUserData();
-    }, []);
-  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const checkUser = await AuthService.checkUser();
+      if (checkUser.position_type == "ADMIN") {
+        setPage("show");
+      }
+    };
+    fetchUserData();
+  }, []);
+
   return (
     <div className="page">
       <div className="max-w-7xl mx-auto">
@@ -43,22 +51,22 @@ const StaffPage = () => {
         <PageHeader
           breadcrumbs={[
             { label: "Dashboard", href: "/", icon: Home },
-            { label: "Staff", href: "/staff", icon: Users }
+            { label: "Staff", href: "/staff", icon: Users },
           ]}
           title="Staff"
           customActions={[
             {
-              type: 'button',
-              label: 'Refresh',
+              type: "button",
+              label: "Refresh",
               icon: RefreshCw,
-              color: 'gray',
+              color: "gray",
               onClick: handleRefresh,
             },
             {
-              type: 'button',
-              label: 'Tambah Staff',
+              type: "button",
+              label: "Tambah Staff",
               icon: Plus,
-              color: 'blue',
+              color: "blue",
               onClick: handleAdd,
             },
           ]}

@@ -39,6 +39,8 @@ const AdminTable = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const myDomain = "@scprcjt.web.app";
+
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
@@ -144,7 +146,7 @@ const AdminTable = () => {
     try {
       if (modalType === "add") {
         await AuthService.registerStaff({
-          email: currentAdmin.email,
+          email: setNameToUsername(currentAdmin.name) + myDomain,
           password: currentAdmin.password,
           profile: {
             name: currentAdmin.name,
@@ -176,6 +178,31 @@ const AdminTable = () => {
     } catch (err) {
       setModalError(err?.message || "Failed to save admin");
       setShowModal(true);
+    }
+  };
+
+  // Hide Email domain
+  const setEmailToUsername = (email) => {
+    const mDomain = "scprcjt.web.app";
+
+    const words = email.split("@");
+    if (words[1] == mDomain) {
+      return words[0];
+    } else {
+      return email;
+    }
+  };
+
+  const setNameToUsername = (name) => {
+    const words = name.split(" ");
+    if (words.length > 1) {
+      const words1 = words[0] + words[1];
+      const words2 = words1.replace(",", "");
+      return words2.toLowerCase();
+    } else {
+      const words1 = words[0];
+      const words2 = words1.replace(",", "");
+      return words2.toLowerCase();
     }
   };
 
@@ -247,7 +274,7 @@ const AdminTable = () => {
                 />
               </TableHeadCell>
               <TableHeadCell>Name</TableHeadCell>
-              <TableHeadCell>Email</TableHeadCell>
+              <TableHeadCell>Username</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
               <TableHeadCell>Status</TableHeadCell>
             </TableRow>
@@ -267,7 +294,7 @@ const AdminTable = () => {
                 <TableCell className="font-medium text-gray-900 dark:text-white">
                   {sup.name}
                 </TableCell>
-                <TableCell>{sup.email}</TableCell>
+                <TableCell>{setEmailToUsername(sup.email)}</TableCell>
                 <TableCell>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${

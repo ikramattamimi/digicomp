@@ -12,6 +12,7 @@ import {
   Checkbox,
 } from "flowbite-react";
 import { Search, Plus, Pencil, Trash2, UserCheck, RefreshCw, Building, Target, Award } from "lucide-react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import IndicatorService from "../../services/IndicatorService";
 import CompetencyService from "../../services/CompetencyService";
 import IndikatorModal from "./IndikatorModal";
@@ -33,13 +34,15 @@ const IndikatorTable = forwardRef((props, ref) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const { id } = useParams();
+
   useEffect(() => {
     const fetchSubDirectorat = async () => {
       try {
         const dataKompetensi = await CompetencyService.getActive();
         setKompetensi(dataKompetensi)
         
-        const data = await IndicatorService.getAll();
+        const data = await IndicatorService.getByCompetency(id);
         setIndikator(data);
         setFilteredIndikator(data);
       } catch (err) {
@@ -154,7 +157,7 @@ const IndikatorTable = forwardRef((props, ref) => {
           name: currentIndikator.name,
           description: currentIndikator.description,
           statement_text: currentIndikator.statement_text,
-          competency_id: currentIndikator.competency_id,
+          competency_id: id,
           is_active: "true",
         });
         const data = await IndicatorService.getAll();
@@ -165,7 +168,7 @@ const IndikatorTable = forwardRef((props, ref) => {
           name: currentIndikator.name,
           description: currentIndikator.description,
           statement_text: currentIndikator.statement_text,
-          competency_id: currentIndikator.competency_id,
+          competency_id: id,
           is_active: currentIndikator.is_active,
         });
         const data = await IndicatorService.getAll();
@@ -187,17 +190,7 @@ const IndikatorTable = forwardRef((props, ref) => {
 
   return (
     <div className="space-y-5 mt-5">
-      {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-        <div className="flex-1">
-          <TextInput
-            icon={Search}
-            placeholder="Search by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
+      
 
       {/* Selected Items Actions */}
       {selectedRows.length > 0 && (
@@ -212,8 +205,7 @@ const IndikatorTable = forwardRef((props, ref) => {
       )}
 
       {/* Table */}
-      <div className="table-container">
-        <Table>
+      <Table>
           <TableHead>
             <TableRow className="bg-gray-50 dark:bg-gray-700">
               <TableHeadCell className="w-4">
@@ -226,9 +218,7 @@ const IndikatorTable = forwardRef((props, ref) => {
                 />
               </TableHeadCell>
               <TableHeadCell>Name</TableHeadCell>
-              <TableHeadCell>Description</TableHeadCell>
               <TableHeadCell>Indikator</TableHeadCell>
-              <TableHeadCell>Competency</TableHeadCell>
               <TableHeadCell>Status</TableHeadCell>
               <TableHeadCell>Actions</TableHeadCell>
             </TableRow>
@@ -248,9 +238,7 @@ const IndikatorTable = forwardRef((props, ref) => {
                 <TableCell className="font-medium text-gray-900 dark:text-white">
                   {sup.name}
                 </TableCell>
-                <TableCell>{sup.description}</TableCell>
                 <TableCell>{sup.statement_text}</TableCell>
-                <TableCell>{setToName(sup.competency_id)}</TableCell>
                 <TableCell>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
@@ -294,7 +282,6 @@ const IndikatorTable = forwardRef((props, ref) => {
             No Sub Dimensi found.
           </div>
         )}
-      </div>
 
       {/* Modal for Add/Edit */}
       <IndikatorModal
