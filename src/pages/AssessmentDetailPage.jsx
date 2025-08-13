@@ -221,6 +221,13 @@ const AssessmentDetailPage = () => {
           />
         )}
 
+        {/* Navigasi ke form assessment */}
+        <div className="mb-4 flex gap-2">
+          <Link to={`/penilaian/${id}/self`}>
+            <Button color="blue">Isi Self-Assessment</Button>
+          </Link>
+        </div>
+
         {/* Content Tabs */}
         <Tabs
           aria-label="Tab detail penilaian"

@@ -61,6 +61,39 @@ class ProfileService {
     return data
   }
 
+  async getSupervisor(profileId) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(`
+        *,
+        supervisor:supervisor_id (
+          id,
+          name,
+          email,
+          position_type,
+          subdirectorat_id,
+          subdirectorats(name)
+        )
+      `)
+      .eq('id', profileId)
+      .is('deleted_at', null)
+      .single()
+    if (error) throw error
+    return data?.supervisor || null
+  }
+
+  async getSubordinates(supervisorId) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*, subdirectorats(name)')
+      .eq('supervisor_id', supervisorId)
+      .is('deleted_at', null)
+      .order('name', { ascending: true })
+    if (error) throw error
+    return data
+  }
+
+
   async getStaff() {
     const { data, error } = await supabase
       .from('profiles')

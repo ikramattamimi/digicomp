@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { ASSESSMENT_STATUS } from "../../constants/assessmentConstants";
 import AssessmentStatusBadge from "./AssessmentStatusBadge";
+import { Link } from 'react-router-dom';
 
 const ParticipantTable = ({
   participants = [],
@@ -51,6 +52,7 @@ const ParticipantTable = ({
   canEdit = true,
   canDelete = true,
   showAssessmentInfo = true,
+  assessmentId
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
