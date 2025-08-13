@@ -48,7 +48,7 @@ const LoginPage = () => {
           <TextInput
             id="email"
             type="email"
-            placeholder="Enter username"
+            placeholder="Enter NRP"
             onChange={(e) =>
               handleOnChange({
                 ...currentLoginForm,
