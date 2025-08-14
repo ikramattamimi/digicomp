@@ -110,25 +110,25 @@ class AssessmentService {
 
   // Get assessments for specific user (as participant)
   async getByParticipant(userId) {
-    const { data, error } = await supabase
-      .from('assessments')
-      .select(`
-        *,
-        assessment_participants!inner (
-          id,
-          subject_profile_id,
-          assessor_profile_id
-        )
-      `)
-      .eq('assessment_participants.subject_profile_id', userId)
-      .or(`assessment_participants.assessor_profile_id.eq.${userId}`)
-      .eq('is_active', true)
-      .is('deleted_at', null)
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data;
-  }
+  const { data, error } = await supabase
+    .from('assessments')
+    .select(`
+      *,
+      assessment_participants!inner (
+        id,
+        subject_profile_id,
+        assessor_profile_id,
+        status
+      )
+    `)
+    .or(`subject_profile_id.eq.${userId},assessor_profile_id.eq.${userId}`, { foreignTable: 'assessment_participants' })
+    .eq('is_active', true)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false });
+  
+  if (error) throw error;
+  return data;
+}
 
   // Create new assessment
   async create(payload) {
