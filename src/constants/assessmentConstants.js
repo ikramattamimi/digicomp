@@ -8,6 +8,14 @@ export const ASSESSMENT_STATUS = {
   DONE: 'done'              // Assessment sudah selesai
 };
 
+// User position type
+export const USER_POSITION = {
+  ADMIN: 'ADMIN',
+  ATASAN: 'ATASAN',
+  BAWAHAN: 'BAWAHAN',
+  TOP_MANAGEMENT: 'TOP_MANAGEMENT'
+};
+
 // Response type untuk membedakan self vs supervisor assessment
 export const RESPONSE_TYPE = {
   SELF: 'self',             // Self assessment (subject_id = assessor_id)

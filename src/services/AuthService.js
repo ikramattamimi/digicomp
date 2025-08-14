@@ -93,7 +93,7 @@ class AuthService {
     } = await supabase.auth.getUser();
 
     if (error) {
-      console.error("Error getting user:", error);
+      // console.error("Error getting user:", error);
       return null;
     }
 

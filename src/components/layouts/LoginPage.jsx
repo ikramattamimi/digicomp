@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { UserCheck } from "lucide-react";
 import { Card } from "flowbite-react";
 import {
@@ -27,8 +27,7 @@ const LoginPage = () => {
     try {
       await AuthService.login(currentLoginForm);
     } catch (err) {
-      setModalError(err?.message || "Failed to save supervisor");
-      setShowModal(true);
+      console.error("Login failed:", err);
     }
   };
 

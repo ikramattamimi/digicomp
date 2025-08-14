@@ -45,8 +45,6 @@ const Sidebar = ({ collapsed }) => {
         }
       } catch (err) {
         console.error("Failed to fetch supervisors:", err);
-        setErrorMessage(err?.message || "Failed to load supervisors");
-        setShowErrorModal(true);
       }
     };
     fetchSupervisors();

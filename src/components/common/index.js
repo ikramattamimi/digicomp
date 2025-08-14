@@ -20,3 +20,7 @@ export {
   WarningAlert,
   InfoAlert
 } from './ErrorAlert.jsx';
+
+export { default as LoadingModal } from './LoadingModal.jsx';
+export { default as SuccessModal } from './SuccessModal.jsx';
+export { default as ErrorModal } from './ErrorModal.jsx';
