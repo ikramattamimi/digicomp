@@ -54,7 +54,7 @@ const AssessmentResponseService = {
   async _resolveAssessorProfileId({ assessmentId, subjectProfileId, mode = 'self' }) {
     let query = supabase
       .from('profiles')
-      .select('id')
+      .select('id, supervisor_id')
       .eq('id', subjectProfileId)
       .is('deleted_at', null)
 
@@ -68,9 +68,11 @@ const AssessmentResponseService = {
     if (error) throw error
     if (!data || data.length === 0) return { participantId: null, assessorProfileId: null }
 
+    const assessorId = mode === 'self' ? data[0].id : data[0].supervisor_id
+
     return {
       participantId: data[0].id,
-      assessorProfileId: data[0].assessor_profile_id
+      assessorProfileId: assessorId
     }
   },
 
@@ -118,137 +120,122 @@ const AssessmentResponseService = {
   // Simpan draft: soft-delete jawaban lama untuk indikator yang dikirim, lalu insert batch jawaban baru
   // payload: { assessmentId, subjectProfileId, mode, responses }
   // responses bisa berupa: { [indicatorId]: number | { value?: number, text?: string } }
-  async saveDraft({ assessmentId, subjectProfileId, mode, responses }) {
-    const t0 = Date.now()
-    console.log('[AssessmentResponseService.saveDraft] Mulai', {
-      assessmentId,
-      subjectProfileId,
-      mode,
-      jumlahIndikator: Object.keys(responses || {}).length,
-      kunciResponses: Object.keys(responses || {})
+  async saveDraft({ assessmentId, subjectProfileId, assessorProfileId, assessmentStatus, responses }) {
+    // const { assessorProfileId } = await this._resolveAssessorProfileId({
+    //   assessmentId,
+    //   subjectProfileId,
+    //   mode
+    // })
+
+    if (!assessorProfileId) {
+      throw new Error('Peserta untuk mode ini tidak ditemukan pada assessment')
+    }
+
+    const now = new Date().toISOString()
+
+    const rows = Object.entries(responses || {}).map(([indicatorId, val]) => {
+      let value = null
+      let text = null
+      if (typeof val === 'number') value = val
+      else if (val && typeof val === 'object') {
+        if (typeof val.value === 'number') value = val.value
+        if (typeof val.text === 'string') text = val.text
+      }
+
+      return {
+        assessment_id: assessmentId,
+        indicator_id: Number(indicatorId),
+        subject_profile_id: subjectProfileId,
+        assessor_profile_id: assessorProfileId,
+        response_value: value,
+        response_text: text,
+        updated_at: now
+      }
     })
 
-    try {
-      const { assessorProfileId } = await this._resolveAssessorProfileId({
-        assessmentId,
-        subjectProfileId,
-        mode
-      })
-      console.log('[AssessmentResponseService.saveDraft] Assessor ter-resolve', {
-        assessorProfileId
-      })
-
-      if (!assessorProfileId) {
-        console.warn('[AssessmentResponseService.saveDraft] Peserta untuk mode ini tidak ditemukan pada assessment', {
-          assessmentId,
-          subjectProfileId,
-          mode
-        })
-        throw new Error('Peserta untuk mode ini tidak ditemukan pada assessment')
-      }
-
-      const now = new Date().toISOString()
-      console.log('[AssessmentResponseService.saveDraft] Normalisasi responses', { now })
-
-      // Normalisasi payload responses
-      // Contoh dukungan:
-      // - responses[12] = 4
-      // - responses[12] = { value: 4, text: "catatan" }
-      const rows = Object.entries(responses || {}).map(([indicatorId, val]) => {
-        let value = null
-        let text = null
-        if (typeof val === 'number') value = val
-        else if (val && typeof val === 'object') {
-          if (typeof val.value === 'number') value = val.value
-          if (typeof val.text === 'string') text = val.text
-        }
-
-        return {
-          assessment_id: assessmentId,
-          indicator_id: Number(indicatorId),
-          subject_profile_id: subjectProfileId,
-          assessor_profile_id: assessorProfileId,
-          response_value: value,
-          response_text: text,
-          updated_at: now
-        }
-      })
-
-      console.log('[AssessmentResponseService.saveDraft] Normalisasi selesai', {
-        rowsCount: rows.length,
-        indikator: rows.map(r => r.indicator_id),
-        ringkas: rows.map(r => ({
-          indicator_id: r.indicator_id,
-          value: r.response_value,
-          hasText: !!r.response_text
-        }))
-      })
-
-      if (rows.length === 0) {
-        console.log('[AssessmentResponseService.saveDraft] Tidak ada baris untuk disimpan, keluar lebih awal')
-        return []
-      }
-
-      const indicatorIds = rows.map(r => r.indicator_id)
-      console.log('[AssessmentResponseService.saveDraft] Soft-delete jawaban lama (jika ada)', {
-        assessmentId,
-        subjectProfileId,
-        assessorProfileId,
-        indicatorIds
-      })
-
-      // Soft-delete jawaban lama untuk indikator yang sama (agar tidak duplikasi)
-      const { error: delErr } = await supabase
-        .from('assessment_responses')
-        .update({ deleted_at: now, updated_at: now })
-        .eq('assessment_id', assessmentId)
-        .eq('subject_profile_id', subjectProfileId)
-        .eq('assessor_profile_id', assessorProfileId)
-        .in('indicator_id', indicatorIds)
-        .is('deleted_at', null)
-
-      if (delErr) {
-        console.error('[AssessmentResponseService.saveDraft] Gagal soft-delete jawaban lama', delErr)
-        throw delErr
-      }
-
-      console.log('[AssessmentResponseService.saveDraft] Soft-delete selesai, lanjut insert', {
-        rowsCount: rows.length
-      })
-
-      // Insert batch jawaban baru
-      const { data: inserted, error: insErr } = await supabase
-        .from('assessment_responses')
-        .insert(rows)
-        .select()
-
-      if (insErr) {
-        console.error('[AssessmentResponseService.saveDraft] Gagal insert jawaban baru', insErr)
-        throw insErr
-      }
-
-      console.log('[AssessmentResponseService.saveDraft] Insert selesai', {
-        insertedCount: (inserted || []).length,
-        durasiMs: Date.now() - t0
-      })
-
-      return inserted
-    } catch (err) {
-      console.error('[AssessmentResponseService.saveDraft] Error', {
-        message: err?.message,
-        stack: err?.stack
-      })
-      throw err
-    } finally {
-      console.log('[AssessmentResponseService.saveDraft] Selesai', { durasiTotalMs: Date.now() - t0 })
+    if (rows.length === 0) {
+      return []
     }
+
+    const indicatorIds = rows.map(r => r.indicator_id)
+
+    const { error: delErr } = await supabase
+      .from('assessment_responses')
+      .delete()
+      .eq('assessment_id', assessmentId)
+      .eq('subject_profile_id', subjectProfileId)
+      .eq('assessor_profile_id', assessorProfileId)
+      .in('indicator_id', indicatorIds)
+
+    if (delErr) {
+      throw delErr
+    }
+
+    // Insert new responses
+    const { data: inserted, error: insErr } = await supabase
+      .from('assessment_responses')
+      .insert(rows)
+      .select()
+
+    if (insErr) {
+      throw insErr
+    }
+
+    // Set participant status to submitted
+    await this.setAssessmentParticipantStatus({
+      assessmentId,
+      subjectProfileId,
+      assessorProfileId,
+      status: assessmentStatus
+    })
+
+    return inserted
   },
 
   // Submit: sama seperti saveDraft (tidak ada kolom status submit di tabel)
-  async submit({ assessmentId, subjectProfileId, mode, responses }) {
-    const inserted = await this.saveDraft({ assessmentId, subjectProfileId, mode, responses })
+  async submit({ assessmentId, subjectProfileId, assessorProfileId, assessmentStatus, responses }) {
+    const inserted = await this.saveDraft({ assessmentId, subjectProfileId, assessorProfileId, assessmentStatus, responses })
     return { success: true, count: inserted.length }
   },
+
+  // Assessor Participant
+  async setAssessmentParticipantStatus({ assessmentId, subjectProfileId, assessorProfileId, status }) {
+    // Check if assessment_participants record exists
+    const { data: existingParticipant, error: checkError } = await supabase
+      .from('assessment_participants')
+      .select('id, status')
+      .eq('assessment_id', assessmentId)
+      .eq('subject_profile_id', subjectProfileId)
+      .eq('assessor_profile_id', assessorProfileId)
+      .is('deleted_at', null)
+      .single()
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      throw checkError
+    }
+
+    if (existingParticipant) {
+      // Update existing participant status to submitted
+      const { error: updateError } = await supabase
+      .from('assessment_participants')
+      .update({ status: status, updated_at: new Date().toISOString() })
+      .eq('id', existingParticipant.id)
+
+      if (updateError) throw updateError
+    } else {
+      // Create new participant record with submitted status
+      const { error: insertError } = await supabase
+      .from('assessment_participants')
+      .insert([{
+        assessment_id: assessmentId,
+        subject_profile_id: subjectProfileId,
+        assessor_profile_id: assessorProfileId,
+        status: status,
+      }])
+
+      if (insertError) throw insertError
+    }
+  }
 };
 
 export default AssessmentResponseService;

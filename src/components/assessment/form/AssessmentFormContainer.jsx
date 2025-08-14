@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Card, Button, Spinner, Alert } from 'flowbite-react';
 import AssessmentProgress from './AssessmentProgress';
 import CompetencySection from './CompetencySection';
+import LoadingModal from '../../common/LoadingModal';
+import SuccessModal from '../../common/SuccessModal';
+import ErrorModal from '../../common/ErrorModal';
 import AssessmentService from '../../../services/AssessmentService';
 import AssessmentCompetencyService from '../../../services/AssessmentCompetencyService';
 import AssessmentResponseService from '../../../services/AssessmentResponseService';
@@ -16,9 +19,40 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
   const [assessment, setAssessment] = useState(null);
   const [competencies, setCompetencies] = useState([]);
   const [responses, setResponses] = useState({});
+  
+  // Modal states
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   const isSelf = mode === 'self';
   const assessorTypeWeight = isSelf ? ASSESSMENT_WEIGHTS.SELF : ASSESSMENT_WEIGHTS.SUPERVISOR;
+
+  // Helper functions for modal
+  const showSuccess = (message, title = 'Berhasil') => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setShowSuccessModal(true);
+  };
+
+  const showFlowbiteErrorModal = (message, title = 'Error') => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setShowErrorModal(true);
+  };
+
+  const showLoading = (message = 'Memproses...') => {
+    setLoadingMessage(message);
+    setShowLoadingModal(true);
+  };
+
+  const hideLoading = () => {
+    setShowLoadingModal(false);
+    setLoadingMessage('');
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -104,15 +138,22 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
     try {
       setSaving(true);
       setError(null);
+      showLoading('Menyimpan draft...');
+      
       const sid = subjectProfileId || user?.id;
       await AssessmentResponseService.saveDraft({
         assessmentId,
-        mode,
+        assessmentStatus: 'draft',
         subjectProfileId: sid,
+        assessorProfileId: user?.id,
         responses
       });
+
+      hideLoading();
+      showSuccess('Draft berhasil disimpan');
     } catch (err) {
-      setError(err?.message || 'Gagal menyimpan draft');
+      hideLoading();
+      showFlowbiteErrorModal(err?.message || 'Gagal menyimpan draft');
     } finally {
       setSaving(false);
     }
@@ -120,21 +161,28 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
 
   const handleSubmit = async () => {
     if (filledIndicators < totalIndicators) {
-      setError('Lengkapi semua indikator sebelum submit');
+      showFlowbiteErrorModal('Lengkapi semua indikator sebelum submit', 'Validasi Error');
       return;
     }
     try {
       setSaving(true);
       setError(null);
-      const sid = subjectProfileId || user?.id;
+      showLoading('Mengirim assessment...');
+      
+      const sid = subjectProfileId;
       await AssessmentResponseService.submit({
         assessmentId,
-        mode,
+        assessmentStatus: 'submitted',
         subjectProfileId: sid,
+        assessorProfileId: user?.id,
         responses
       });
+      
+      hideLoading();
+      showSuccess('Assessment berhasil disubmit');
     } catch (err) {
-      setError(err?.message || 'Gagal submit assessment');
+      hideLoading();
+      showFlowbiteErrorModal(err?.message || 'Gagal submit assessment');
     } finally {
       setSaving(false);
     }
@@ -189,6 +237,26 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
           {saving ? <Spinner size="sm" /> : 'Submit Assessment'}
         </Button>
       </div>
+
+      {/* Modals */}
+      <LoadingModal
+        show={showLoadingModal}
+        message={loadingMessage}
+      />
+
+      <SuccessModal
+        show={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={modalTitle}
+        message={modalMessage}
+      />
+
+      <ErrorModal
+        show={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title={modalTitle}
+        message={modalMessage}
+      />
     </div>
   );
 };

@@ -5,12 +5,9 @@ import Input from '../../ui/forms/Input';
 const CompetencySection = ({ competency, responses, onChange, disabled }) => {
   const handleScoreChange = (indicatorId, e) => {
     const value = e.target.value;
-    const numericValue = value === '' ? null : parseFloat(value);
-    
-    onChange(indicatorId, {
-      ...responses[indicatorId],
-      score: numericValue
-    });
+    let numericValue = value === '' ? null : parseInt(value);
+    if (numericValue > 10) numericValue = 10;
+    onChange(indicatorId, numericValue);
   };
 
   return (
@@ -64,12 +61,12 @@ const CompetencySection = ({ competency, responses, onChange, disabled }) => {
                         <TableCell className="w-32">
                           <Input
                             type="number"
-                            value={response.score || ''}
+                            value={response.value || ''}
                             onChange={(e) => handleScoreChange(indicator.id, e)}
                             placeholder="0-10"
                             min="0"
                             max="10"
-                            step="0.1"
+                            step="1"
                             disabled={disabled}
                             className="text-center"
                             size="sm"
