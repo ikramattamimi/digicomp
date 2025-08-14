@@ -10,6 +10,16 @@ class IndicatorService {
     return data
   }
 
+  async getByCompetency(id) {
+    const { data, error } = await supabase
+      .from('indicators')
+      .select('*')
+      .eq('competency_id', id)
+      .is('deleted_at', null)
+    if (error) throw error
+    return data
+  }
+
   async getById(id) {
     const { data, error } = await supabase
       .from('indicators')

@@ -27,19 +27,6 @@ const AdminModal = ({ show, onClose, modalType, admin, onChange, onSave, error }
         </div>
         <div>
           <div className="mb-2 block">
-            <Label htmlFor="email" value="Email" />
-          </div>
-          <TextInput
-            id="email"
-            type="email"
-            value={admin.email || ''}
-            onChange={e => onChange({ ...admin, email: e.target.value })}
-            placeholder="Enter email address"
-            required
-          />
-        </div>
-        <div>
-          <div className="mb-2 block">
             <Label htmlFor="password" value="password" />
           </div>
           <TextInput

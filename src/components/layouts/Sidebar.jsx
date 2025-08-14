@@ -135,16 +135,7 @@ const Sidebar = ({ collapsed }) => {
               icon={() => <Award size={20} />}
               active={location.pathname.startsWith("/kompetensi")}
             >
-              Kompetensi
-            </SidebarItem>
-            <SidebarItem
-              className={admin}
-              as={NavLink}
-              to="/indikator"
-              icon={() => <Target size={20} />}
-              active={location.pathname.startsWith("/indikator")}
-            >
-              Sub Dimensi
+              Kompetensi & Subdimensi
             </SidebarItem>
             <SidebarItem
               className={admin}

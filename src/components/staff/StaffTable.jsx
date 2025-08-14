@@ -1,4 +1,9 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import React, {
+  useEffect,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import {
   Table,
   TableBody,
@@ -10,6 +15,8 @@ import {
   TextInput,
   Select,
   Checkbox,
+  Tabs,
+  TabItem,
 } from "flowbite-react";
 import {
   Search,
@@ -27,7 +34,7 @@ import StaffModal from "./StaffModal";
 import ErrorModal from "./ErrorModal";
 
 const StaffTable = forwardRef((props, ref) => {
-  const [subDirektoratA, setSubDirektoratA] = useState("");
+  const [subDirektoratS, setSubDirektoratS] = useState();
   const [subDirektorat, setSubDirektorat] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
@@ -43,6 +50,8 @@ const StaffTable = forwardRef((props, ref) => {
   const [modalError, setModalError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const myDomain = "@scprcjt.web.app";
 
   useEffect(() => {
     const fetchSupervisors = async () => {
@@ -81,7 +90,6 @@ const StaffTable = forwardRef((props, ref) => {
     try {
       if (id != "*") {
         const data = await ProfileService.getBySubDirectorat(id);
-        setSubDirektoratA(id)
         setSupervisors(data);
         setFilteredSupervisors(data);
         setErrorMessage("");
@@ -109,14 +117,6 @@ const StaffTable = forwardRef((props, ref) => {
 
     setFilteredSupervisors(filtered);
   }, [supervisors, searchTerm]);
-
-  // Set ID to Competency Name
-  const setToName = (id) => {
-    const bobObject = subDirektorat.find((obj) => obj.id === id);
-    const bobId = bobObject ? bobObject.name : undefined;
-
-    return bobId;
-  };
 
   const setToNameSupervisor = (id) => {
     const bobObject = supervisors.find((obj) => obj.id === id);
@@ -148,7 +148,7 @@ const StaffTable = forwardRef((props, ref) => {
     setCurrentSupervisor({
       name: "",
       email: "",
-      department: "",
+      subdirectorat_id: subDirektorat[subDirektoratS].id,
       status: "Active",
       password: "",
     });
@@ -193,7 +193,7 @@ const StaffTable = forwardRef((props, ref) => {
     try {
       if (modalType === "add") {
         await AuthService.registerStaff({
-          email: currentSupervisor.email,
+          email: setNameToUsername(currentSupervisor.name) + myDomain,
           password: currentSupervisor.password,
           profile: {
             name: currentSupervisor.name,
@@ -240,125 +240,196 @@ const StaffTable = forwardRef((props, ref) => {
     handleRefresh,
   }));
 
+  // Hide Email domain
+  const setEmailToUsername = (email) => {
+    const mDomain = "scprcjt.web.app";
+
+    const words = email.split("@");
+    if (words[1] == mDomain) {
+      return words[0];
+    } else {
+      return email;
+    }
+  };
+
+  const setNameToUsername = (name) => {
+    const words = name.split(" ");
+    if (words.length > 1) {
+      const words1 = words[0] + words[1];
+      const words2 = words1.replace(",", "");
+      return words2.toLowerCase();
+    } else {
+      const words1 = words[0];
+      const words2 = words1.replace(",", "");
+      return words2.toLowerCase();
+    }
+  };
+
+  const handleTabClick = (tab) => {
+    setSubDirektoratS(tab);
+    // Perform actions specific to the clicked tab
+  };
+
   return (
     <div className="space-y-5 mt-5">
+      {/* Main Form */}
+      <form className="my-5 flex flex-row">
+        <div className="grid w-full">
+          {/* Left Column - Tabs for Assessment Info & Competencies */}
+          <div className="lg:col-span-3">
+            <Tabs
+              aria-label="Tabs Assessment"
+              onActiveTabChange={(tab) => setSubDirektoratS(tab)}
+              theme={{
+                base: " border border-gray-200 rounded-lg bg-white shadow-sm",
+                tablist: {
+                  base: "gap-0",
+                },
+                tabitemcontainer: {
+                  base: "px-5 pb-3",
+                },
+                tabItem: {
+                  variant: {
+                    default: {
+                      base: "rounded-t-lg",
+                      active: {
+                        on: "bg-blue-800 text-primary-600 dark:bg-gray-800 dark:text-primary-500",
+                        off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300",
+                      },
+                    },
+                  },
+                },
+                // tabpanel: "p-0"
+              }}
+            >
+              {subDirektorat.map((sub) => {
+                return (
+                  <TabItem title={sub.name}>
+                    {/* Search and Filter Bar */}
+                    <div className="flex flex-col sm:flex-row gap-4 rounded-lg mb-4">
+                      <div className="flex-1">
+                        <TextInput
+                          icon={Search}
+                          placeholder="Search by name or email..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+                    </div>
 
-      <div className="w-full sm:w-48 flex flex-row gap-4 m-5">
-        {subDirektorat.map((sup) => (
-          <Button
-            id={sup.id}
-            color={subDirektoratA === sup.id ? 'blue' : 'gray'}
-            className="flex items-center gap-2"
-            onClick={() => handleFilterSubdirectorat(sup.id)}
-            value={sup.id}
-          >
-            <p class="whitespace-nowrap">
-              {sup.name}
-            </p>
-          </Button>
-        ))}
-      </div>
+                    {/* Selected Items Actions */}
+                    {selectedRows.length > 0 && (
+                      <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <span className="text-sm text-blue-700 dark:text-blue-300">
+                          {selectedRows.length} item(s) selected
+                        </span>
+                        <Button size="xs" color="failure">
+                          Delete Selected
+                        </Button>
+                      </div>
+                    )}
 
-      {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 rounded-lg">
-        <div className="flex-1">
-          <TextInput
-            icon={Search}
-            placeholder="Search by name or email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
+                    {/* Table */}
+                    <div className="table-container">
+                      <Table>
+                        <TableHead>
+                          <TableRow className="bg-gray-50 dark:bg-gray-700">
+                            <TableHeadCell className="w-4">
+                              <Checkbox
+                                checked={
+                                  selectedRows.length ===
+                                    filteredSupervisors.length &&
+                                  filteredSupervisors.length > 0
+                                }
+                                onChange={(e) =>
+                                  handleSelectAll(e.target.checked)
+                                }
+                              />
+                            </TableHeadCell>
+                            <TableHeadCell>Name</TableHeadCell>
+                            <TableHeadCell>Username</TableHeadCell>
+                            <TableHeadCell>NRP</TableHeadCell>
+                            <TableHeadCell>Position</TableHeadCell>
+                            <TableHeadCell>Position Type</TableHeadCell>
+                            <TableHeadCell>Supervisor</TableHeadCell>
+                            <TableHeadCell>Actions</TableHeadCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody className="divide-y">
+                          {filteredSupervisors.map((sup) => {
+                            if (sup.subdirectorat_id == sub.id) {
+                              return (
+                                <TableRow
+                                  key={sup.id}
+                                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                  <TableCell>
+                                    <Checkbox
+                                      checked={selectedRows.includes(sup.id)}
+                                      onChange={(e) =>
+                                        handleSelectRow(
+                                          sup.id,
+                                          e.target.checked
+                                        )
+                                      }
+                                    />
+                                  </TableCell>
+                                  <TableCell className="font-medium text-gray-900 dark:text-white">
+                                    {sup.name}
+                                  </TableCell>
+                                  <TableCell>
+                                    {setEmailToUsername(sup.email)}
+                                  </TableCell>
+                                  <TableCell>{sup.nrp}</TableCell>
+                                  <TableCell>{sup.position}</TableCell>
+                                  <TableCell>{sup.position_type}</TableCell>
+                                  <TableCell>
+                                    {setToNameSupervisor(sup.supervisor_id)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        size="xs"
+                                        color="light"
+                                        onClick={() => handleEdit(sup)}
+                                        className="flex items-center gap-1"
+                                      >
+                                        <Pencil className="w-3 h-3" />
+                                        Edit
+                                      </Button>
+                                      <Button
+                                        size="xs"
+                                        color="red"
+                                        onClick={() => handleDelete(sup.id)}
+                                        className="flex items-center gap-1"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                        Delete
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          })}
+                        </TableBody>
+                      </Table>
 
-      {/* Selected Items Actions */}
-      {selectedRows.length > 0 && (
-        <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          <span className="text-sm text-blue-700 dark:text-blue-300">
-            {selectedRows.length} item(s) selected
-          </span>
-          <Button size="xs" color="failure">
-            Delete Selected
-          </Button>
-        </div>
-      )}
-
-      {/* Table */}
-      <div className="table-container">
-        <Table>
-          <TableHead>
-            <TableRow className="bg-gray-50 dark:bg-gray-700">
-              <TableHeadCell className="w-4">
-                <Checkbox
-                  checked={
-                    selectedRows.length === filteredSupervisors.length &&
-                    filteredSupervisors.length > 0
-                  }
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                />
-              </TableHeadCell>
-              <TableHeadCell>Name</TableHeadCell>
-              <TableHeadCell>Email</TableHeadCell>
-              <TableHeadCell>NRP</TableHeadCell>
-              <TableHeadCell>Position</TableHeadCell>
-              <TableHeadCell>Position Type</TableHeadCell>
-              <TableHeadCell>Supervisor</TableHeadCell>
-              <TableHeadCell>Actions</TableHeadCell>
-            </TableRow>
-          </TableHead>
-          <TableBody className="divide-y">
-            {filteredSupervisors.map((sup) => (
-              <TableRow
-                key={sup.id}
-                className="hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                <TableCell>
-                  <Checkbox
-                    checked={selectedRows.includes(sup.id)}
-                    onChange={(e) => handleSelectRow(sup.id, e.target.checked)}
-                  />
-                </TableCell>
-                <TableCell className="font-medium text-gray-900 dark:text-white">
-                  {sup.name}
-                </TableCell>
-                <TableCell>{sup.email}</TableCell>
-                <TableCell>{sup.nrp}</TableCell>
-                <TableCell>{sup.position}</TableCell>
-                <TableCell>{sup.position_type}</TableCell>
-                <TableCell>{setToNameSupervisor(sup.supervisor_id)}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      size="xs"
-                      color="light"
-                      onClick={() => handleEdit(sup)}
-                      className="flex items-center gap-1"
-                    >
-                      <Pencil className="w-3 h-3" />
-                      Edit
-                    </Button>
-                    <Button
-                      size="xs"
-                      color="red"
-                      onClick={() => handleDelete(sup.id)}
-                      className="flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      Delete
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-
-        {filteredSupervisors.length === 0 && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            No supervisors found.
+                      {filteredSupervisors.length === 0 && (
+                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                          No supervisors found.
+                        </div>
+                      )}
+                    </div>
+                  </TabItem>
+                );
+              })}
+            </Tabs>
           </div>
-        )}
-      </div>
+        </div>
+      </form>
+
+      <div className="w-full sm:w-48 flex flex-row gap-4 m-5"></div>
 
       {/* Modal for Add/Edit */}
       <StaffModal

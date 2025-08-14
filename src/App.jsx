@@ -21,6 +21,7 @@ import AdminPage from "./pages/AdminPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
 import SelfAssessmentFormPage from "./pages/SelfAssessmentFormPage.jsx";
 import SupervisorAssessmentFormPage from "./pages/SupervisorAssessmentFormPage.jsx";
+import DetailCompetencyPage from "./pages/DetailCompentencyPage.jsx";
 
 function App() {
   const router = createBrowserRouter(
@@ -30,6 +31,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="sub-direktorat" element={<SubDirectoratePage />} />
           <Route path="kompetensi" element={<CompetencyPage />} />
+          <Route path="kompetensi/detail/:id" element={<DetailCompetencyPage />} />
           <Route path="indikator" element={<IndicatorPage />} />
           <Route path="staff" element={<StaffPage />} />
           

@@ -17,6 +17,7 @@ import AuthService from "../../services/AuthService";
 
 const LoginPage = () => {
   const [currentLoginForm, setCurrentLoginForm] = useState([]);
+  const myDomain = "@scprcjt.web.app";
 
   const handleOnChange = (updated) => {
     setCurrentLoginForm(updated);
@@ -47,9 +48,12 @@ const LoginPage = () => {
           <TextInput
             id="email"
             type="email"
-            placeholder="Enter email address"
+            placeholder="Enter username"
             onChange={(e) =>
-              handleOnChange({ ...currentLoginForm, email: e.target.value })
+              handleOnChange({
+                ...currentLoginForm,
+                email: e.target.value + myDomain,
+              })
             }
             required
           />
