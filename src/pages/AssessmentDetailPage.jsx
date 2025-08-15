@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { Card, Button, Badge, Tabs, Alert, TabItem } from "flowbite-react";
+import { Card, Button, Badge, Tabs, Alert, TabItem, Dropdown, DropdownItem, DropdownDivider } from "flowbite-react";
 import {
   ClipboardCheck,
   ArrowLeft,
@@ -16,6 +16,10 @@ import {
   Settings,
   Eye,
   FileText,
+  MoreHorizontal,
+  Home,
+  Trash2,
+  Pause, // Add Pause icon
 } from "lucide-react";
 import AssessmentService from "../services/AssessmentService";
 import AssessmentParticipantService from "../services/AssessmentParticipantService";
@@ -24,11 +28,14 @@ import ParticipantTable from "../components/assessment/ParticipantTable";
 import { formatAssessmentPeriod } from "../utils/assessmentUtils";
 import { ASSESSMENT_STATUS } from "../constants/assessmentConstants";
 import { LoadingSpinner, ErrorAlert } from "../components/common";
-import { AssessmentDetailHeader } from "../components/common/PageHeader";
+import { PageHeader } from "../components/common";
+import { useUserContext } from "../contexts/UserContext";
+import { USER_POSITION } from "../constants/assessmentConstants";
 
 const AssessmentDetailPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const user = useUserContext();
 
   // State management
   const [assessment, setAssessment] = useState(null);
@@ -73,6 +80,10 @@ const AssessmentDetailPage = () => {
 
   // Handle assessment workflow actions
   const handlePublish = async () => {
+    const confirmMessage = `Yakin ingin mempublikasikan assessment "${assessment.name}"?\n\nSetelah dipublikasikan, assessment akan aktif dan peserta dapat mulai mengisi penilaian.`;
+    
+    if (!window.confirm(confirmMessage)) return;
+
     try {
       await AssessmentService.publish(id);
       await loadAssessmentData(); // Refresh data
@@ -81,12 +92,42 @@ const AssessmentDetailPage = () => {
     }
   };
 
+  const handlePause = async () => {
+    const confirmMessage = `Yakin ingin menjedakan assessment "${assessment.name}"?\n\nSetelah dijeda, peserta tidak dapat mengisi atau melanjutkan penilaian sampai assessment dipublikasikan kembali.`;
+    
+    if (!window.confirm(confirmMessage)) return;
+
+    try {
+      await AssessmentService.pause(id);
+      await loadAssessmentData(); // Refresh data
+    } catch (err) {
+      setError(err.message || "Failed to pause assessment");
+    }
+  };
+
   const handleComplete = async () => {
+    const confirmMessage = `Yakin ingin menyelesaikan assessment "${assessment.name}"?\n\nSetelah diselesaikan, assessment tidak dapat diubah lagi dan peserta tidak dapat mengisi penilaian.`;
+    
+    if (!window.confirm(confirmMessage)) return;
+
     try {
       await AssessmentService.complete(id);
       await loadAssessmentData(); // Refresh data
     } catch (err) {
       setError(err.message || "Failed to complete assessment");
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmMessage = `Yakin ingin menghapus assessment "${assessment.name}"?\n\nTindakan ini tidak dapat dibatalkan.`;
+    
+    if (!window.confirm(confirmMessage)) return;
+
+    try {
+      await AssessmentService.delete(id);
+      navigate("/penilaian");
+    } catch (err) {
+      setError(err.message || "Failed to delete assessment");
     }
   };
 
@@ -115,13 +156,21 @@ const AssessmentDetailPage = () => {
   const canPublish = () => {
     return (
       assessment &&
-      assessment.status === ASSESSMENT_STATUS.DRAFT &&
-      participants.length > 0
+      assessment.status === ASSESSMENT_STATUS.DRAFT
     );
   };
 
-  const canComplete = () => {
+  const canPause = () => {
     return assessment && assessment.status === ASSESSMENT_STATUS.IN_PROGRESS;
+  };
+
+  const canComplete = () => {
+    console.log('can complete', assessment, assessment?.status === ASSESSMENT_STATUS.IN_PROGRESS);
+    return assessment && assessment.status === ASSESSMENT_STATUS.IN_PROGRESS;
+  };
+
+  const isAdmin = () => {
+    return user?.position_type === USER_POSITION.ADMIN;
   };
 
   // Render loading state
@@ -152,66 +201,17 @@ const AssessmentDetailPage = () => {
   return (
     <div className="page">
       <div className="max-w-7xl mx-auto">
-        {/* Page Header - using AssessmentDetailHeader */}
-        <AssessmentDetailHeader
-          assessmentTitle={assessment?.name}
-          status={assessment?.status}
-          statusConfig={assessment?.statusConfig}
-          onEdit={handleEdit}
-          customActions={[
-            ...(canEdit()
-              ? [
-                  {
-                    type: "button",
-                    label: "Ubah",
-                    icon: Edit,
-                    onClick: handleEdit,
-                    color: "gray",
-                  },
-                ]
-              : []),
-            {
-              type: "button",
-              label: "Peserta",
-              icon: Users,
-              onClick: handleManageParticipants,
-              color: "gray",
-            },
-            ...(canPublish()
-              ? [
-                  {
-                    type: "button",
-                    label: "Publikasikan",
-                    icon: Play,
-                    onClick: handlePublish,
-                    color: "blue",
-                  },
-                ]
-              : []),
-            ...(canComplete()
-              ? [
-                  {
-                    type: "button",
-                    label: "Selesaikan",
-                    icon: CheckCircle,
-                    onClick: handleComplete,
-                    color: "green",
-                  },
-                ]
-              : []),
-            ...(assessment?.status === ASSESSMENT_STATUS.DONE
-              ? [
-                  {
-                    type: "button",
-                    label: "Laporan",
-                    icon: FileText,
-                    onClick: handleViewReports,
-                    color: "blue",
-                  },
-                ]
-              : []),
+        {/* Page Header with breadcrumbs */}
+        <PageHeader
+          breadcrumbs={[
+            { label: 'Dashboard', href: '/', icon: Home },
+            { label: 'Penilaian', href: '/penilaian', icon: ClipboardCheck },
+            { label: assessment?.name || 'Detail Penilaian', icon: Settings }
           ]}
-        ></AssessmentDetailHeader>
+          title={assessment?.name || 'Detail Penilaian'}
+          subtitle={assessment ? formatAssessmentPeriod(assessment.start_date, assessment.end_date) : 'Informasi detail penilaian'}
+          showExportButton={false}
+        />
 
         {error && (
           <ErrorAlert
@@ -221,19 +221,172 @@ const AssessmentDetailPage = () => {
           />
         )}
 
-        {/* Navigasi ke form assessment */}
-        <div className="mb-4 flex gap-2">
-          <Link to={`/penilaian/${id}/self`}>
-            <Button color="blue">Isi Self-Assessment</Button>
-          </Link>
-        </div>
+        {/* Assessment Header Info with Actions */}
+        <Card className="mb-6 bg-white dark:bg-gray-800">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            {/* Assessment Info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {assessment?.name}
+                </h1>
+                <AssessmentStatusBadge status={assessment?.status} />
+              </div>
+              
+              {assessment?.description && (
+                <p className="text-gray-600 dark:text-gray-400 mb-3">
+                  {assessment.description}
+                </p>
+              )}
+
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  {formatAssessmentPeriod(assessment?.start_date, assessment?.end_date)}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  {participantStats.totalParticipants || 0} Peserta
+                </div>
+                <div className="flex items-center gap-1">
+                  <Award className="w-4 h-4" />
+                  {assessment?.assessment_competencies?.length || 0} Kompetensi
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2">
+              {/* Primary Actions */}
+              <Link to={`/penilaian/${id}`}>
+                <Button
+                  size="sm"
+                  color="gray"
+                  className="flex items-center gap-1"
+                >
+                  <Eye className="w-4 h-4" />
+                  Detail
+                </Button>
+              </Link>
+              
+              {canEdit() && (
+                <Link to={`/penilaian/${id}/edit`}>
+                  <Button
+                    size="sm"
+                    color="blue"
+                    className="flex items-center gap-1"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Edit
+                  </Button>
+                </Link>
+              )}
+
+              <Link to={`/penilaian/${id}/participants`}>
+                <Button
+                  size="sm"
+                  color="gray"
+                  className="flex items-center gap-1"
+                >
+                  <Users className="w-4 h-4" />
+                  Peserta
+                </Button>
+              </Link>
+
+              {/* Dropdown Menu for Additional Actions */}
+              {isAdmin() && (
+                <Dropdown
+                  label=""
+                  dismissOnClick={false}
+                  renderTrigger={() => (
+                    <Button
+                      size="sm"
+                      color="gray"
+                      className="flex items-center gap-1"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  )}
+                >
+                  {canPublish() && (
+                    <DropdownItem
+                      icon={Play}
+                      onClick={handlePublish}
+                    >
+                      Publikasikan Assessment
+                    </DropdownItem>
+                  )}
+
+                  {canPause() && (
+                    <DropdownItem
+                      icon={Pause}
+                      onClick={handlePause}
+                    >
+                      Jeda Assessment
+                    </DropdownItem>
+                  )}
+
+                  {canComplete() && (
+                    <DropdownItem
+                      icon={CheckCircle}
+                      onClick={handleComplete}
+                    >
+                      Selesaikan Assessment
+                    </DropdownItem>
+                  )}
+
+                  {assessment?.status === ASSESSMENT_STATUS.DONE && (
+                    <DropdownItem icon={FileText}>
+                      <Link to={`/penilaian/${id}/reports`}>
+                        Lihat Laporan
+                      </Link>
+                    </DropdownItem>
+                  )}
+
+                  <DropdownDivider />
+
+                  <DropdownItem
+                    icon={Trash2}
+                    className="text-red-600 dark:text-red-400"
+                    onClick={handleDelete}
+                  >
+                    Hapus Assessment
+                  </DropdownItem>
+                </Dropdown>
+              )}
+            </div>
+          </div>
+        </Card>
+
+        {/* Quick Links for Staff */}
+        {!isAdmin() && (
+          <Card className="mb-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link to={`/penilaian/${id}/self`} className="flex-1">
+                <Button color="blue" className="w-full">
+                  <Play className="w-4 h-4 mr-2" />
+                  Isi Penilaian Diri
+                </Button>
+              </Link>
+              
+              {user?.position_type === USER_POSITION.ATASAN && (
+                <Link to={`/penilaian/${id}/supervisor`} className="flex-1">
+                  <Button color="gray" className="w-full">
+                    <Users className="w-4 h-4 mr-2" />
+                    Penilaian Bawahan
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </Card>
+        )}
 
         {/* Content Tabs */}
         <Tabs
           aria-label="Tab detail penilaian"
           onActiveTabChange={(tab) => setActiveTab(tab)}
           theme={{
-            base: "mt-5 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm",
+            base: "border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm",
             tablist: {
               base: "gap-0",
             },
@@ -245,7 +398,7 @@ const AssessmentDetailPage = () => {
                 default: {
                   base: "rounded-t-lg",
                   active: {
-                    on: "bg-blue-800 text-primary-600 dark:bg-gray-800 dark:text-primary-500",
+                    on: "bg-blue-50 text-blue-600 dark:bg-gray-800 dark:text-blue-400",
                     off: "text-gray-500 hover:bg-gray-50 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-300",
                   },
                 },
@@ -259,181 +412,349 @@ const AssessmentDetailPage = () => {
             title="Ringkasan"
             icon={Eye}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Informasi Penilaian */}
-              <div className="lg:col-span-2">
-                <Card className="bg-gray-50 dark:bg-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <ClipboardCheck className="mr-2 text-blue-600 dark:text-blue-400" />
-                    Informasi Penilaian
-                  </h3>
-
-                  <div className="space-y-3">
+            <div className="space-y-6">
+              {/* Status & Progress Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Total Participants */}
+                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-700">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Nama:
-                      </label>
-                      <p className="text-gray-900 dark:text-white">
-                        {assessment?.name}
+                      <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                        Total Peserta
                       </p>
+                      <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                        {participantStats.totalParticipants || 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-blue-500 rounded-full">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Unique Subjects */}
+                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 border-purple-200 dark:border-purple-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-purple-600 dark:text-purple-400">
+                        Subjek Unik
+                      </p>
+                      <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                        {participantStats.uniqueSubjects || 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-purple-500 rounded-full">
+                      <Award className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Self Assessments */}
+                <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 border-green-200 dark:border-green-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                        Penilaian Diri
+                      </p>
+                      <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                        {participantStats.selfAssessments || 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-green-500 rounded-full">
+                      <CheckCircle className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Supervisor Assessments */}
+                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 border-orange-200 dark:border-orange-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                        Penilaian Atasan
+                      </p>
+                      <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                        {participantStats.supervisorAssessments || 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-orange-500 rounded-full">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Assessment Information */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Basic Info Card */}
+                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <ClipboardCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Informasi Assessment
+                      </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                            Tanggal Mulai
+                          </label>
+                          <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <p className="text-gray-900 dark:text-white font-medium">
+                              {new Date(assessment?.start_date).toLocaleDateString("id-ID", {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                            Status Assessment
+                          </label>
+                          <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <AssessmentStatusBadge status={assessment?.status} size="lg" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                            Tanggal Selesai
+                          </label>
+                          <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <p className="text-gray-900 dark:text-white font-medium">
+                              {new Date(assessment?.end_date).toLocaleDateString("id-ID", {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                            Total Kompetensi
+                          </label>
+                          <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <Award className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <p className="text-gray-900 dark:text-white font-medium">
+                              {assessment?.assessment_competencies?.length || 0} Kompetensi
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     {assessment?.description && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Deskripsi:
+                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                          Deskripsi
                         </label>
-                        <p className="text-gray-900 dark:text-white">
-                          {assessment.description}
-                        </p>
+                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {assessment.description}
+                          </p>
+                        </div>
                       </div>
                     )}
+                  </Card>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Tanggal Mulai:
-                        </label>
-                        <p className="text-gray-900 dark:text-white">
-                          {new Date(assessment?.start_date).toLocaleDateString(
-                            "id-ID"
-                          )}
-                        </p>
+                  {/* Weight Configuration Card */}
+                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                        <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Tanggal Selesai:
-                        </label>
-                        <p className="text-gray-900 dark:text-white">
-                          {new Date(assessment?.end_date).toLocaleDateString(
-                            "id-ID"
-                          )}
-                        </p>
-                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Konfigurasi Bobot
+                      </h3>
                     </div>
 
-                    {/* Bobot Penilaian */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Bobot Penilaian:
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
-                        <div className="text-gray-900 dark:text-white">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Mandiri:{" "}
-                          </span>
-                          {((assessment?.self_weight || 0.3) * 100).toFixed(0)}%
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="relative">
+                        <div className="bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 p-4 rounded-lg border border-green-200 dark:border-green-700">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                              Penilaian Diri
+                            </span>
+                            <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                          </div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-green-900 dark:text-green-100">
+                              {((assessment?.self_weight || 0.3) * 100).toFixed(0)}
+                            </span>
+                            <span className="text-lg text-green-700 dark:text-green-300">%</span>
+                          </div>
+                          <div className="mt-3 bg-green-200 dark:bg-green-800 rounded-full h-2">
+                            <div 
+                              className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${((assessment?.self_weight || 0.3) * 100)}%` }}
+                            ></div>
+                          </div>
                         </div>
-                        <div className="text-gray-900 dark:text-white">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Atasan:{" "}
-                          </span>
-                          {(
-                            (assessment?.supervisor_weight || 0.7) * 100
-                          ).toFixed(0)}
-                          %
+                      </div>
+
+                      <div className="relative">
+                        <div className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                              Penilaian Atasan
+                            </span>
+                            <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                              {((assessment?.supervisor_weight || 0.7) * 100).toFixed(0)}
+                            </span>
+                            <span className="text-lg text-blue-700 dark:text-blue-300">%</span>
+                          </div>
+                          <div className="mt-3 bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                            <div 
+                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${((assessment?.supervisor_weight || 0.7) * 100)}%` }}
+                            ></div>
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {assessment?.configuration && (
-                      <div>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Konfigurasi:
+                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                          Konfigurasi Teknis
                         </label>
-                        <pre className="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-2 rounded border">
-                          {assessment.configuration}
-                        </pre>
+                        <div className="p-4 bg-gray-900 dark:bg-gray-800 rounded-lg border">
+                          <code className="text-sm text-green-400 font-mono">
+                            {assessment.configuration}
+                          </code>
+                        </div>
                       </div>
                     )}
-                  </div>
-                </Card>
-              </div>
+                  </Card>
+                </div>
 
-              {/* Statistik */}
-              <div>
-                <Card className="bg-gray-50 dark:bg-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <Users className="mr-2 text-blue-600 dark:text-blue-400" />
-                    Statistik Peserta
-                  </h3>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-700 dark:text-gray-300">
-                        Total Peserta:
-                      </span>
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        {participantStats.totalParticipants || 0}
-                      </span>
+                {/* Progress & Analytics */}
+                <div className="space-y-6">
+                  {/* Progress Card */}
+                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Progress Penilaian
+                      </h3>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-700 dark:text-gray-300">
-                        Subjek Unik:
-                      </span>
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        {participantStats.uniqueSubjects || 0}
-                      </span>
+
+                    <div className="space-y-4">
+                      {/* Self Assessment Progress */}
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Penilaian Diri
+                          </span>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {participantStats.selfAssessments || 0} / {participantStats.uniqueSubjects || 0}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                            style={{ 
+                              width: `${participantStats.uniqueSubjects > 0 
+                                ? ((participantStats.selfAssessments || 0) / participantStats.uniqueSubjects * 100) 
+                                : 0}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {participantStats.uniqueSubjects > 0 
+                            ? `${(((participantStats.selfAssessments || 0) / participantStats.uniqueSubjects) * 100).toFixed(1)}% selesai`
+                            : 'Belum ada peserta'
+                          }
+                        </p>
+                      </div>
+
+                      {/* Supervisor Assessment Progress */}
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Penilaian Atasan
+                          </span>
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {participantStats.supervisorAssessments || 0} / {participantStats.uniqueSubjects || 0}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                            style={{ 
+                              width: `${participantStats.uniqueSubjects > 0 
+                                ? ((participantStats.supervisorAssessments || 0) / participantStats.uniqueSubjects * 100) 
+                                : 0}%` 
+                            }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {participantStats.uniqueSubjects > 0 
+                            ? `${(((participantStats.supervisorAssessments || 0) / participantStats.uniqueSubjects) * 100).toFixed(1)}% selesai`
+                            : 'Belum ada peserta'
+                          }
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-700 dark:text-gray-300">
-                        Penilaian Mandiri:
-                      </span>
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        {participantStats.selfAssessments || 0}
-                      </span>
+                  </Card>
+
+                  {/* Quick Actions Card */}
+                  <Card className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                      <Play className="mr-2 text-gray-600 dark:text-gray-400" />
+                      Aksi Cepat
+                    </h3>
+
+                    <div className="space-y-3">
+                      <Link to={`/penilaian/${id}/participants`} className="block">
+                        <Button color="gray" className="w-full justify-start">
+                          <Users className="w-4 h-4 mr-2" />
+                          Kelola Peserta
+                        </Button>
+                      </Link>
+
+                      {assessment?.status === ASSESSMENT_STATUS.DONE && (
+                        <Link to={`/penilaian/${id}/reports`} className="block">
+                          <Button color="blue" className="w-full justify-start">
+                            <FileText className="w-4 h-4 mr-2" />
+                            Lihat Laporan
+                          </Button>
+                        </Link>
+                      )}
+
+                      {canEdit() && (
+                        <Link to={`/penilaian/${id}/edit`} className="block">
+                          <Button color="yellow" className="w-full justify-start">
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Assessment
+                          </Button>
+                        </Link>
+                      )}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-700 dark:text-gray-300">
-                        Penilaian Atasan:
-                      </span>
-                      <span className="font-semibold text-gray-900 dark:text-white">
-                        {participantStats.supervisorAssessments || 0}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Aksi Cepat */}
-                <Card className="mt-4 bg-gray-50 dark:bg-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <Settings className="mr-2 text-blue-600 dark:text-blue-400" />
-                    Aksi Cepat
-                  </h3>
-
-                  <div className="space-y-2">
-                    <Button
-                      color="gray"
-                      onClick={handleManageParticipants}
-                      className="w-full justify-start"
-                    >
-                      <Users className="w-4 h-4 mr-2" />
-                      Kelola Peserta
-                    </Button>
-
-                    {canEdit() && (
-                      <Button
-                        color="gray"
-                        onClick={handleEdit}
-                        className="w-full justify-start"
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Ubah Penilaian
-                      </Button>
-                    )}
-
-                    {assessment?.status === ASSESSMENT_STATUS.DONE && (
-                      <Button
-                        color="blue"
-                        onClick={handleViewReports}
-                        className="w-full justify-start"
-                      >
-                        <FileText className="w-4 h-4 mr-2" />
-                        Lihat Laporan
-                      </Button>
-                    )}
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               </div>
             </div>
           </TabItem>
@@ -460,30 +781,35 @@ const AssessmentDetailPage = () => {
                           key={ac.id}
                           className="bg-gray-50 dark:bg-gray-700"
                         >
-                          <h4 className="font-semibold text-gray-900 dark:text-white">
-                            {ac.competencies.name}
-                          </h4>
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-semibold text-gray-900 dark:text-white">
+                              {ac.competencies.name}
+                            </h4>
+                            <Badge color="gray" size="sm">
+                              {ac.competencies.indicators?.length || 0} Indikator
+                            </Badge>
+                          </div>
+                          
                           {ac.competencies.description && (
-                            <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-gray-600 dark:text-gray-400 mb-3 text-sm">
                               {ac.competencies.description}
                             </p>
                           )}
 
                           {ac.competencies.indicators &&
                             ac.competencies.indicators.length > 0 && (
-                              <div className="mt-3">
-                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                  Indikator (
-                                  {ac.competencies.indicators.length}):
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Indikator:
                                 </p>
-                                <ul className="space-y-1">
+                                <ul className="space-y-1 max-h-32 overflow-y-auto">
                                   {ac.competencies.indicators.map(
                                     (indicator) => (
                                       <li
                                         key={indicator.id}
-                                        className="text-sm text-gray-600 dark:text-gray-400"
+                                        className="text-sm text-gray-600 dark:text-gray-400 pl-2 border-l-2 border-gray-200 dark:border-gray-600"
                                       >
-                                        • {indicator.name}
+                                        {indicator.name}
                                       </li>
                                     )
                                   )}

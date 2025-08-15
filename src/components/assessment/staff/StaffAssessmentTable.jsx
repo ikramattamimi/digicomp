@@ -25,6 +25,7 @@ import {
 import AssessmentStatusBadge from "../AssessmentStatusBadge.jsx";
 import { formatAssessmentPeriod } from "../../../utils/assessmentUtils";
 import { ASSESSMENT_STATUS } from "../../../constants/assessmentConstants";
+import { useUserContext } from "../../../contexts/UserContext.js";
 
 const StaffAssessmentTable = ({
   assessments,
@@ -32,6 +33,8 @@ const StaffAssessmentTable = ({
 }) => {
   const [sortField, setSortField] = useState("start_date");
   const [sortDirection, setSortDirection] = useState("desc");
+
+  const user = useUserContext();
 
   // Handle sorting
   const handleSort = (field) => {
@@ -93,7 +96,7 @@ const StaffAssessmentTable = ({
     const startDate = new Date(assessment.start_date);
     const endDate = new Date(assessment.end_date);
     const isInPeriod = now >= startDate && now <= endDate;
-    const isSubmitted = assessment.assessment_participants[0].status === 'submitted';
+    const isSubmitted = assessment?.assessment_participants[0]?.status === 'submitted';
 
     return isActive && isInPeriod && !isSubmitted;
   };
@@ -102,17 +105,15 @@ const StaffAssessmentTable = ({
   const getParticipationStatus = (assessment) => {
     // This would come from the API response indicating user's participation
     // For now, we'll use placeholder logic
-    if (assessment.assessment_participants[0].status) {
+    if (assessment?.assessment_participants[0]?.status) {
       const self_completed = assessment.assessment_participants[0].status;
       
       if (self_completed) {
         return { status: 'submitted', label: 'Selesai', color: 'success' };
-      } else {
-        return { status: 'not_started', label: 'Belum Mulai', color: 'gray' };
-      }
+      } 
     }
     
-    return { status: 'not_participating', label: 'Tidak Berpartisipasi', color: 'failure' };
+    return { status: 'not_started', label: 'Belum Mulai', color: 'gray' };
   };
 
   // Render loading state

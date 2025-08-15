@@ -29,6 +29,7 @@ import AuthService from "./services/AuthService.js";
 import { UserContext } from "./contexts/UserContext.js";
 import LoginPage from "./components/layouts/LoginPage.jsx";
 import SupervisorAssessmentDetailPage from "./pages/staff/SupervisorAssessmentDetailPage.jsx";
+import AssessmentResultPage from './pages/AssessmentResultPage';
 
 function App() {
   const [authenticatedUser, setAuthenticatedUser] = useState({});
@@ -78,6 +79,8 @@ function App() {
             <Route path="penilaian/:id" element={<AssessmentDetailPage />} />
             <Route path="penilaian/:id/edit" element={<AssessmentEditPage />} />
             <Route path="penilaian/:assessmentId/participants" element={<AssessmentParticipantPage />} />
+            <Route path="penilaian/:id/hasil" element={<AssessmentResultPage />} />
+
             <Route path="admin" element={<AdminPage />} />
             <Route path="akun" element={<AccountPage />} />
             <Route path="assessment" element={<AssessmentPage />} />

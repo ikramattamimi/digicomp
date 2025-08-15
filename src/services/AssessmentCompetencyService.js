@@ -204,7 +204,7 @@ class AssessmentCompetencyService {
   async deleteByAssessmentId(assessmentId) {
     const { data, error } = await supabase
       .from('assessment_competencies')
-      .update({ deleted_at: new Date().toISOString() })
+      .delete()
       .eq('assessment_id', assessmentId)
       .select();
     

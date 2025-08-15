@@ -1,6 +1,3 @@
-// Assessment List Page - Main page for viewing and managing assessments
-// Shows all assessments with filtering, search, and management actions
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -130,6 +127,72 @@ const AssessmentListPage = () => {
     }
   };
 
+  // Handle publish action
+  const handlePublish = async (assessment) => {
+    const confirmMessage = `Yakin ingin mempublikasikan assessment "${assessment.name}"?\n\nSetelah dipublikasikan, assessment akan aktif dan peserta dapat mulai mengisi penilaian.`;
+    
+    if (!window.confirm(confirmMessage)) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Publish assessment using service
+      await AssessmentService.publish(assessment.id);
+      
+      // Update local state to reflect the change
+      setAssessments(prev => 
+        prev.map(a => 
+          a.id === assessment.id 
+            ? { ...a, status: ASSESSMENT_STATUS.IN_PROGRESS }
+            : a
+        )
+      );
+      
+      // Refresh statistics
+      await loadStatistics();
+      
+    } catch (err) {
+      console.error('Failed to publish assessment:', err);
+      setError(err.message || 'Gagal mempublikasikan assessment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle complete action
+  const handleComplete = async (assessment) => {
+    const confirmMessage = `Yakin ingin menyelesaikan assessment "${assessment.name}"?\n\nSetelah diselesaikan, assessment tidak dapat diubah lagi dan peserta tidak dapat mengisi penilaian.`;
+    
+    if (!window.confirm(confirmMessage)) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Complete assessment using service
+      await AssessmentService.complete(assessment.id);
+      
+      // Update local state to reflect the change
+      setAssessments(prev => 
+        prev.map(a => 
+          a.id === assessment.id 
+            ? { ...a, status: ASSESSMENT_STATUS.DONE }
+            : a
+        )
+      );
+      
+      // Refresh statistics
+      await loadStatistics();
+      
+    } catch (err) {
+      console.error('Failed to complete assessment:', err);
+      setError(err.message || 'Gagal menyelesaikan assessment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Handle delete action
   const handleDelete = async (assessment) => {
     if (!window.confirm(`Yakin ingin menghapus assessment "${assessment.name}"?`)) return;
@@ -139,6 +202,9 @@ const AssessmentListPage = () => {
       await AssessmentService.delete(assessment.id);
       // Hapus dari state
       setAssessments(prev => prev.filter(a => a.id !== assessment.id));
+      
+      // Refresh statistics
+      await loadStatistics();
     } catch (err) {
       setError(err.message || 'Gagal menghapus assessment');
     } finally {
@@ -248,6 +314,8 @@ const AssessmentListPage = () => {
             onView={(assessment) => navigate(`/penilaian/${assessment.id}`)}
             onEdit={(assessment) => navigate(`/penilaian/${assessment.id}/edit`)}
             onDelete={handleDelete}
+            onPublish={handlePublish}
+            onComplete={handleComplete}
             onDuplicate={(assessment) => console.log('Duplicate:', assessment)}
             loading={loading}
           />

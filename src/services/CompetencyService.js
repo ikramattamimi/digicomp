@@ -4,9 +4,14 @@ class CompetencyService {
   async getActive() {
     const { data, error } = await supabase
       .from('competencies')
-      .select('*')
+      .select(`
+        *,
+        indicators!inner(*)
+      `)
       .eq('is_active', true)
+      .eq('indicators.is_active', true)
       .is('deleted_at', null)
+      .is('indicators.deleted_at', null)
     if (error) throw error
     return data
   }

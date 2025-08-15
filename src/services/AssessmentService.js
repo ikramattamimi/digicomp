@@ -69,11 +69,11 @@ class AssessmentService {
         assessment_competencies (
           id,
           competency_id,
-          competencies (
+          competencies!inner (
             id,
             name,
             description,
-            indicators (
+            indicators!inner (
               id,
               name,
               description,
@@ -101,6 +101,7 @@ class AssessmentService {
           )
         )
       `)
+      .eq('assessment_competencies.competencies.indicators.is_active', true)
       .eq('id', id)
       .single();
     
@@ -114,7 +115,7 @@ class AssessmentService {
     .from('assessments')
     .select(`
       *,
-      assessment_participants!inner (
+      assessment_participants (
         id,
         subject_profile_id,
         assessor_profile_id,
@@ -150,7 +151,7 @@ class AssessmentService {
       .from('assessments')
       .update({
         ...payload,
-        updated_at: new Date().toISOString()
+        // updated_at: new Date().toISOString()
       })
       .eq('id', id)
       .select();
@@ -165,7 +166,7 @@ class AssessmentService {
       .from('assessments')
       .update({ 
         status,
-        updated_at: new Date().toISOString()
+        // updated_at: new Date().toISOString()
       })
       .eq('id', id)
       .select();
@@ -230,6 +231,22 @@ class AssessmentService {
   // Complete assessment (change to done)
   async complete(id) {
     return this.updateStatus(id, ASSESSMENT_STATUS.DONE);
+  }
+
+  // Pause assessment (set status back to draft)
+  async pause(assessmentId) {
+    const { data, error } = await supabase
+      .from('assessments')
+      .update({ 
+        status: ASSESSMENT_STATUS.DRAFT,
+        // updated_at: new Date().toISOString()
+      })
+      .eq('id', assessmentId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 }
 

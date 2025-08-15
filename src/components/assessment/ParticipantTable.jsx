@@ -1,7 +1,4 @@
-// Participant Table Component - Display and manage assessment participants
-// Features: dual participants (self + supervisor), status tracking, actions
-
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   Table,
   Button,
@@ -41,90 +38,147 @@ import {
 import { ASSESSMENT_STATUS } from "../../constants/assessmentConstants";
 import AssessmentStatusBadge from "./AssessmentStatusBadge";
 import { Link } from 'react-router-dom';
+import ProfileService from "../../services/ProfileService";
+import AssessmentParticipantService from "../../services/AssessmentParticipantService";
 
 const ParticipantTable = ({
-  participants = [],
   onView,
   onEdit,
   onDelete,
   onSendReminder,
-  loading = false,
+  loading: externalLoading = false,
   canEdit = true,
   canDelete = true,
   showAssessmentInfo = true,
-  assessmentId
+  assessmentId,
+  onRefresh
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [sortField, setSortField] = useState("subject_name");
   const [sortDirection, setSortDirection] = useState("asc");
+  
+  // Internal state for participants
+  const [participants, setParticipants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Group participants by subject (combine self and supervisor assessments)
-  const groupedParticipants = useMemo(() => {
-    const grouped = {};
-    
-    participants.forEach(participant => {
-      const subjectId = participant.subject_profile_id;
-      
-      if (!grouped[subjectId]) {
-        grouped[subjectId] = {
-          id: subjectId,
-          subject_name: participant.subject_name,
-          subject_email: participant.subject_email,
-          subject_avatar: participant.subject_avatar,
-          assessment_id: participant.assessment_id,
-          assessment_title: participant.assessment_title,
-          assessment_status: participant.assessment_status,
-          assessment_due_date: participant.assessment_due_date,
-          self_assessment: null,
-          supervisor_assessment: null,
-          supervisor_name: null,
-          supervisor_email: null,
-          supervisor_avatar: null
-        };
-      }
-      
-      // Check if this is self or supervisor assessment
-      if (participant.subject_profile_id === participant.assessor_profile_id) {
-        // Self assessment
-        grouped[subjectId].self_assessment = {
-          id: participant.id,
-          status: participant.status,
-          response_submitted: participant.response_submitted,
-          submission_date: participant.submission_date,
-          completion_percentage: participant.completion_percentage
-        };
-      } else {
-        // Supervisor assessment
-        grouped[subjectId].supervisor_assessment = {
-          id: participant.id,
-          status: participant.status,
-          response_submitted: participant.response_submitted,
-          submission_date: participant.submission_date,
-          completion_percentage: participant.completion_percentage
-        };
-        grouped[subjectId].supervisor_name = participant.assessor_name;
-        grouped[subjectId].supervisor_email = participant.assessor_email;
-        grouped[subjectId].supervisor_avatar = participant.assessor_avatar;
-      }
-    });
-    
-    return Object.values(grouped);
-  }, [participants]);
+  // Load all active profiles and their assessment status
+  useEffect(() => {
+    const loadParticipants = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  // Participant status mapping for grouped data
-  const getParticipantStatus = useCallback((groupedParticipant) => {
-    const selfCompleted = groupedParticipant.self_assessment?.response_submitted || false;
-    const supervisorCompleted = groupedParticipant.supervisor_assessment?.response_submitted || false;
-    
-    if (!selfCompleted && !supervisorCompleted) {
-      return "not_started";
-    } else if (selfCompleted && supervisorCompleted) {
-      return "completed";
-    } else {
-      return "in_progress";
+        // Get all active profiles (bawahan)
+        const allProfiles = await ProfileService.getAll({ 
+          position_type: 'BAWAHAN', 
+          is_active: true 
+        });
+
+        // Get assessment participation status for each profile
+        const participantsWithStatus = await Promise.all(
+          allProfiles.map(async (profile) => {
+            try {
+              // Check self assessment status
+              const selfStatusResult = await AssessmentParticipantService.getAssessmentStatus(
+                assessmentId, 
+                profile.id, 
+                profile.id
+              );
+              const selfStatus = selfStatusResult?.status || null;
+
+              // Check supervisor assessment status  
+              const supervisorStatusResult = profile.supervisor_id 
+                ? await AssessmentParticipantService.getAssessmentStatus(
+                    assessmentId, 
+                    profile.id, 
+                    profile.supervisor_id
+                  )
+                : null;
+              const supervisorStatus = supervisorStatusResult?.status || null;
+
+              return {
+                id: profile.id,
+                subject_profile_id: profile.id,
+                subject_name: profile.name,
+                subject_email: profile.email,
+                subject_avatar: profile.avatar,
+                subject_nrp: profile.nrp,
+                subject_position: profile.position,
+                supervisor_id: profile.supervisor_id,
+                supervisor_name: profile.supervisor?.name || null,
+                supervisor_email: profile.supervisor?.email || null,
+                supervisor_avatar: profile.supervisor?.avatar || null,
+                subdirectorate_name: profile.subdirectorats?.name || null,
+                self_assessment: selfStatus ? {
+                  status: selfStatus,
+                  response_submitted: selfStatus === 'submitted'
+                } : null,
+                supervisor_assessment: supervisorStatus ? {
+                  status: supervisorStatus, 
+                  response_submitted: supervisorStatus === 'submitted'
+                } : null,
+                overall_status: getOverallStatus(selfStatus, supervisorStatus)
+              };
+            } catch (err) {
+              return {
+                id: profile.id,
+                subject_profile_id: profile.id,
+                subject_name: profile.name,
+                subject_email: profile.email,
+                subject_avatar: profile.avatar,
+                subject_nrp: profile.nrp,
+                subject_position: profile.position,
+                supervisor_id: profile.supervisor_id,
+                supervisor_name: profile.supervisor?.name || null,
+                supervisor_email: profile.supervisor?.email || null,
+                supervisor_avatar: profile.supervisor?.avatar || null,
+                subdirectorate_name: profile.subdirectorats?.name || null,
+                self_assessment: null,
+                supervisor_assessment: null,
+                overall_status: 'not_started'
+              };
+            }
+          })
+        );
+
+        setParticipants(participantsWithStatus);
+      } catch (err) {
+        console.error("Failed to load participants:", err);
+        setError(err.message || "Failed to load participants");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (assessmentId) {
+      loadParticipants();
     }
+  }, [assessmentId, onRefresh]);
+
+  // Get overall status for a participant
+  const getOverallStatus = (selfStatus, supervisorStatus) => {
+    if (!selfStatus && !supervisorStatus) return 'not_started';
+
+    const selfCompleted = selfStatus === 'submitted';
+    const supervisorCompleted = supervisorStatus === 'submitted';
+    const selfDraft = selfStatus === 'draft';
+    const supervisorDraft = supervisorStatus === 'draft';
+
+    if (selfCompleted && supervisorCompleted) {
+      return 'completed';
+    } else if (selfDraft || supervisorDraft || selfCompleted || supervisorCompleted) {
+      return 'in_progress';
+    } else {
+      return 'not_started';
+    }
+  };
+
+  // Participant status mapping
+  const getParticipantStatus = useCallback((participant) => {
+    return participant.overall_status;
   }, []);
 
   // Status badge configuration
@@ -133,17 +187,17 @@ const ParticipantTable = ({
       not_started: {
         color: "gray",
         icon: Clock,
-        label: "Not Started",
+        label: "Belum Mulai",
       },
       in_progress: {
         color: "yellow",
         icon: User,
-        label: "In Progress",
+        label: "Sedang Berjalan",
       },
       completed: {
         color: "green",
         icon: CheckCircle,
-        label: "Completed",
+        label: "Selesai",
       },
     };
 
@@ -160,12 +214,15 @@ const ParticipantTable = ({
 
   // Filter and sort participants
   const filteredAndSortedParticipants = useMemo(() => {
-    let filtered = groupedParticipants.filter((participant) => {
+    let filtered = participants.filter((participant) => {
       const matchesSearch =
         participant.subject_name
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         participant.subject_email
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        participant.subject_nrp
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         participant.supervisor_name
@@ -211,7 +268,7 @@ const ParticipantTable = ({
 
     return filtered;
   }, [
-    groupedParticipants,
+    participants,
     searchTerm,
     statusFilter,
     typeFilter,
@@ -236,35 +293,39 @@ const ParticipantTable = ({
     return sortDirection === "asc" ? "↑" : "↓";
   };
 
-  // Calculate completion percentage for grouped data
-  const getCompletionPercentage = (groupedParticipant) => {
+  // Calculate completion percentage
+  const getCompletionPercentage = (participant) => {
     let completed = 0;
-    if (groupedParticipant.self_assessment?.response_submitted) completed += 1;
-    if (groupedParticipant.supervisor_assessment?.response_submitted) completed += 1;
+    if (participant.self_assessment?.response_submitted) completed += 1;
+    if (participant.supervisor_assessment?.response_submitted) completed += 1;
     return (completed / 2) * 100;
   };
 
   // Get assessment status badge
-  const getAssessmentStatusBadge = (status, submissionDate) => {
-    if (status === "completed") {
+  const getAssessmentStatusBadge = (assessment, type) => {
+    if (!assessment) {
+      return (
+        <Badge color="gray" size="sm" className="flex items-center gap-1">
+          <XCircle className="w-3 h-3" />
+          Belum Ada
+        </Badge>
+      );
+    }
+
+    if (assessment.response_submitted) {
       return (
         <div className="space-y-1">
           <Badge color="green" size="sm" className="flex items-center gap-1">
             <CheckCircle className="w-3 h-3" />
             Selesai
           </Badge>
-          {submissionDate && (
-            <div className="text-xs text-gray-500 dark:text-gray-400">
-              {new Date(submissionDate).toLocaleDateString('id-ID')}
-            </div>
-          )}
         </div>
       );
-    } else if (status === "in_progress") {
+    } else if (assessment.status === 'draft') {
       return (
         <Badge color="yellow" size="sm" className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
-          Sedang Berjalan
+          Draft
         </Badge>
       );
     } else {
@@ -277,7 +338,8 @@ const ParticipantTable = ({
     }
   };
 
-  if (loading) {
+  // Handle loading state
+  if (loading || externalLoading) {
     return (
       <div className="animate-pulse">
         <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
@@ -293,6 +355,18 @@ const ParticipantTable = ({
     );
   }
 
+  // Handle error state
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-red-600 dark:text-red-400 mb-2">{error}</div>
+        <Button size="sm" onClick={() => window.location.reload()}>
+          Coba Lagi
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       
@@ -304,7 +378,7 @@ const ParticipantTable = ({
             <div>
               <p className="text-sm text-blue-600 dark:text-blue-400">Total Peserta</p>
               <p className="text-lg font-semibold text-blue-900 dark:text-blue-300">
-                {groupedParticipants.length}
+                {participants.length}
               </p>
             </div>
           </div>
@@ -319,7 +393,7 @@ const ParticipantTable = ({
               </p>
               <p className="text-lg font-semibold text-green-900 dark:text-green-300">
                 {
-                  groupedParticipants.filter(
+                  participants.filter(
                     (p) => getParticipantStatus(p) === "completed"
                   ).length
                 }
@@ -337,7 +411,7 @@ const ParticipantTable = ({
               </p>
               <p className="text-lg font-semibold text-yellow-900 dark:text-yellow-300">
                 {
-                  groupedParticipants.filter(
+                  participants.filter(
                     (p) => getParticipantStatus(p) === "in_progress"
                   ).length
                 }
@@ -355,7 +429,7 @@ const ParticipantTable = ({
               </p>
               <p className="text-lg font-semibold text-red-900 dark:text-red-300">
                 {
-                  groupedParticipants.filter(
+                  participants.filter(
                     (p) => getParticipantStatus(p) === "not_started"
                   ).length
                 }
@@ -413,20 +487,18 @@ const ParticipantTable = ({
               </div>
             </TableHeadCell>
 
+            {/* NRP */}
+            <TableHeadCell>NRP</TableHeadCell>
+
             {/* Supervisor */}
             <TableHeadCell
               className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
               onClick={() => handleSort("supervisor_name")}
             >
               <div className="flex items-center">
-                Supervisor {getSortIcon("supervisor_name")}
+                Atasan {getSortIcon("supervisor_name")}
               </div>
             </TableHeadCell>
-            
-            {/* Assessment Info */}
-            {showAssessmentInfo && (
-              <TableHeadCell>Info Penilaian</TableHeadCell>
-            )}
 
             {/* Status */}
             <TableHeadCell
@@ -453,12 +525,11 @@ const ParticipantTable = ({
             </TableHeadCell>
           </TableHead>
 
-
           <TableBody className="divide-y">
             {filteredAndSortedParticipants.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={showAssessmentInfo ? 8 : 7}
+                  colSpan={8}
                   className="text-center py-8"
                 >
                   <div className="flex flex-col items-center text-gray-500 dark:text-gray-400">
@@ -498,6 +569,11 @@ const ParticipantTable = ({
                     </div>
                   </TableCell>
 
+                  {/* NRP */}
+                  <TableCell>
+                    {participant.subject_nrp || '-'}
+                  </TableCell>
+
                   {/* Supervisor Info */}
                   <TableCell>
                     {participant.supervisor_name ? (
@@ -524,26 +600,6 @@ const ParticipantTable = ({
                     )}
                   </TableCell>
 
-                  {/* Assessment Info */}
-                  {showAssessmentInfo && (
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="text-sm font-medium">
-                          {participant.assessment_title}
-                        </div>
-                        <AssessmentStatusBadge
-                          status={participant.assessment_status}
-                        />
-                        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {new Date(
-                            participant.assessment_due_date
-                          ).toLocaleDateString('id-ID')}
-                        </div>
-                      </div>
-                    </TableCell>
-                  )}
-
                   {/* Status */}
                   <TableCell>
                     {getStatusBadge(getParticipantStatus(participant))}
@@ -551,32 +607,12 @@ const ParticipantTable = ({
 
                   {/* Self Assessment */}
                   <TableCell>
-                    {participant.self_assessment ? (
-                      getAssessmentStatusBadge(
-                        participant.self_assessment.response_submitted ? "completed" : "not_started",
-                        participant.self_assessment.submission_date
-                      )
-                    ) : (
-                      <Badge color="gray" size="sm" className="flex items-center gap-1">
-                        <XCircle className="w-3 h-3" />
-                        Tidak Ada
-                      </Badge>
-                    )}
+                    {getAssessmentStatusBadge(participant.self_assessment, 'self')}
                   </TableCell>
 
                   {/* Supervisor Assessment */}
                   <TableCell>
-                    {participant.supervisor_assessment ? (
-                      getAssessmentStatusBadge(
-                        participant.supervisor_assessment.response_submitted ? "completed" : "not_started",
-                        participant.supervisor_assessment.submission_date
-                      )
-                    ) : (
-                      <Badge color="gray" size="sm" className="flex items-center gap-1">
-                        <XCircle className="w-3 h-3" />
-                        Tidak Ada
-                      </Badge>
-                    )}
+                    {getAssessmentStatusBadge(participant.supervisor_assessment, 'supervisor')}
                   </TableCell>
 
                   {/* Progress */}
@@ -600,50 +636,23 @@ const ParticipantTable = ({
 
                   {/* Actions */}
                   <TableCell>
-                    <Dropdown
-                      arrowIcon={false}
-                      inline
-                      label={
-                        <Button color="gray" size="sm">
-                          <MoreVertical className="w-4 h-4" />
+                    <div className="flex items-center gap-2">
+                      {/* Hapus tombol "Nilai" untuk admin, hanya tampilkan tombol "Lihat" */}
+                      <Link to={`/penilaian/${assessmentId}/hasil?subject=${participant.id}`}>
+                        <Button size="xs" color="blue" className="flex items-center gap-1">
+                          <Eye className="w-3 h-3" />
+                          Lihat Hasil
                         </Button>
-                      }
-                    >
-                      <DropdownItem
-                        icon={Eye}
-                        onClick={() => onView?.(participant)}
-                      >
-                        View Details
-                      </DropdownItem>
-
-                      {canEdit && (
-                        <DropdownItem
-                          icon={Edit}
-                          onClick={() => onEdit?.(participant)}
-                        >
-                          Edit Participant
-                        </DropdownItem>
-                      )}
-
-                      <DropdownItem
-                        icon={Mail}
-                        onClick={() => onSendReminder?.(participant)}
-                      >
-                        Send Reminder
-                      </DropdownItem>
-
-                      <DropdownDivider />
-
-                      {canDelete && (
-                        <DropdownItem
-                          icon={Trash}
-                          onClick={() => onDelete?.(participant)}
-                          className="text-red-600 dark:text-red-400"
-                        >
-                          Remove Participant
-                        </DropdownItem>
-                      )}
-                    </Dropdown>
+                      </Link>
+                      
+                      {/* Opsional: Tambah tombol lihat detail profil */}
+                      <Link to={`/profil/${participant.id}`}>
+                        <Button size="xs" color="gray" className="flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          Profil
+                        </Button>
+                      </Link>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -655,7 +664,7 @@ const ParticipantTable = ({
       {/* Results Summary */}
       {filteredAndSortedParticipants.length > 0 && (
         <div className="text-sm text-gray-500 dark:text-gray-400 text-center">
-          Menampilkan {filteredAndSortedParticipants.length} dari {groupedParticipants.length} peserta
+          Menampilkan {filteredAndSortedParticipants.length} dari {participants.length} peserta
         </div>
       )}
     </div>

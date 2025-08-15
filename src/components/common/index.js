@@ -24,3 +24,9 @@ export {
 export { default as LoadingModal } from './LoadingModal.jsx';
 export { default as SuccessModal } from './SuccessModal.jsx';
 export { default as ErrorModal } from './ErrorModal.jsx';
+
+// Page Header
+export {
+  default as PageHeader,
+  
+ } from './PageHeader.jsx';
