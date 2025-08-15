@@ -28,7 +28,7 @@ import { useEffect, useState } from "react";
 import AuthService from "./services/AuthService.js";
 import { UserContext } from "./contexts/UserContext.js";
 import LoginPage from "./components/layouts/LoginPage.jsx";
-import StaffAssessmentDetailPage from "./pages/staff/StaffAssessmentDetailPage.jsx";
+import SupervisorAssessmentDetailPage from "./pages/staff/SupervisorAssessmentDetailPage.jsx";
 
 function App() {
   const [authenticatedUser, setAuthenticatedUser] = useState({});
@@ -98,9 +98,10 @@ function App() {
           <Route path="/" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="penilaian" element={<AssessmentPage />} />
-            <Route path="penilaian/:id" element={<StaffAssessmentDetailPage />} />
+            <Route path="penilaian/:id" element={authenticatedUser.position_type === "BAWAHAN" ? <SelfAssessmentFormPage /> : <SupervisorAssessmentDetailPage />} />
             <Route path="penilaian/:id/self" element={<SelfAssessmentFormPage />} />
-            <Route path="penilaian/:id/supervisor/:subjectId" element={<SupervisorAssessmentFormPage />} />
+            <Route path="penilaian/:id/:subjectId" element={<SupervisorAssessmentFormPage />} />
+            <Route path="akun" element={<AccountPage />} />
           </Route>
           <Route path="login" element={<LoginPage />} />
           <Route path="*" element={<NotFoundPage />} />

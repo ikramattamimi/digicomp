@@ -51,6 +51,8 @@ class AssessmentCompetencyService {
         )
       `)
       .eq('assessment_id', assessmentId)
+      .or(`is_active.eq.${true}`, { foreignTable: 'competencies.indicators' })
+
       .is('deleted_at', null)
       .order('competency_id');
     

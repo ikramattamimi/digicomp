@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Home, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useUserContext } from '../contexts/UserContext';
 
 const NotFoundPage = () => {
+
+  const user = useUserContext();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!user) navigate('/login');
+  }, [user]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
       <div className="text-center">

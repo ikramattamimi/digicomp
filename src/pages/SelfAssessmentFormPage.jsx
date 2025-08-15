@@ -6,6 +6,7 @@ import { Card, Button, Badge, Spinner, Alert } from 'flowbite-react';
 import { Home, ClipboardCheck } from 'lucide-react';
 import ProfileService from '../services/ProfileService';
 import AuthService from '../services/AuthService';
+import { useUserContext } from '../contexts/UserContext.js';
 
 const SelfAssessmentFormPage = () => {
   const { id } = useParams();
@@ -16,6 +17,8 @@ const SelfAssessmentFormPage = () => {
   const [participant, setParticipant] = useState(null);
   const [supervisor, setSupervisor] = useState(null);
 
+  const currentUser = useUserContext();
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -23,9 +26,8 @@ const SelfAssessmentFormPage = () => {
         setError(null);
 
         // Get current user
-        const currentUser = await AuthService.checkUser();
         if (!currentUser) {
-          throw new Error('User not authenticated');
+          throw new Error('User not authenticated'); 
         }
 
         // Load participant data (current user's profile)
@@ -76,7 +78,7 @@ const SelfAssessmentFormPage = () => {
             { label: 'Penilaian', href: '/penilaian', icon: ClipboardCheck },
             { label: 'Pengisian Nilai' }
           ]}
-          title="Pengisian Nilai"
+          title={`Pengisian Nilai`}
           customActions={[
             {
               type: 'button',
@@ -91,38 +93,33 @@ const SelfAssessmentFormPage = () => {
 
         {error && (
           <Alert color="failure" className="mb-6" onDismiss={() => setError(null)}>
-            {error}
+            {error} 
           </Alert>
         )}
 
-        {/* Informasi Peserta & Supervisor */}
+        {/* Informasi Personel & Supervisor */}
         <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-6">
           <div className="space-y-6">
             <div>
               <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-                Informasi Peserta
+                Informasi Personel
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <InfoRow label="Nama Peserta" value={participant?.name} />
-                <InfoRow label="Email" value={participant?.email} />
-                <InfoRow label="Posisi" value={participant?.position_type} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <InfoRow label="Nama Personel" value={participant?.name} />
                 <InfoRow 
                   label="Sub Direktorat" 
                   value={participant?.subdirectorats?.name || participant?.subdirectorat_name} 
                 />
-                <InfoRow label="Status" value={participant?.is_active ? 'Aktif' : 'Tidak Aktif'} />
               </div>
             </div>
 
             {supervisor && (
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
-                  Informasi Supervisor
+                  Informasi Atasan
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <InfoRow label="Nama Supervisor" value={supervisor?.name} />
-                  <InfoRow label="Email" value={supervisor?.email} />
-                  <InfoRow label="Posisi" value={supervisor?.position_type} />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <InfoRow label="Nama Atasan" value={supervisor?.name} />
                   <InfoRow 
                     label="Sub Direktorat" 
                     value={supervisor?.subdirectorats?.name || supervisor?.subdirectorat_name} 
@@ -144,15 +141,10 @@ const SelfAssessmentFormPage = () => {
         </Card>
 
         {/* Form penilaian (accordion/section akan diatur oleh container) */}
-        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        {/* <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"> */}
           <AssessmentFormContainer assessmentId={id} mode="self" subjectProfileId={participant.id} />
-        </Card>
+        {/* </Card> */}
 
-        {/* Action Bar */}
-        <div className="mt-6 flex justify-end gap-3">
-          <Button color="gray">Simpan Draft</Button>
-          <Button color="blue">Kirim</Button>
-        </div>
       </div>
     </div>
   );

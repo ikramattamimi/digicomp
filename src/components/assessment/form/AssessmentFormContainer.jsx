@@ -2,24 +2,25 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Card, Button, Spinner, Alert } from 'flowbite-react';
 import AssessmentProgress from './AssessmentProgress';
 import CompetencySection from './CompetencySection';
-import LoadingModal from '../../common/LoadingModal';
-import SuccessModal from '../../common/SuccessModal';
-import ErrorModal from '../../common/ErrorModal';
+import { LoadingModal, ErrorModal, SuccessModal } from '../../common';
 import AssessmentService from '../../../services/AssessmentService';
 import AssessmentCompetencyService from '../../../services/AssessmentCompetencyService';
 import AssessmentResponseService from '../../../services/AssessmentResponseService';
 import AuthService from '../../../services/AuthService';
 import { ASSESSMENT_WEIGHTS } from '../../../constants/assessmentConstants';
+import AssessmentParticipantService from '../../../services/AssessmentParticipantService';
+import { useUserContext } from '../../../contexts/UserContext';
 
 const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId }) => {
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [assessment, setAssessment] = useState(null);
   const [competencies, setCompetencies] = useState([]);
   const [responses, setResponses] = useState({});
-  
+  const [supervisorResponses, setSupervisorResponses] = useState({});
+  const [participantStatus, setParticipantStatus] = useState(null);
+
   // Modal states
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -53,6 +54,8 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
     setShowLoadingModal(false);
     setLoadingMessage('');
   };
+  
+  const user = useUserContext();
 
   useEffect(() => {
     const load = async () => {
@@ -61,11 +64,9 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
         setError(null);
         
         // Get current user
-        const currentUser = await AuthService.checkUser();
-        if (!currentUser) {
+        if (!user) {
           throw new Error('User not authenticated');
         }
-        setUser(currentUser);
         
         // Load assessment
         const a = await AssessmentService.getById(assessmentId);
@@ -78,18 +79,51 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
           .filter(Boolean);
         setCompetencies(comps);
 
-        // Resolve subject id (fallback ke user aktif)
-        const resolvedSubjectId = subjectProfileId || currentUser.id;
+        // Resolve subject id (fallback ke user aktif untuk self assessment)
+        const resolvedSubjectId = subjectProfileId || user.id;
 
-        // Load existing draft responses if any
-        const existing = await AssessmentResponseService.getByAssessmentAndAssessor({
-          assessmentId,
-          subjectProfileId: resolvedSubjectId,
-          mode
-        });
+        // Load participant data
+        const participantStatus = await AssessmentParticipantService.getAssessmentStatus(assessmentId, resolvedSubjectId, user?.id);
+        setParticipantStatus(participantStatus);
 
-        // existing.responses berbentuk { [indicatorId]: { id, value, text, updated_at } }
-        if (existing?.responses) setResponses(existing.responses);
+        // Load existing responses based on mode
+        if (mode === 'self') {
+          // For self assessment, load user's own responses
+          const existingSelfAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
+            assessmentId,
+            subjectProfileId: resolvedSubjectId,
+            mode: 'self'
+          });
+          
+          // Also load supervisor responses for comparison (read-only)
+          const existingSupervisorAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
+            assessmentId,
+            subjectProfileId: resolvedSubjectId,
+            mode: 'supervisor'
+          });
+
+          if (existingSelfAssessment?.responses) setResponses(existingSelfAssessment.responses);
+          if (existingSupervisorAssessment?.responses) setSupervisorResponses(existingSupervisorAssessment.responses);
+          
+        } else if (mode === 'supervisor') {
+          // For supervisor assessment, load supervisor's responses for the subject
+          const existingSupervisorAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
+            assessmentId,
+            subjectProfileId: resolvedSubjectId,
+            mode: 'supervisor'
+          });
+          
+          // Also load self assessment responses for comparison (read-only)
+          const existingSelfAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
+            assessmentId,
+            subjectProfileId: resolvedSubjectId,
+            mode: 'self'
+          });
+
+          if (existingSupervisorAssessment?.responses) setResponses(existingSupervisorAssessment.responses);
+          if (existingSelfAssessment?.responses) setSupervisorResponses(existingSelfAssessment.responses);
+        }
+
       } catch (err) {
         setError(err?.message || 'Gagal memuat form assessment');
       } finally {
@@ -97,7 +131,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
       }
     };
     load();
-  }, [assessmentId, mode, subjectProfileId]);
+  }, [assessmentId, mode, subjectProfileId, user]);
 
   const totalIndicators = useMemo(() => {
     return competencies.reduce((sum, c) => sum + (c.indicators?.length || 0), 0);
@@ -169,7 +203,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
       setError(null);
       showLoading('Mengirim assessment...');
       
-      const sid = subjectProfileId;
+      const sid = subjectProfileId || user?.id;
       await AssessmentResponseService.submit({
         assessmentId,
         assessmentStatus: 'submitted',
@@ -205,17 +239,19 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
         </Alert>
       )}
 
-      <Card>
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-semibold">
-            {assessment?.name} • {isSelf ? 'Self Assessment' : 'Supervisor Assessment'}
-          </h3>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Bobot: {Math.round((assessorTypeWeight || 0) * 100)}%
+      <div className="lg:col-span-1 sticky top-32 self-start z-10">
+        <Card>
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-semibold">
+              {assessment?.name} • {isSelf ? 'Penilaian Diri' : 'Penilaian Atasan'}
+            </h3>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Bobot: {Math.round((assessorTypeWeight || 0) * 100)}%
+            </div>
+            <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
           </div>
-          <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
-        </div>
-      </Card>
+        </Card>
+      </div>
 
       <div className="space-y-4">
         {competencies.map((c) => (
@@ -223,20 +259,24 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
             key={c.id}
             competency={c}
             responses={responses}
+            supervisorResponses={supervisorResponses}
             onChange={handleChange}
-            disabled={saving}
+            mode={mode}
+            disabled={saving || participantStatus?.status === 'submitted'}
           />
         ))}
       </div>
 
-      <div className="flex gap-2 justify-end">
-        <Button color="gray" onClick={handleSaveDraft} disabled={saving}>
-          {saving ? <Spinner size="sm" /> : 'Simpan Draft'}
-        </Button>
-        <Button color="blue" onClick={handleSubmit} disabled={saving || totalIndicators === 0}>
-          {saving ? <Spinner size="sm" /> : 'Submit Assessment'}
-        </Button>
-      </div>
+      {participantStatus?.status !== 'submitted' && (
+        <div className="flex gap-2 justify-end">
+          <Button color="gray" onClick={handleSaveDraft} disabled={saving}>
+            {saving ? <Spinner size="sm" /> : 'Simpan Draft'}
+          </Button>
+          <Button color="blue" onClick={handleSubmit} disabled={saving || totalIndicators === 0}>
+            {saving ? <Spinner size="sm" /> : 'Submit Assessment'}
+          </Button>
+        </div>
+      )}
 
       {/* Modals */}
       <LoadingModal

@@ -392,6 +392,49 @@ class AssessmentParticipantService {
       supervisorAssessments: supervisorAssessments.length
     };
   }
+
+  async getByAssessmentIdAndUserId(assessmentId, subjectId, userId) {
+    const { data, error } = await supabase
+      .from('assessment_participants')
+      .select(`
+        *,
+        subject_profile:profiles!subject_profile_id (
+          id,
+          name,
+          nrp
+        ),
+        assessor_profile:profiles!assessor_profile_id (
+          id,
+          name,
+          nrp
+        )
+      `)
+      .eq('assessment_id', assessmentId)
+      .eq('subject_profile_id', subjectId)
+      .eq('assessor_profile_id', userId)
+      .is('deleted_at', null)
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+    async getAssessmentStatus(assessmentId, subjectId, userId) {
+    const { data, error } = await supabase
+      .from('assessment_participants')
+      .select(`
+        status
+      `)
+      .eq('assessment_id', assessmentId)
+      .eq('subject_profile_id', subjectId)
+      .eq('assessor_profile_id', userId)
+      .is('deleted_at', null);
+
+    if (error) throw error;
+    if (!data || data.length === 0) return null;
+    
+    return data[0];
+  }
 }
 
 export default new AssessmentParticipantService()

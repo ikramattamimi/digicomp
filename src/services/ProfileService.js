@@ -93,6 +93,18 @@ class ProfileService {
     return data
   }
 
+  async getSubordinatesWithAssessment(supervisorId, assessmentId) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*, subdirectorats(name), assessment_participants(assessment_id, response_submitted)')
+      .or(`assessment_id.eq.${assessmentId}`, {foreignTable: 'assessment_participants'})
+      .eq('supervisor_id', supervisorId)
+      .is('deleted_at', null)
+      .order('name', { ascending: true })
+    if (error) throw error
+    return data
+  }
+
 
   async getStaff() {
     const { data, error } = await supabase

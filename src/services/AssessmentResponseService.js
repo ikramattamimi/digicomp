@@ -90,7 +90,10 @@ const AssessmentResponseService = {
 
     const { data, error } = await supabase
       .from('assessment_responses')
-      .select('id, indicator_id, response_value, response_text, updated_at')
+      .select(`id, indicator_id, response_value, response_text, updated_at,
+         indicators!inner(statement_text, is_active)   
+      `)
+      .eq('indicators.is_active', true)
       .eq('assessment_id', assessmentId)
       .eq('subject_profile_id', subjectProfileId)
       .eq('assessor_profile_id', assessorProfileId)
@@ -148,8 +151,7 @@ const AssessmentResponseService = {
         subject_profile_id: subjectProfileId,
         assessor_profile_id: assessorProfileId,
         response_value: value,
-        response_text: text,
-        updated_at: now
+        response_text: text
       }
     })
 
@@ -218,7 +220,7 @@ const AssessmentResponseService = {
       // Update existing participant status to submitted
       const { error: updateError } = await supabase
       .from('assessment_participants')
-      .update({ status: status, updated_at: new Date().toISOString() })
+      .update({ status: status })
       .eq('id', existingParticipant.id)
 
       if (updateError) throw updateError

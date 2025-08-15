@@ -24,13 +24,12 @@ import {
   Eye
 } from 'lucide-react';
 import AssessmentService from '../services/AssessmentService';
-import { AssessmentListHeader, StaffAssessmentListHeader } from '../components/common/PageHeader';
+import { AssessmentListHeader } from '../components/common/PageHeader';
 import AssessmentTable from '../components/assessment/AssessmentTable';
 import AssessmentStatusBadge from '../components/assessment/AssessmentStatusBadge';
 import { ASSESSMENT_STATUS, USER_POSITION } from '../constants/assessmentConstants';
 import { LoadingSpinner, ErrorAlert } from '../components/common';
 import { useUserContext } from '../contexts/UserContext';
-import StaffAssessmentTable from '../components/assessment/staff/StaffAssessmentTable';
 
 const AssessmentListPage = () => {
   // Navigation
@@ -103,9 +102,9 @@ const AssessmentListPage = () => {
       if (user.position_type === USER_POSITION.ADMIN) {
         data = await AssessmentService.getAll(true); // Include inactive
       } else if (user.position_type === USER_POSITION.ATASAN || user.position_type === USER_POSITION.BAWAHAN) {
-        data = await AssessmentService.getByParticipant(user.id);
+        data = await AssessmentService.getByStatus(ASSESSMENT_STATUS.IN_PROGRESS);
       }
-
+      
       setAssessments(data);
     } catch (err) {
       console.error('Failed to load assessments:', err);
@@ -118,12 +117,7 @@ const AssessmentListPage = () => {
   // Load assessment statistics
   const loadStatistics = async () => {
     try {
-      let statistics;
-      if (user.position_type === USER_POSITION.ADMIN) {
-        statistics = await AssessmentService.getStatistics();
-      } else {
-        statistics = await AssessmentService.getMyStatistics(); // New method for staff stats
-      }
+      const statistics = await AssessmentService.getStatistics();
       setStats(statistics);
     } catch (err) {
       console.error('Failed to load statistics:', err);
@@ -168,27 +162,16 @@ const AssessmentListPage = () => {
     <div className="page">
       <div className="max-w-7xl mx-auto">
         {/* Enhanced Header with Statistics */}
-        {user.position_type === USER_POSITION.ADMIN ? (
-          <AssessmentListHeader 
-            totalAssessments={stats.total}
-            activeAssessments={stats.active}
-            totalParticipants={stats.participants}
-            dueSoon={stats.dueSoon}
-            onCreateClick={() => navigate('/penilaian/create')}
-            onFilterClick={() => setStatusFilter(statusFilter === 'all' ? 'draft' : 'all')}
-            onExportClick={() => console.log('Export clicked')}
-            loading={loading}
-          />
-        ) : (
-          <StaffAssessmentListHeader 
-            totalAssessments={stats.total}
-            activeAssessments={stats.active}
-            completedAssessments={stats.completed}
-            dueSoon={stats.dueSoon}
-            onFilterClick={() => setStatusFilter(statusFilter === 'all' ? ASSESSMENT_STATUS.IN_PROGRESS : 'all')}
-            loading={loading}
-          />
-        )}
+        <AssessmentListHeader 
+          totalAssessments={stats.total}
+          activeAssessments={stats.active}
+          totalParticipants={stats.participants}
+          dueSoon={stats.dueSoon}
+          onCreateClick={() => navigate('/penilaian/create')}
+          onFilterClick={() => setStatusFilter(statusFilter === 'all' ? 'draft' : 'all')}
+          onExportClick={() => console.log('Export clicked')}
+          loading={loading}
+        />
 
         {/* Error Alert */}
         {error && (
@@ -201,48 +184,34 @@ const AssessmentListPage = () => {
         )}
 
         {/* Search and Filter Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 my-5">
-          <div className="flex-1">
-            <TextInput
-              icon={Search}
-              placeholder={
-                user.position_type === USER_POSITION.ADMIN 
-                  ? "Search assessments by name or description..." 
-                  : "Cari penilaian berdasarkan nama..."
-              }
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+        {/* <Card className="mb-6 bg-white dark:bg-gray-800"> */}
+          <div className="flex flex-col sm:flex-row gap-4 my-5">
+            <div className="flex-1">
+              <TextInput
+                icon={Search}
+                placeholder="Search assessments by name or description..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </div>
+            
+            <div className="w-full sm:w-48">
+              <Select
+                value={statusFilter}
+                onChange={handleStatusFilterChange}
+                icon={Filter}
+              >
+                <option value="all">All Status</option>
+                <option value={ASSESSMENT_STATUS.DRAFT}>Draft</option>
+                <option value={ASSESSMENT_STATUS.IN_PROGRESS}>In Progress</option>
+                <option value={ASSESSMENT_STATUS.DONE}>Done</option>
+              </Select>
+            </div>
           </div>
-          
-          <div className="w-full sm:w-48">
-            <Select
-              value={statusFilter}
-              onChange={handleStatusFilterChange}
-              icon={Filter}
-            >
-              {user.position_type === USER_POSITION.ADMIN ? (
-                <>
-                  <option value="all">All Status</option>
-                  <option value={ASSESSMENT_STATUS.DRAFT}>Draft</option>
-                  <option value={ASSESSMENT_STATUS.IN_PROGRESS}>In Progress</option>
-                  <option value={ASSESSMENT_STATUS.DONE}>Done</option>
-                </>
-              ) : (
-                <>
-                  <option value="all">Semua Status</option>
-                  <option value={ASSESSMENT_STATUS.IN_PROGRESS}>Aktif</option>
-                  <option value={ASSESSMENT_STATUS.DONE}>Selesai</option>
-                  <option value="my_completed">Saya Selesai</option>
-                  <option value="my_pending">Belum Selesai</option>
-                </>
-              )}
-            </Select>
-          </div>
-        </div>
+        {/* </Card> */}
 
         {/* Assessment Table */}
-        {user.position_type === USER_POSITION.ADMIN ? (
+        {/* <Card className="bg-transparent" theme={{root: {children: "p-1"}}}> */}
           <AssessmentTable 
             assessments={filteredAssessments}
             onView={(assessment) => navigate(`/penilaian/${assessment.id}`)}
@@ -251,12 +220,7 @@ const AssessmentListPage = () => {
             onDuplicate={(assessment) => console.log('Duplicate:', assessment)}
             loading={loading}
           />
-        ) : (
-          <StaffAssessmentTable 
-            assessments={filteredAssessments}
-            loading={loading}
-          />
-        )}
+        {/* </Card> */}
       </div>
     </div>
   );
