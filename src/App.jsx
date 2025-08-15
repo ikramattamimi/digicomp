@@ -21,6 +21,9 @@ import AdminPage from "./pages/AdminPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
 import DetailCompetencyPage from "./pages/DetailCompentencyPage.jsx";
 
+import LaporanPage from "./pages/LaporanPage.jsx";
+import LaporanSubsatkerPage from "./pages/LaporanSubsatkerPage.jsx";
+
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -43,6 +46,9 @@ function App() {
           <Route path="admin" element={<AdminPage />} />
           <Route path="akun" element={<AccountPage />} />
           <Route path="assessment" element={<AssessmentPage />} />
+
+          <Route path="laporanIndividu" element={<LaporanPage />} />
+          <Route path="laporanSubsatker" element={<LaporanSubsatkerPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </>

@@ -51,9 +51,9 @@ const StaffPage = () => {
         <PageHeader
           breadcrumbs={[
             { label: "Dashboard", href: "/", icon: Home },
-            { label: "Staff", href: "/staff", icon: Users },
+            { label: "Personel", href: "/staff", icon: Users },
           ]}
-          title="Staff"
+          title="Personel"
           customActions={[
             {
               type: "button",
@@ -64,7 +64,7 @@ const StaffPage = () => {
             },
             {
               type: "button",
-              label: "Tambah Staff",
+              label: "Tambah Personel",
               icon: Plus,
               color: "blue",
               onClick: handleAdd,

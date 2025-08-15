@@ -44,9 +44,9 @@ const SubDirectoratePage = () => {
           <PageHeader
             breadcrumbs={[
               { label: "Dashboard", href: "/", icon: Home },
-              { label: "Sub Direktorat", href: "/subdirektorat", icon: Building }
+              { label: "Subsatker", href: "/subdirektorat", icon: Building }
             ]}
-            title="Sub Direktorat"
+            title="Subsatker"
             customActions={[
               {
                 type: 'button',
@@ -57,7 +57,7 @@ const SubDirectoratePage = () => {
               },
               {
                 type: 'button',
-                label: 'Tambah Sub Direktorat',
+                label: 'Tambah Subsatker',
                 icon: Plus,
                 color: 'blue',
                 onClick: handleAdd,

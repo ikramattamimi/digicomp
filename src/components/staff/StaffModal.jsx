@@ -24,7 +24,7 @@ const StaffModal = ({
 }) => (
   <Modal show={show} onClose={onClose}>
     <ModalHeader>
-      {modalType === "add" ? "Add New Staff" : "Edit Staff"}
+      {modalType === "add" ? "Add New Personel" : "Edit Personel"}
     </ModalHeader>
     <ModalBody>
       {error && (
@@ -41,7 +41,7 @@ const StaffModal = ({
             id="name"
             value={staff.name}
             onChange={(e) => onChange({ ...staff, name: e.target.value })}
-            placeholder="Enter Staff name"
+            placeholder="Enter Personel name"
             required
           />
         </div>
@@ -106,7 +106,7 @@ const StaffModal = ({
             }
             required
           >
-            <option value={0}>Select sub directorate</option>
+            <option value={0}>Select subsatker</option>
             {subDirectorat.map((sup) => (
               <option value={sup.id}>{sup.name}</option>
             ))}
@@ -156,7 +156,7 @@ const StaffModal = ({
     </ModalBody>
     <ModalFooter>
       <Button onClick={onSave}>
-        {modalType === "add" ? "Add Staff" : "Update Staff"}
+        {modalType === "add" ? "Add Personel" : "Update Personel"}
       </Button>
       <Button color="alternative" onClick={onClose}>
         Cancel

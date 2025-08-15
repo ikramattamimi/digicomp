@@ -33,7 +33,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="m-10 flex items-center justify-center">
+    <div className="m-10 flex items-center justify-center gap-10">
+      <div className="w-150 h-150 bg-amber-400">
+        <img></img>
+      </div>
       <Card className="w-fit h-fit bg-white dark:bg-gray-800">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
           <UserCheck className="mr-3 text-blue-600 dark:text-blue-400" />
@@ -72,6 +75,7 @@ const LoginPage = () => {
 
         <Button onClick={handleSave}>Login</Button>
       </Card>
+      
     </div>
   );
 };
