@@ -109,7 +109,12 @@ function App() {
             <Route path="penilaian/:id" element={authenticatedUser.position_type === "BAWAHAN" ? <SelfAssessmentFormPage /> : <SupervisorAssessmentDetailPage />} />
             <Route path="penilaian/:id/self" element={<SelfAssessmentFormPage />} />
             <Route path="penilaian/:id/:subjectId" element={<SupervisorAssessmentFormPage />} />
+            <Route path="penilaian/:id/hasil" element={<AssessmentResultPage />} />
             <Route path="akun" element={<AccountPage />} />
+            
+            <Route path="laporanIndividu" element={<LaporanPage />} />
+            <Route path="laporanSubsatker" element={<LaporanSubsatkerPage />} />
+            
           </Route>
           <Route path="login" element={<LoginPage />} />
           <Route path="*" element={<NotFoundPage />} />

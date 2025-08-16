@@ -271,11 +271,7 @@ const AssessmentListPage = () => {
           <div className="flex-1">
             <TextInput
               icon={Search}
-              placeholder={
-                user.position_type === USER_POSITION.ADMIN 
-                  ? "Search assessments by name or description..." 
-                  : "Cari penilaian berdasarkan nama..."
-              }
+              placeholder="Cari penilaian berdasarkan nama..."
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -299,8 +295,6 @@ const AssessmentListPage = () => {
                   <option value="all">Semua Status</option>
                   <option value={ASSESSMENT_STATUS.IN_PROGRESS}>Aktif</option>
                   <option value={ASSESSMENT_STATUS.DONE}>Selesai</option>
-                  <option value="my_completed">Saya Selesai</option>
-                  <option value="my_pending">Belum Selesai</option>
                 </>
               )}
             </Select>

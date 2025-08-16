@@ -6,7 +6,7 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
   const handleScoreChange = (indicatorId, e) => {
     const value = e.target.value;
     let numericValue = value === '' ? null : parseInt(value);
-    if (numericValue > 10) numericValue = 10;
+    if (numericValue > 5) numericValue = 5;
     onChange(indicatorId, numericValue);
   };
 
@@ -78,9 +78,9 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                               type="number"
                               value={currentResponse.value || ''}
                               onChange={(e) => handleScoreChange(indicator.id, e)}
-                              placeholder="0-10"
-                              min="0"
-                              max="10"
+                              placeholder="1-5"
+                              min="1"
+                              max="5"
                               step="1"
                               disabled={disabled}
                               className="text-center"
@@ -119,9 +119,9 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                               type="number"
                               value={currentResponse.value || ''}
                               onChange={(e) => handleScoreChange(indicator.id, e)}
-                              placeholder="0-10"
-                              min="0"
-                              max="10"
+                              placeholder="1-5"
+                              min="1"
+                              max="5"
                               step="1"
                               disabled={disabled}
                               className="text-center"

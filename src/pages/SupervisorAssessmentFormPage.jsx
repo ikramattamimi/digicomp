@@ -100,7 +100,7 @@ const SupervisorAssessmentFormPage = () => {
         )}
 
         {/* Informasi Supervisor & Subject */}
-        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-6">
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 my-6">
           <div className="space-y-6">
             {/* Subject Information */}
             {subject && (

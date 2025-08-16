@@ -1,3 +1,4 @@
+import { ASSESSMENT_STATUS } from "../constants/assessmentConstants";
 import { supabase } from "./SupabaseClient";
 
 // Simple service skeleton for responses (adjust endpoints to your API)
@@ -264,6 +265,23 @@ const AssessmentResponseService = {
       .select(
         "*, subject_profile_id(subdirectorat_id,id), assessment_id(id,name)"
       );
+    if (error) throw error;
+    return data;
+  },
+
+  async getHistoryAssesment() {
+    const { data, error } = await supabase
+      .from("assessment_responses")
+      .select(
+        `*, 
+        subject_profile_id(subdirectorat_id,id), 
+        assessment_id(id,name,status)`
+      )
+      // .neq("status", ASSESSMENT_STATUS.DRAFT)
+      .neq("assessment_id.status", ASSESSMENT_STATUS.DRAFT)
+      .eq("assessment_id.is_active", true)
+      .is("assessment_id.deleted_at", null)
+      // .is('deleted_at', null);
     if (error) throw error;
     return data;
   },

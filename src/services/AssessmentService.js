@@ -123,6 +123,7 @@ class AssessmentService {
       )
     `)
     .or(`subject_profile_id.eq.${userId},assessor_profile_id.eq.${userId}`, { foreignTable: 'assessment_participants' })
+    .eq('status', ASSESSMENT_STATUS.IN_PROGRESS)
     .eq('is_active', true)
     .is('deleted_at', null)
     .order('created_at', { ascending: false });

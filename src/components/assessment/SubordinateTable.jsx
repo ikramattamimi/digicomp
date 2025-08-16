@@ -393,18 +393,17 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
                       <Link
                         to={`/penilaian/${assessmentId}/${subordinate.id}`}
                       >
-                        <Button size="xs" color="blue">
-                          <Edit className="w-3 h-3 mr-1" />
-                          Nilai
-                        </Button>
-                      </Link>
-                      <Link
-                        to={`/penilaian/${assessmentId}/hasil?subject=${subordinate.id}`}
-                      >
-                        <Button size="xs" color="gray">
-                          <Eye className="w-3 h-3 mr-1" />
-                          Lihat
-                        </Button>
+                        {subordinate.supervisorAssessment ? (
+                          <Button size="xs" color="blue">
+                            <Edit className="w-3 h-3 mr-1" />
+                            Nilai
+                          </Button>
+                        ) : (                            
+                          <Button size="xs" color="gray">
+                            <Eye className="w-3 h-3 mr-1" />
+                            Lihat
+                          </Button>
+                        )}
                       </Link>
                     </div>
                   </TableCell>

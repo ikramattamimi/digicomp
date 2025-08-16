@@ -150,7 +150,7 @@ const SupervisorAssessmentDetailPage = () => {
 
         {/* Assessment Info Card */}
         {assessment && (
-          <Card className="mb-6">
+          <Card className="my-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -193,15 +193,14 @@ const SupervisorAssessmentDetailPage = () => {
           </Card>
         )}
 
-        {/* Tab Strip */}
         <div className="mt-6">
           <div className="mt-4">
-                <SubordinateTable
-                  assessmentId={id}
-                  supervisorId={user.id}
-                  onRefresh={refreshKey}
-                />
-              </div>
+            <SubordinateTable
+              assessmentId={id}
+              supervisorId={user.id}
+              onRefresh={refreshKey}
+            />
+          </div>
         </div>
 
       </div>

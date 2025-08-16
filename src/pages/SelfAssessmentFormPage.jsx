@@ -79,15 +79,6 @@ const SelfAssessmentFormPage = () => {
             { label: 'Pengisian Nilai' }
           ]}
           title={`Pengisian Nilai`}
-          customActions={[
-            {
-              type: 'button',
-              label: 'Belum Selesai',
-              color: 'warning',
-              onClick: () => {},
-              disabled: true
-            }
-          ]}
           showExportButton={false}
         />
 
@@ -98,7 +89,7 @@ const SelfAssessmentFormPage = () => {
         )}
 
         {/* Informasi Personel & Supervisor */}
-        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-6">
+        <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 my-6">
           <div className="space-y-6">
             <div>
               <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">

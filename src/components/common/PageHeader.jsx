@@ -360,48 +360,48 @@ export const AssessmentListHeader = (props) => (
     showFilterButton={false}
     showExportButton={false}
     createButtonText="Buat Penilaian"
-    stats={[
-      {
-        label: 'Total Penilaian',
-        value: props.totalAssessments || 0,
-        icon: FileText,
-        bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-        borderColor: 'border-blue-200 dark:border-blue-800',
-        iconColor: 'text-blue-600 dark:text-blue-400',
-        labelColor: 'text-blue-600 dark:text-blue-400',
-        valueColor: 'text-blue-900 dark:text-blue-300'
-      },
-      {
-        label: 'Aktif',
-        value: props.activeAssessments || 0,
-        icon: Target,
-        bgColor: 'bg-green-50 dark:bg-green-900/20',
-        borderColor: 'border-green-200 dark:border-green-800',
-        iconColor: 'text-green-600 dark:text-green-400',
-        labelColor: 'text-green-600 dark:text-green-400',
-        valueColor: 'text-green-900 dark:text-green-300'
-      },
-      {
-        label: 'Peserta',
-        value: props.totalParticipants || 0,
-        icon: Users,
-        bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-        borderColor: 'border-purple-200 dark:border-purple-800',
-        iconColor: 'text-purple-600 dark:text-purple-400',
-        labelColor: 'text-purple-600 dark:text-purple-400',
-        valueColor: 'text-purple-900 dark:text-purple-300'
-      },
-      {
-        label: 'Segera Berakhir',
-        value: props.dueSoon || 0,
-        icon: Calendar,
-        bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
-        borderColor: 'border-yellow-200 dark:border-yellow-800',
-        iconColor: 'text-yellow-600 dark:text-yellow-400',
-        labelColor: 'text-yellow-600 dark:text-yellow-400',
-        valueColor: 'text-yellow-900 dark:text-yellow-300'
-      }
-    ]}
+    // stats={[
+    //   {
+    //     label: 'Total Penilaian',
+    //     value: props.totalAssessments || 0,
+    //     icon: FileText,
+    //     bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+    //     borderColor: 'border-blue-200 dark:border-blue-800',
+    //     iconColor: 'text-blue-600 dark:text-blue-400',
+    //     labelColor: 'text-blue-600 dark:text-blue-400',
+    //     valueColor: 'text-blue-900 dark:text-blue-300'
+    //   },
+    //   {
+    //     label: 'Aktif',
+    //     value: props.activeAssessments || 0,
+    //     icon: Target,
+    //     bgColor: 'bg-green-50 dark:bg-green-900/20',
+    //     borderColor: 'border-green-200 dark:border-green-800',
+    //     iconColor: 'text-green-600 dark:text-green-400',
+    //     labelColor: 'text-green-600 dark:text-green-400',
+    //     valueColor: 'text-green-900 dark:text-green-300'
+    //   },
+    //   {
+    //     label: 'Peserta',
+    //     value: props.totalParticipants || 0,
+    //     icon: Users,
+    //     bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+    //     borderColor: 'border-purple-200 dark:border-purple-800',
+    //     iconColor: 'text-purple-600 dark:text-purple-400',
+    //     labelColor: 'text-purple-600 dark:text-purple-400',
+    //     valueColor: 'text-purple-900 dark:text-purple-300'
+    //   },
+    //   {
+    //     label: 'Segera Berakhir',
+    //     value: props.dueSoon || 0,
+    //     icon: Calendar,
+    //     bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+    //     borderColor: 'border-yellow-200 dark:border-yellow-800',
+    //     iconColor: 'text-yellow-600 dark:text-yellow-400',
+    //     labelColor: 'text-yellow-600 dark:text-yellow-400',
+    //     valueColor: 'text-yellow-900 dark:text-yellow-300'
+    //   }
+    // ]}
     {...props}
   />
 );
