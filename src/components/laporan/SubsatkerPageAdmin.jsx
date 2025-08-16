@@ -41,6 +41,7 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
   const showComp = [];
   const [showGrap, setShowGrap] = useState(); // nilai dari mentor
   const [showTable, setShowTable] = useState(); // nilai dari mentor
+  const [showRec, setShowRec] = useState(); // nilai dari mentor
 
   const all = [];
   var showRow = [];
@@ -230,6 +231,7 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
             setTimeout(function () {
               setShowGrap(graphtml);
               setShowTable(tablehtml);
+              setShowRec(rechtml);
             }, 100);
           }
         });
@@ -363,6 +365,152 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
     return bobId;
   };
 
+  const rechtml = () => {
+    const kompetensiData = {
+      1: { name: "Integritas", clas: 1 },
+      2: { name: "Komitmen Terhadap Organisasi", clas: 1 },
+      3: { name: "Orientasi Pada Pelayanan", clas: 2 },
+      4: { name: "Komunikasi Dan Perekat Bangsa", clas: 2 },
+      5: { name: "Pengambilan Keputusan", clas: 3 },
+      6: { name: "Perencanaan Dan Pengorganisasian", clas: 3 },
+      7: { name: "Kepemimpinan", clas: 4 },
+      8: { name: "Kerja Sama", clas: 4 },
+      9: { name: "Pengawasan", clas: 4 },
+      10: { name: "Mengelola Perubahan", clas: 5 },
+    };
+
+    const bobId = (
+      <div>
+        {showRow.map((sup) => {
+          let claster = [];
+          return sup.nilai.map((sub, index) => {
+            const editorUser = Object.entries(kompetensiData).find(
+              ([key, value]) => value.name === showComp[index]
+            );
+
+            if (editorUser) {
+              const clasKomp = editorUser[1].clas;
+
+              if (claster.includes(clasKomp)) {
+              } else {
+                claster.push(clasKomp);
+                if (
+                  sub == "Cukup" ||
+                  sub == "Kurang" ||
+                  sub == "Sangat Kurang"
+                ) {
+                  return (
+                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <p className="text-m text-blue-700 dark:text-blue-300">
+                        {getSaran(showComp[index])}
+                      </p>
+                    </div>
+                  );
+                }
+              }
+            }
+          });
+        })}
+      </div>
+    );
+    return bobId;
+  };
+
+  const getSaran = (kompetensi) => {
+    if (kompetensi == "Integritas" ||kompetensi == "Komitmen terhadap Organisasi") {
+      return (
+        <div>
+          <strong>Kompetensi Integritas / Komitmen terhadap Organisasi</strong>{" "}
+          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          <div className="ml-1">
+            <p>Saran Penguatan</p>
+            <p className="ml-2">
+              <div>
+                • Pelatihan Etika Tugas dan Loyalitas dalam Pengamanan Objek
+                Vital
+              </div>
+              <div>
+                • Pelatihan Tanggung Jawab Pribadi dan Keteladanan dalam Tugas
+              </div>
+            </p>
+          </div>
+        </div>
+      );
+    }else if (kompetensi == "Orientasi Pada Pelayanan" ||kompetensi == "Komunikasi Dan Perekat Bangsa") {
+      return (
+        <div>
+          <strong>Kompetensi Orientasi Pada Pelayanan / Komunikasi Dan Perekat Bangsa</strong>{" "}
+          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          <div className="ml-1">
+            <p>Saran Penguatan</p>
+            <p className="ml-2">
+              <div>
+                •	Pelatihan Layanan Prima dan Komunikasi Positif di Titik Pengamanan
+              </div>
+              <div>
+                •	Pelatihan Interaksi Inklusif dan Toleransi di Lingkungan Obvit
+              </div>
+            </p>
+          </div>
+        </div>
+      );
+    }else if (kompetensi == "Pengambilan Keputusan" ||kompetensi == "Perencanaan Dan Pengorganisasian") {
+      return (
+        <div>
+          <strong>Kompetensi Pengambilan Keputusan / Perencanaan Dan Pengorganisasian</strong>
+          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          <div className="ml-1">
+            <p>Saran Penguatan</p>
+            <p className="ml-2">
+              <div>
+                •	Pelatihan Pengambilan Keputusan Cepat di Lapangan
+              </div>
+              <div>
+                •	Pelatihan Penyusunan Rencana Tugas Sederhana
+              </div>
+            </p>
+          </div>
+        </div>
+      );
+    }else if (kompetensi == "Kepemimpinan" ||kompetensi == "Kerja Sama"||kompetensi == "Pengawasan") {
+      return (
+        <div>
+          <strong>Kompetensi Kepemimpinan / Kerja Sama / Pengawasan</strong>
+          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          <div className="ml-1">
+            <p>Saran Penguatan</p>
+            <p className="ml-2">
+              <div>
+                •	Pelatihan Kepemimpinan Lapangan dan Supervisi Efektif
+              </div>
+              <div>
+                •	Pelatihan Kolaborasi Taktis dalam Situasi Obvit
+              </div>
+            </p>
+          </div>
+        </div>
+      );
+    }else if (kompetensi == "Mengelola Perubahan") {
+      return (
+        <div>
+          <strong>Kompetensi Mengelola Perubahan</strong>
+          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          <div className="ml-1">
+            <p>Saran Penguatan</p>
+            <p className="ml-2">
+              <div>
+                •	Pelatihan Adaptasi Operasional di Situasi Krisis
+              </div>
+              <div>
+                •	Pelatihan Perubahan Sosial dan Teknologi di Lingkup Obvit
+              </div>
+            </p>
+          </div>
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="bg-white p-5 rounded-lg shadow-lg">
       <PageHeader
@@ -388,17 +536,7 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
         {/* Table */}
         <div className="table-container">{showTable}</div>
 
-        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          <p className="text-m text-blue-700 dark:text-blue-300">
-            <strong>Catatan:</strong> Mengelola Perubahan memiliki nilai cukup
-            dan harus diperbaiki Lorem Ipsum is simply dummy text of the
-            printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard dummy text ever since the 1500s, when an unknown
-            printer took a galley of type and scrambled it to make a type
-            specimen book. It has survived not only five centuries, but also the
-            leap into electronic typesetting, remaining essentially unchanged.
-          </p>
-        </div>
+        <div>{showRec}</div>
 
         {/* Modal for Add/Edit */}
         <ErrorModal

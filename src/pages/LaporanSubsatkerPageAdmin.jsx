@@ -49,7 +49,6 @@ const LaporanSubsatkerPageAdmin = () => {
       setSubsatkers(subsatkerData);
 
       const dataResponse = await AssessmentResponseService.getAssesment();
-
       dataResponse.map((sup) => {
         if (sup.subject_profile_id.subdirectorat_id == subsatkers[0].id) {
           if (showComp.includes(sup.assessment_id.id)) {
@@ -73,11 +72,13 @@ const LaporanSubsatkerPageAdmin = () => {
   };
 
   const forceReRender = (id) => {
+    const myArray = [];
     setShow(
       <LaporanAnggotaPage
         id={id}
         userData={forceReRender2}
         assasmentId={assasmentId}
+        cntId={myArray}
       />
     );
     setMessage("hidden");
@@ -94,8 +95,8 @@ const LaporanSubsatkerPageAdmin = () => {
   };
 
   const handleChange = (assaid) => {
-    setassasmentId(assaid)
-    forceReRender2()
+    setassasmentId(assaid);
+    forceReRender2();
     if (subsatkerPage == null && assaid != 0) {
       setSubsatkerPage(
         <SubsatkerPageAdmin assasmentId={assaid} subsatkerId={selsubsatker} />
@@ -107,7 +108,7 @@ const LaporanSubsatkerPageAdmin = () => {
           <SubsatkerPageAdmin assasmentId={assaid} subsatkerId={selsubsatker} />
         );
       }, 100);
-    } else{
+    } else {
       setSubsatkerPage(<strong>Pilih penilaian untuk ditampilkan</strong>);
     }
   };
@@ -190,7 +191,9 @@ const LaporanSubsatkerPageAdmin = () => {
                 onChange={(e) => handleChange(e.target.value)}
                 className="my-1 w-100"
               >
-                <option value={0}><strong>PILIH PENILAIAN</strong></option>
+                <option value={0}>
+                  <strong>PILIH PENILAIAN</strong>
+                </option>
                 {assa.map((sub) => (
                   <option value={sub.id}>{sub.nama}</option>
                 ))}

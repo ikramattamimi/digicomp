@@ -14,11 +14,13 @@ const LaporanPage = () => {
 
   const handleChange = (id) => {
     if (subsatkerPage == null) {
-      setSubsatkerPage(<BawahanPage assasmentId={id} />);
+      const myArray = [];
+      setSubsatkerPage(<BawahanPage assasmentId={id} cntId={myArray} />);
     } else {
       setSubsatkerPage(<div></div>);
       setTimeout(function () {
-        setSubsatkerPage(<BawahanPage assasmentId={id} />);
+        const myArray = [];
+        setSubsatkerPage(<BawahanPage assasmentId={id} cntId={myArray} />);
       }, 100);
     }
   };

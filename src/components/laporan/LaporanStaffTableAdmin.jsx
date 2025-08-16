@@ -55,20 +55,6 @@ const LaporanStaffTable = forwardRef((props, ref) => {
     fetchSupervisors();
   }, []);
 
-  // Fungsi refresh supervisor
-  const handleRefresh = async () => {
-    try {
-      const data = await ProfileService.getStaff();
-      setSupervisors(data);
-      setFilteredSupervisors(data);
-      setErrorMessage("");
-      setShowErrorModal(false);
-    } catch (err) {
-      setErrorMessage(err?.message || "Failed to load supervisors");
-      setShowErrorModal(true);
-    }
-  };
-
   // Filter and search functionality
   useEffect(() => {
     let filtered = supervisors;

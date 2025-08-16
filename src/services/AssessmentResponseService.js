@@ -52,7 +52,7 @@ class AssessmentResponseService {
   async getKompetensi(subjectid, assid) {
     const { data, error } = await supabase
       .from("assessment_responses")
-      .select("*,indicator_id(competency_id(name))")
+      .select("*,indicator_id(competency_id(name)),assessment_id(self_weight,supervisor_weight)")
       .eq("assessment_id", assid)
       .eq("subject_profile_id", subjectid);
     if (error) throw error;

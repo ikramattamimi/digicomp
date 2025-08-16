@@ -14,6 +14,7 @@ import {
   Select,
 } from "flowbite-react";
 import AuthService from "../../services/AuthService";
+import myImage from "../../assets/logo1.png"
 
 const LoginPage = () => {
   const [currentLoginForm, setCurrentLoginForm] = useState([]);
@@ -34,8 +35,8 @@ const LoginPage = () => {
 
   return (
     <div className="m-10 flex items-center justify-center gap-10">
-      <div className="w-150 h-150 bg-amber-400">
-        <img></img>
+      <div className="w-150 h-150">
+        <img className="object-cover w-150 h-150" src={myImage}></img>
       </div>
       <Card className="w-fit h-fit bg-white dark:bg-gray-800">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">

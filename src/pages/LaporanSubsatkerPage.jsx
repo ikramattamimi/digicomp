@@ -36,11 +36,13 @@ const LaporanSubsatkerPage = () => {
   };
 
   const forceReRender = (id) => {
+    const myArray = [];
     setShow(
       <LaporanAnggotaPage
         id={id}
         userData={forceReRender2}
         assasmentId={assasmentId}
+        cntId={myArray}
       />
     );
     setMessage("hidden");
@@ -58,7 +60,7 @@ const LaporanSubsatkerPage = () => {
 
   const handleChange = (id) => {
     setassasmentId(id);
-    forceReRender2()
+    forceReRender2();
 
     if (subsatkerPage == null) {
       setSubsatkerPage(<SubsatkerPage assasmentId={id} />);
@@ -94,7 +96,7 @@ const LaporanSubsatkerPage = () => {
               ...prevArray1,
               { id: sup.assessment_id.id, nama: sup.assessment_id.name },
             ]);
-            console.log(assa);
+            //console.log(assa);
           }
         }
       });
