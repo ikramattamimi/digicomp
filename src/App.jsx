@@ -39,7 +39,6 @@ function App() {
     const fetchUser = async () => {
       try {
         const loggedUser = await AuthService.checkUser();
-        console.log("Authenticated User:", loggedUser);
         setAuthenticatedUser(loggedUser || {});
       } catch (error) {
         console.error("Auth check failed:", error);
