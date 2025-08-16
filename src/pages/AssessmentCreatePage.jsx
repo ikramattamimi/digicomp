@@ -334,7 +334,7 @@ const AssessmentCreatePage = () => {
                     )}
 
                     {/* Assessment Weights */}
-                    <div className="mb-4">
+                    <div className="mb-4" hidden>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="self_weight">
@@ -410,7 +410,7 @@ const AssessmentCreatePage = () => {
 
 
                     {/* Rating Scale Selection */}
-                    <div className="mb-4">
+                    <div className="mb-4" hidden>
                       <Label htmlFor="configuration">
                         Skema Penilaian <span className="text-red-600">*</span>
                       </Label>
@@ -424,7 +424,7 @@ const AssessmentCreatePage = () => {
                       >
                         <option value="">Pilih Skema Penilaian</option>
                         {RATING_TYPE.map((scale) => (
-                          <option key={scale.value} value={scale.value}>
+                          <option key={scale.value} value={scale.value} selected={scale.value === RATING_TYPE[0].value}>
                             {scale.label}
                           </option>
                         ))}
@@ -510,14 +510,6 @@ const AssessmentCreatePage = () => {
                   >
                     Batal
                   </Button>
-                </div>
-
-                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    <strong>Catatan:</strong> Penilaian akan dibuat dalam
-                    status Draft. Anda dapat menambah peserta dan
-                    mempublikasikannya nanti.
-                  </p>
                 </div>
               </Card>
             </div>

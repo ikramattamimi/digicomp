@@ -106,7 +106,7 @@ const AssessmentTable = ({
           Untuk memulai, buat penilaian baru.
         </p>
         <div className="mt-6">
-          <Link to="/assessment/create">
+          <Link to="/penilaian/create">
             <Button color="blue">Buat Penilaian</Button>
           </Link>
         </div>

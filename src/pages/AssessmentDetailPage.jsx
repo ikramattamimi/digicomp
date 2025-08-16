@@ -208,8 +208,8 @@ const AssessmentDetailPage = () => {
             { label: 'Penilaian', href: '/penilaian', icon: ClipboardCheck },
             { label: assessment?.name || 'Detail Penilaian', icon: Settings }
           ]}
-          title={assessment?.name || 'Detail Penilaian'}
-          subtitle={assessment ? formatAssessmentPeriod(assessment.start_date, assessment.end_date) : 'Informasi detail penilaian'}
+          // title={assessment?.name || 'Detail Penilaian'}
+          // subtitle={assessment ? formatAssessmentPeriod(assessment.start_date, assessment.end_date) : 'Informasi detail penilaian'}
           showExportButton={false}
         />
 
@@ -414,7 +414,7 @@ const AssessmentDetailPage = () => {
           >
             <div className="space-y-6">
               {/* Status & Progress Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4" hidden>
                 {/* Total Participants */}
                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-700">
                   <div className="flex items-center justify-between">
@@ -634,7 +634,7 @@ const AssessmentDetailPage = () => {
                     </div>
 
                     {assessment?.configuration && (
-                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600" hidden>
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                           Konfigurasi Teknis
                         </label>

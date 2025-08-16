@@ -24,13 +24,13 @@ import {
 } from "lucide-react";
 import AssessmentStatusBadge from "../AssessmentStatusBadge.jsx";
 import { formatAssessmentPeriod } from "../../../utils/assessmentUtils";
-import { ASSESSMENT_STATUS } from "../../../constants/assessmentConstants";
+import {
+  ASSESSMENT_STATUS,
+  USER_POSITION,
+} from "../../../constants/assessmentConstants";
 import { useUserContext } from "../../../contexts/UserContext.js";
 
-const StaffAssessmentTable = ({
-  assessments,
-  loading,
-}) => {
+const StaffAssessmentTable = ({ assessments, loading }) => {
   const [sortField, setSortField] = useState("start_date");
   const [sortDirection, setSortDirection] = useState("desc");
 
@@ -73,47 +73,61 @@ const StaffAssessmentTable = ({
   // Get assessment period status
   const getAssessmentPeriodStatus = (assessment) => {
     if (!assessment) return null;
-    
+
     const now = new Date();
     const startDate = new Date(assessment.start_date);
     const endDate = new Date(assessment.end_date);
-    
+
     if (now < startDate) {
-      return { status: 'upcoming', label: 'Akan Dimulai', color: 'warning' };
+      return { status: "upcoming", label: "Akan Dimulai", color: "warning" };
     } else if (now > endDate) {
-      return { status: 'ended', label: 'Berakhir', color: 'failure' };
+      return { status: "ended", label: "Berakhir", color: "failure" };
     } else {
-      return { status: 'active', label: 'Berlangsung', color: 'success' };
+      return { status: "active", label: "Berlangsung", color: "success" };
     }
   };
 
   // Check if user can fill assessment
   const canFillAssessment = (assessment) => {
     if (!assessment) return false;
-    
+
     const isActive = assessment.status === ASSESSMENT_STATUS.IN_PROGRESS;
     const now = new Date();
     const startDate = new Date(assessment.start_date);
     const endDate = new Date(assessment.end_date);
     const isInPeriod = now >= startDate && now <= endDate;
-    const isSubmitted = assessment?.assessment_participants[0]?.status === 'submitted';
 
-    return isActive && isInPeriod && !isSubmitted;
+    // filter assessments participant bagi user saat ini
+    const userParticipation = assessment?.assessment_participants.find(
+      (participant) => participant.assessor_profile_id === user.id
+    );
+
+    const isSubmitted = userParticipation?.status === "submitted";
+
+    return (
+      isActive &&
+      isInPeriod &&
+      !isSubmitted &&
+      user.position_type === USER_POSITION.BAWAHAN
+    );
   };
 
   // Get participation status
   const getParticipationStatus = (assessment) => {
-    // This would come from the API response indicating user's participation
-    // For now, we'll use placeholder logic
-    if (assessment?.assessment_participants[0]?.status) {
-      const self_completed = assessment.assessment_participants[0].status;
-      
+    // filter assessments participant bagi user saat ini
+    const userParticipation = assessment?.assessment_participants.find(
+      (participant) => participant.assessor_profile_id === user.id
+    );
+
+    if (userParticipation) {
+      const self_completed = userParticipation.status;
+
       if (self_completed) {
-        return { status: 'submitted', label: 'Selesai', color: 'success' };
-      } 
+        return { status: "submitted", label: "Selesai", color: "success" };
+      }
     }
-    
-    return { status: 'not_started', label: 'Belum Mulai', color: 'gray' };
+
+    return { status: "not_started", label: "Belum Mengisi", color: "gray" };
   };
 
   // Render loading state
@@ -226,10 +240,9 @@ const StaffAssessmentTable = ({
                     </Link>
                     {assessment.description && (
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        {assessment.description.length > 60 
-                          ? `${assessment.description.substring(0, 60)}...` 
-                          : assessment.description
-                        }
+                        {assessment.description.length > 60
+                          ? `${assessment.description.substring(0, 60)}...`
+                          : assessment.description}
                       </p>
                     )}
                   </div>
@@ -244,17 +257,31 @@ const StaffAssessmentTable = ({
                     )}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {Math.ceil((new Date(assessment.end_date) - new Date()) / (1000 * 60 * 60 * 24))} hari tersisa
+                    {Math.ceil(
+                      (new Date(assessment.end_date) - new Date()) /
+                        (1000 * 60 * 60 * 24)
+                    )}{" "}
+                    hari tersisa
                   </div>
                 </TableCell>
 
                 {/* Period Status */}
                 <TableCell>
                   {periodStatus && (
-                    <Badge color={periodStatus.color} size="sm" className="flex items-center gap-1 w-fit">
-                      {periodStatus.status === 'active' && <Clock className="w-3 h-3" />}
-                      {periodStatus.status === 'upcoming' && <AlertCircle className="w-3 h-3" />}
-                      {periodStatus.status === 'ended' && <CheckCircle className="w-3 h-3" />}
+                    <Badge
+                      color={periodStatus.color}
+                      size="sm"
+                      className="flex items-center gap-1 w-fit"
+                    >
+                      {periodStatus.status === "active" && (
+                        <Clock className="w-3 h-3" />
+                      )}
+                      {periodStatus.status === "upcoming" && (
+                        <AlertCircle className="w-3 h-3" />
+                      )}
+                      {periodStatus.status === "ended" && (
+                        <CheckCircle className="w-3 h-3" />
+                      )}
                       {periodStatus.label}
                     </Badge>
                   )}
@@ -262,10 +289,20 @@ const StaffAssessmentTable = ({
 
                 {/* Participation Status */}
                 <TableCell>
-                  <Badge color={participationStatus.color} size="sm" className="flex items-center gap-1 w-fit">
-                    {participationStatus.status === 'completed' && <CheckCircle className="w-3 h-3" />}
-                    {participationStatus.status === 'partial' && <Clock className="w-3 h-3" />}
-                    {participationStatus.status === 'not_started' && <Play className="w-3 h-3" />}
+                  <Badge
+                    color={participationStatus.color}
+                    size="sm"
+                    className="flex items-center gap-1 w-fit"
+                  >
+                    {participationStatus.status === "completed" && (
+                      <CheckCircle className="w-3 h-3" />
+                    )}
+                    {participationStatus.status === "partial" && (
+                      <Clock className="w-3 h-3" />
+                    )}
+                    {participationStatus.status === "not_started" && (
+                      <Play className="w-3 h-3" />
+                    )}
                     {participationStatus.label}
                   </Badge>
                 </TableCell>
@@ -274,20 +311,26 @@ const StaffAssessmentTable = ({
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Link to={`/penilaian/${assessment.id}`}>
-                      <Button size="xs" color="gray" className="flex items-center gap-1">
-                        <Eye className="w-3 h-3" />
-                        Detail
-                      </Button>
-                    </Link>
-                    
-                    {canFill && (
-                      <Link to={`/penilaian/${assessment.id}/self`}>
-                        <Button size="xs" color="blue" className="flex items-center gap-1">
+                      {canFill ? (
+                        <Button
+                          size="xs"
+                          color="blue"
+                          className="flex items-center gap-1"
+                        >
                           <Play className="w-3 h-3" />
                           Isi
                         </Button>
-                      </Link>
-                    )}
+                      ) : (
+                        <Button
+                          size="xs"
+                          color="gray"
+                          className="flex items-center gap-1"
+                        >
+                          <Eye className="w-3 h-3" />
+                          Detail
+                        </Button>
+                      )}
+                    </Link>
                   </div>
                 </TableCell>
               </TableRow>
@@ -300,8 +343,8 @@ const StaffAssessmentTable = ({
       {assessments.length > 0 && (
         <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200">
           <div className="text-sm text-gray-700 dark:text-gray-300">
-            Menampilkan <span className="font-medium">{assessments.length}</span>{" "}
-            penilaian
+            Menampilkan{" "}
+            <span className="font-medium">{assessments.length}</span> penilaian
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
             Terakhir diperbarui: {new Date().toLocaleTimeString("id-ID")}

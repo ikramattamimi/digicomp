@@ -393,7 +393,7 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
                       <Link
                         to={`/penilaian/${assessmentId}/${subordinate.id}`}
                       >
-                        {subordinate.supervisorAssessment ? (
+                        {!subordinate.supervisorAssessment ? (
                           <Button size="xs" color="blue">
                             <Edit className="w-3 h-3 mr-1" />
                             Nilai

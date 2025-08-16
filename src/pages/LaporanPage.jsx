@@ -44,6 +44,7 @@ const LaporanPage = () => {
       }
 
       const dataResponse = await AssessmentResponseService.getAssesment();
+      console.log('dataResponse', dataResponse);
       handleChange(dataResponse[0].assessment_id.id);
 
       dataResponse.map((sup) => {

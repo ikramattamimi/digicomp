@@ -86,9 +86,7 @@ function App() {
             <Route path="admin" element={<AdminPage />} />
             <Route path="akun" element={<AccountPage />} />
             <Route path="assessment" element={<AssessmentPage />} />
-            {/* New: Assessment forms */}
-            <Route path="penilaian/:id/self" element={<SelfAssessmentFormPage />} />
-            <Route path="penilaian/:id/supervisor/:subjectId" element={<SupervisorAssessmentFormPage />} />
+            <Route path="penilaian/:id/:subjectId" element={<SupervisorAssessmentFormPage />} />
 
             <Route path="laporanIndividu" element={<LaporanPage />} />
             <Route path="laporanSubsatker" element={<LaporanSubsatkerPage />} />

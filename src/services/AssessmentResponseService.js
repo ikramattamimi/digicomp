@@ -273,14 +273,14 @@ const AssessmentResponseService = {
     const { data, error } = await supabase
       .from("assessment_responses")
       .select(
-        `*, 
+        `id, assessment_id, 
         subject_profile_id(subdirectorat_id,id), 
-        assessment_id(id,name,status)`
+        assessments(id,name,status)`
       )
       // .neq("status", ASSESSMENT_STATUS.DRAFT)
-      .neq("assessment_id.status", ASSESSMENT_STATUS.DRAFT)
-      .eq("assessment_id.is_active", true)
-      .is("assessment_id.deleted_at", null)
+      // .neq("assessments.status", ASSESSMENT_STATUS.DRAFT)
+      // .eq("assessments.is_active", true)
+      // .is("assessments.deleted_at", null)
       // .is('deleted_at', null);
     if (error) throw error;
     return data;
@@ -289,8 +289,12 @@ const AssessmentResponseService = {
   async getMyResponse(id) {
     const { data, error } = await supabase
       .from("assessment_responses")
-      .select("*")
-      .eq("subject_profile_id", id);
+      .select(`*, 
+        assessments(id,name,status)`)
+      .eq("subject_profile_id", id)
+      // .neq("assessments.status", ASSESSMENT_STATUS.DRAFT)
+      // .eq("assessments.is_active", true)
+      // .is("assessments.deleted_at", null)
     if (error) throw error;
     return data;
   },
