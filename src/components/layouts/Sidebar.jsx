@@ -158,7 +158,7 @@ const Sidebar = ({ collapsed }) => {
             </SidebarItem>
             <SidebarItem
               as={NavLink}
-              to="/Akun"
+              to="/akun"
               icon={() => <UserCheck size={20} />}
               active={location.pathname.startsWith("/Akun")}
             >

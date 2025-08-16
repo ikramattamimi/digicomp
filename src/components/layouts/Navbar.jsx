@@ -25,9 +25,12 @@ import {
 
 import AuthService from "../../services/AuthService";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const TopNavbar = ({ collapsed, setCollapsed }) => {
   const [account, setAccount] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSupervisors = async () => {
@@ -36,8 +39,6 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
         setAccount(checkUser);
       } catch (err) {
         console.error("Failed to fetch supervisors:", err);
-        setErrorMessage(err?.message || "Failed to load supervisors");
-        setShowErrorModal(true);
       }
     };
     fetchSupervisors();
@@ -47,8 +48,7 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
     try {
       await AuthService.signUserOut();
     } catch (err) {
-      setModalError(err?.message || "Failed to save supervisor");
-      setShowModal(true);
+      console.error("Failed to log out:", err);
     }
   };
 
@@ -78,30 +78,13 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
 
         <NavbarBrand href="/">
           <span className="self-center whitespace-nowrap text-xl font-semibold text-gray-900 dark:text-white">
-            Profesi
+            Profesi Ditpamobvit
           </span>
         </NavbarBrand>
       </div>
       <div className="flex items-center gap-3 md:order-2">
         {/* Dark Mode Toggle */}
         <DarkThemeToggle />
-
-        {/* Search Button */}
-        <button
-          className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 transition-colors"
-          title="Search"
-        >
-          <Search size={20} />
-        </button>
-
-        {/* Notifications */}
-        <button
-          className="p-2 text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 relative transition-colors"
-          title="Notifications"
-        >
-          <Bell size={20} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
 
         {/* User Profile Dropdown */}
         <Dropdown
@@ -122,9 +105,7 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
               {userProfile.role} • {userProfile.department}
             </span>
           </DropdownHeader>
-          <DropdownItem icon={User}>Profile</DropdownItem>
-          <DropdownItem icon={Settings}>Settings</DropdownItem>
-          <DropdownItem icon={HelpCircle}>Help Center</DropdownItem>
+          <DropdownItem icon={User} onClick={() => navigate("/akun")}>Akun</DropdownItem>
           <DropdownDivider />
           <DropdownItem icon={LogOut} onClick={handleLogOut}>
             Sign out
