@@ -85,7 +85,7 @@ const LaporanSubsatkerPage = () => {
           setPage("show");
         }
 
-        const dataResponse = await AssessmentResponseService.getHistoryAssesment();
+        const dataResponse = await AssessmentResponseService.getAssesment();
         
         if (!dataResponse || dataResponse.length === 0) {
           setLoading(false);
