@@ -289,4 +289,4 @@ const AssessmentResponseService = {
   }
 }
 
-export default new AssessmentResponseService();
+export default AssessmentResponseService;
