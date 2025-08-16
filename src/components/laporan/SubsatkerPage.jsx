@@ -35,8 +35,8 @@ const SubsatkerPage = forwardRef((props, ref) => {
 
   const [dataResponse, setdataResponse] = useState([]); // nilai dari mentor
 
-  const bBawahan = 0.3;
-  const bAtasan = 0.7;
+  const bBawahan = props.sw;
+  const bAtasan = props.aw;
 
   const showComp = [];
   const [showGrap, setShowGrap] = useState(); // nilai dari mentor

@@ -30,7 +30,7 @@ const LaporanSubsatkerPage = () => {
   const [assasmentId, setassasmentId] = useState(5); // nilai dari mentor
   const [subsatkerPage, setSubsatkerPage] = useState(); // nilai dari mentor
 
-  const forceReRender2 = (id) => {
+  const closePage = (id) => {
     setMessage("");
     setShow();
   };
@@ -40,8 +40,10 @@ const LaporanSubsatkerPage = () => {
     setShow(
       <LaporanAnggotaPage
         id={id}
-        userData={forceReRender2}
-        assasmentId={assasmentId}
+        userData={closePage}
+        assasmentId={assasmentId.id}
+        sw={assasmentId.self_weight}
+        aw={assasmentId.supervisor_weight}
         cntId={myArray}
       />
     );
@@ -58,16 +60,37 @@ const LaporanSubsatkerPage = () => {
     }
   };
 
-  const handleChange = (id) => {
-    setassasmentId(id);
-    forceReRender2();
+  const handleChange = (index) => {
+    closePage();
+    const assdetail = assa[index];
 
-    if (subsatkerPage == null) {
-      setSubsatkerPage(<SubsatkerPage assasmentId={id} />);
-    } else {
+    if (assdetail) {
+      setassasmentId(assdetail);
+      console.log(assdetail);
+    }
+
+    if (subsatkerPage == null && assdetail) {
+      const myArray = [];
+      setSubsatkerPage(
+        <SubsatkerPage
+          assasmentId={assdetail.id}
+          sw={assdetail.self_weight}
+          aw={assdetail.supervisor_weight}
+          cntId={myArray}
+        />
+      );
+    } else if (subsatkerPage != null && assdetail) {
       setSubsatkerPage(<div></div>);
       setTimeout(function () {
-        setSubsatkerPage(<SubsatkerPage assasmentId={id} />);
+        const myArray = [];
+        setSubsatkerPage(
+          <SubsatkerPage
+            assasmentId={assdetail.id}
+            sw={assdetail.self_weight}
+            aw={assdetail.supervisor_weight}
+            cntId={myArray}
+          />
+        );
       }, 100);
     }
   };
@@ -94,7 +117,12 @@ const LaporanSubsatkerPage = () => {
             showComp.push(sup.assessment_id.id);
             setassa((prevArray1) => [
               ...prevArray1,
-              { id: sup.assessment_id.id, nama: sup.assessment_id.name },
+              {
+                id: sup.assessment_id.id,
+                nama: sup.assessment_id.name,
+                self_weight: sup.assessment_id.self_weight,
+                supervisor_weight: sup.assessment_id.supervisor_weight,
+              },
             ]);
             //console.log(assa);
           }
@@ -140,8 +168,9 @@ const LaporanSubsatkerPage = () => {
             onChange={(e) => handleChange(e.target.value)}
             className="m-4 w-100"
           >
-            {assa.map((sub) => (
-              <option value={sub.id}>{sub.nama}</option>
+            <option value={-1}>PILIH PENILAIAN</option>
+            {assa.map((sub, index) => (
+              <option value={index}>{sub.nama}</option>
             ))}
           </Select>
 

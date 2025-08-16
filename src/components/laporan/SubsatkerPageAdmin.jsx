@@ -35,8 +35,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
 
   const [dataResponse, setdataResponse] = useState([]); // nilai dari mentor
 
-  const bBawahan = 0.3;
-  const bAtasan = 0.7;
+  const bBawahan = props.sw;
+  const bAtasan = props.aw;
 
   const showComp = [];
   const [showGrap, setShowGrap] = useState(); // nilai dari mentor
@@ -417,7 +417,10 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
   };
 
   const getSaran = (kompetensi) => {
-    if (kompetensi == "Integritas" ||kompetensi == "Komitmen terhadap Organisasi") {
+    if (
+      kompetensi == "Integritas" ||
+      kompetensi == "Komitmen terhadap Organisasi"
+    ) {
       return (
         <div>
           <strong>Kompetensi Integritas / Komitmen terhadap Organisasi</strong>{" "}
@@ -436,43 +439,54 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           </div>
         </div>
       );
-    }else if (kompetensi == "Orientasi Pada Pelayanan" ||kompetensi == "Komunikasi Dan Perekat Bangsa") {
+    } else if (
+      kompetensi == "Orientasi Pada Pelayanan" ||
+      kompetensi == "Komunikasi Dan Perekat Bangsa"
+    ) {
       return (
         <div>
-          <strong>Kompetensi Orientasi Pada Pelayanan / Komunikasi Dan Perekat Bangsa</strong>{" "}
+          <strong>
+            Kompetensi Orientasi Pada Pelayanan / Komunikasi Dan Perekat Bangsa
+          </strong>{" "}
           memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
               <div>
-                •	Pelatihan Layanan Prima dan Komunikasi Positif di Titik Pengamanan
+                • Pelatihan Layanan Prima dan Komunikasi Positif di Titik
+                Pengamanan
               </div>
               <div>
-                •	Pelatihan Interaksi Inklusif dan Toleransi di Lingkungan Obvit
+                • Pelatihan Interaksi Inklusif dan Toleransi di Lingkungan Obvit
               </div>
             </p>
           </div>
         </div>
       );
-    }else if (kompetensi == "Pengambilan Keputusan" ||kompetensi == "Perencanaan Dan Pengorganisasian") {
+    } else if (
+      kompetensi == "Pengambilan Keputusan" ||
+      kompetensi == "Perencanaan Dan Pengorganisasian"
+    ) {
       return (
         <div>
-          <strong>Kompetensi Pengambilan Keputusan / Perencanaan Dan Pengorganisasian</strong>
+          <strong>
+            Kompetensi Pengambilan Keputusan / Perencanaan Dan Pengorganisasian
+          </strong>
           memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
-              <div>
-                •	Pelatihan Pengambilan Keputusan Cepat di Lapangan
-              </div>
-              <div>
-                •	Pelatihan Penyusunan Rencana Tugas Sederhana
-              </div>
+              <div>• Pelatihan Pengambilan Keputusan Cepat di Lapangan</div>
+              <div>• Pelatihan Penyusunan Rencana Tugas Sederhana</div>
             </p>
           </div>
         </div>
       );
-    }else if (kompetensi == "Kepemimpinan" ||kompetensi == "Kerja Sama"||kompetensi == "Pengawasan") {
+    } else if (
+      kompetensi == "Kepemimpinan" ||
+      kompetensi == "Kerja Sama" ||
+      kompetensi == "Pengawasan"
+    ) {
       return (
         <div>
           <strong>Kompetensi Kepemimpinan / Kerja Sama / Pengawasan</strong>
@@ -480,17 +494,13 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
-              <div>
-                •	Pelatihan Kepemimpinan Lapangan dan Supervisi Efektif
-              </div>
-              <div>
-                •	Pelatihan Kolaborasi Taktis dalam Situasi Obvit
-              </div>
+              <div>• Pelatihan Kepemimpinan Lapangan dan Supervisi Efektif</div>
+              <div>• Pelatihan Kolaborasi Taktis dalam Situasi Obvit</div>
             </p>
           </div>
         </div>
       );
-    }else if (kompetensi == "Mengelola Perubahan") {
+    } else if (kompetensi == "Mengelola Perubahan") {
       return (
         <div>
           <strong>Kompetensi Mengelola Perubahan</strong>
@@ -498,11 +508,9 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
+              <div>• Pelatihan Adaptasi Operasional di Situasi Krisis</div>
               <div>
-                •	Pelatihan Adaptasi Operasional di Situasi Krisis
-              </div>
-              <div>
-                •	Pelatihan Perubahan Sosial dan Teknologi di Lingkup Obvit
+                • Pelatihan Perubahan Sosial dan Teknologi di Lingkup Obvit
               </div>
             </p>
           </div>

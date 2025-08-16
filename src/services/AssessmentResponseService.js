@@ -72,7 +72,7 @@ class AssessmentResponseService {
     const { data, error } = await supabase
       .from("assessment_responses")
       .select(
-        "*, subject_profile_id(subdirectorat_id,id), assessment_id(id,name)"
+        "*, subject_profile_id(subdirectorat_id,id), assessment_id(id,name,self_weight,supervisor_weight)"
       );
     if (error) throw error;
     return data;

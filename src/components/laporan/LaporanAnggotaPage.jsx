@@ -35,8 +35,8 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
 
   const [dataResponse, setdataResponse] = useState([]); // nilai dari mentor
 
-  const bBawahan = 0.3;
-  const bAtasan = 0.7;
+  const bBawahan = props.sw;
+  const bAtasan = props.aw;
 
   const showComp = [];
   const showNPeserta = [];
@@ -47,11 +47,10 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   const [showRec, setShowRec] = useState(); // nilai dari mentor
 
   setTimeout(function () {
-    if(props.cntId.length < 100 ){
-      props.cntId.push(0)
+    if (props.cntId.length < 100) {
+      props.cntId.push(0);
       setShowRec(rechtml);
     }
-    
   }, 100);
 
   const rechtml = () => {
