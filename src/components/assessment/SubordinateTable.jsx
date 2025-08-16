@@ -352,9 +352,6 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
                         <div className="font-medium">
                           {subordinate.name}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {subordinate.email}
-                        </div>
                       </div>
                     </div>
                   </TableCell>

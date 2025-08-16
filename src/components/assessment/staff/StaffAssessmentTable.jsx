@@ -211,7 +211,7 @@ const StaffAssessmentTable = ({ assessments, loading }) => {
             <TableHeadCell>Status</TableHeadCell>
 
             {/* Participation Status */}
-            <TableHeadCell>Status Partisipasi</TableHeadCell>
+            { user.position_type === USER_POSITION.BAWAHAN && <TableHeadCell>Status Partisipasi</TableHeadCell>}
 
             {/* Actions */}
             <TableHeadCell>Aksi</TableHeadCell>
@@ -288,24 +288,26 @@ const StaffAssessmentTable = ({ assessments, loading }) => {
                 </TableCell>
 
                 {/* Participation Status */}
-                <TableCell>
-                  <Badge
-                    color={participationStatus.color}
-                    size="sm"
-                    className="flex items-center gap-1 w-fit"
-                  >
-                    {participationStatus.status === "completed" && (
-                      <CheckCircle className="w-3 h-3" />
-                    )}
-                    {participationStatus.status === "partial" && (
-                      <Clock className="w-3 h-3" />
-                    )}
-                    {participationStatus.status === "not_started" && (
-                      <Play className="w-3 h-3" />
-                    )}
-                    {participationStatus.label}
-                  </Badge>
-                </TableCell>
+                {user.position_type === USER_POSITION.BAWAHAN && (
+                  <TableCell>
+                    <Badge
+                      color={participationStatus.color}
+                      size="sm"
+                      className="flex items-center gap-1 w-fit"
+                    >
+                      {participationStatus.status === "completed" && (
+                        <CheckCircle className="w-3 h-3" />
+                      )}
+                      {participationStatus.status === "partial" && (
+                        <Clock className="w-3 h-3" />
+                      )}
+                      {participationStatus.status === "not_started" && (
+                        <Play className="w-3 h-3" />
+                      )}
+                      {participationStatus.label}
+                    </Badge>
+                  </TableCell>
+                )}
 
                 {/* Actions */}
                 <TableCell>

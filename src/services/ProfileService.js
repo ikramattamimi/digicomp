@@ -53,7 +53,7 @@ class ProfileService {
   async getMyAccount(uuid) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, subdirectorats(name)')
       .eq('id', uuid)
       .is('deleted_at', null)
       .single()
@@ -129,7 +129,7 @@ class ProfileService {
   async getById(id) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, subdirectorats(name)')
       .eq('id', id)
       .single()
     if (error) throw error

@@ -38,6 +38,7 @@ const SupervisorAssessmentFormPage = () => {
         if (subjectId) {
           const subjectData = await ProfileService.getById(subjectId);
           setSubject(subjectData);
+          console.log(subjectData)
         }
       } catch (err) {
         setError(err?.message || 'Gagal memuat data');
@@ -108,7 +109,7 @@ const SupervisorAssessmentFormPage = () => {
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                   Informasi Personel yang Dinilai
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <InfoRow label="Nama Personel" value={subject?.name} />
                   <InfoRow label="NRP" value={subject?.nrp} />
                   <InfoRow label="Posisi" value={subject?.position} />
@@ -116,7 +117,6 @@ const SupervisorAssessmentFormPage = () => {
                     label="Sub Direktorat" 
                     value={subject?.subdirectorats?.name || subject?.subdirectorat_name} 
                   />
-                  <InfoRow label="Email" value={subject?.email} />
                 </div>
               </div>
             )}
@@ -127,7 +127,7 @@ const SupervisorAssessmentFormPage = () => {
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
                   Informasi Penilai (Atasan)
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <InfoRow label="Nama Atasan" value={supervisor?.name} />
                   <InfoRow label="NRP" value={supervisor?.nrp} />
                   <InfoRow label="Posisi" value={supervisor?.position} />
@@ -135,7 +135,6 @@ const SupervisorAssessmentFormPage = () => {
                     label="Sub Direktorat" 
                     value={supervisor?.subdirectorats?.name || supervisor?.subdirectorat_name} 
                   />
-                  <InfoRow label="Email" value={supervisor?.email} />
                 </div>
               </div>
             )}
