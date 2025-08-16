@@ -26,8 +26,6 @@ const LaporanSubsatkerPage = () => {
   const subDirektoratTableRef = useRef();
   const [show, setShow] = useState();
   const [message, setMessage] = useState("0");
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(0);
 
   const [assasmentId, setassasmentId] = useState(5); // nilai dari mentor
   const [subsatkerPage, setSubsatkerPage] = useState(); // nilai dari mentor
@@ -75,7 +73,6 @@ const LaporanSubsatkerPage = () => {
   const [page, setPage] = useState("hidden");
   let showComp = [];
   const [assa, setassa] = useState([]);
-  
   useEffect(() => {
     const fetchUserData = async () => {
       const checkUser = await AuthService.checkUser();
@@ -86,11 +83,12 @@ const LaporanSubsatkerPage = () => {
       const dataResponse = await AssessmentResponseService.getAssesment();
       handleChange(dataResponse[0].assessment_id.id);
 
-      dataResponse.map(async (sup) => {
+      dataResponse.map((sup) => {
         if (
           sup.subject_profile_id.subdirectorat_id == checkUser.subdirectorat_id
         ) {
-          if (!showComp.includes(sup.assessment_id.id)){
+          if (showComp.includes(sup.assessment_id.id)) {
+          } else {
             showComp.push(sup.assessment_id.id);
             setassa((prevArray1) => [
               ...prevArray1,
@@ -99,34 +97,8 @@ const LaporanSubsatkerPage = () => {
             console.log(assa);
           }
         }
-
-        const dataResponse = await AssessmentResponseService.getAssesment();
-        
-        if (!dataResponse || dataResponse.length === 0) {
-          setLoading(false);
-          return;
-        }
-
-        handleChange(dataResponse[0].assessment_id.id);
-
-        const filteredAssessments = [];
-        dataResponse.forEach((sup) => {
-          if (
-            sup.subject_profile_id.subdirectorat_id == checkUser.subdirectorat_id
-          ) {
-            if (!showComp.includes(sup.assessment_id.id)) {
-              showComp.push(sup.assessment_id.id);
-              filteredAssessments.push({
-                id: sup.assessment_id.id,
-                nama: sup.assessment_id.name
-              });
-            }
-          }
-        });
-
-        setassa(filteredAssessments);
       });
-    }
+    };
     fetchUserData();
   }, []);
 
