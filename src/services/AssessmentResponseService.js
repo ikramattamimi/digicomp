@@ -97,6 +97,14 @@ class AssessmentResponseService {
     if (error) throw error;
     return data;
   }
+  async getMentorIdasAdmin(assid) {
+    const { data, error } = await supabase
+      .from("assessment_responses")
+      .select("*, assessor_profile_id(subdirectorat_id,id)")
+      .eq("assessment_id", assid)
+    if (error) throw error;
+    return data;
+  }
 }
 
 export default new AssessmentResponseService();

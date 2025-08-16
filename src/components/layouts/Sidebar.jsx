@@ -190,9 +190,9 @@ const Sidebar = ({ collapsed }) => {
             <SidebarItem
               className={admin}
               as={NavLink}
-              to="/laporanSubsatker"
+              to="/laporanSubsatkerAdmin"
               icon={() => <Award size={20} />}
-              active={location.pathname.startsWith("/laporanSubsatker")}
+              active={location.pathname.startsWith("/laporanSubsatkerAdmin")}
             >
               Laporan & Hasil
             </SidebarItem>
