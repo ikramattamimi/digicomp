@@ -30,7 +30,8 @@ import { useEffect, useState } from "react";
 const Sidebar = ({ collapsed }) => {
   const [admin, setAdmin] = useState("hidden");
   const [top, setTop] = useState("hidden");
-  const [staff, setStaff] = useState("hidden");
+  const [staffAtasan, setStaffAtasan] = useState("hidden");
+  const [staffBawahan, setStaffBawahan] = useState("hidden");
 
   useEffect(() => {
     const fetchSupervisors = async () => {
@@ -38,9 +39,11 @@ const Sidebar = ({ collapsed }) => {
         const checkUser = await AuthService.checkUser();
         if (checkUser.position_type == "ADMIN") {
           setAdmin("show");
-        } else if (checkUser.position_type == "ATASAN" || checkUser.position_type == "BAWAHAN") {
-          setStaff("show");
-        }if (checkUser.position_type == "TOP MANAGEMENT") {
+        } else if (checkUser.position_type == "ATASAN") {
+          setStaffAtasan("show");
+        }else if (checkUser.position_type == "BAWAHAN") {
+          setStaffBawahan("show");
+        }else if (checkUser.position_type == "TOP MANAGEMENT") {
           setTop("show");
         }
       } catch (err) {
@@ -124,7 +127,7 @@ const Sidebar = ({ collapsed }) => {
               icon={() => <Building size={20} />}
               active={location.pathname.startsWith("/sub-direktorat")}
             >
-              Sub Direktorat
+              Subsatker
             </SidebarItem>
             <SidebarItem
               className={admin}
@@ -133,7 +136,7 @@ const Sidebar = ({ collapsed }) => {
               icon={() => <Award size={20} />}
               active={location.pathname.startsWith("/kompetensi")}
             >
-              Kompetensi & Subdimensi
+              Profil Kompetensi
             </SidebarItem>
             <SidebarItem
               className={admin}
@@ -142,7 +145,7 @@ const Sidebar = ({ collapsed }) => {
               icon={() => <UserCheck size={20} />}
               active={location.pathname.startsWith("/staff")}
             >
-              Staff
+              Personel
             </SidebarItem>
             <SidebarItem
               className={top}
@@ -154,7 +157,6 @@ const Sidebar = ({ collapsed }) => {
               Admin
             </SidebarItem>
             <SidebarItem
-              className={staff}
               as={NavLink}
               to="/Akun"
               icon={() => <UserCheck size={20} />}
@@ -162,6 +164,37 @@ const Sidebar = ({ collapsed }) => {
             >
               Akun
             </SidebarItem>
+            <div className="uppercase text-xs font-bold text-gray-500 dark:text-gray-400 px-3 py-2">
+              Laporan
+            </div>
+            <SidebarItem
+              className={staffBawahan}
+              as={NavLink}
+              to="/laporanIndividu"
+              icon={() => <Award size={20} />}
+              active={location.pathname.startsWith("/laporanIndividu")}
+            >
+              Laporan & Hasil
+            </SidebarItem>
+            <SidebarItem
+              className={staffAtasan}
+              as={NavLink}
+              to="/laporanSubsatker"
+              icon={() => <Award size={20} />}
+              active={location.pathname.startsWith("/laporanSubsatker")}
+            >
+              Laporan & Hasil
+            </SidebarItem>
+            <SidebarItem
+              className={admin}
+              as={NavLink}
+              to="/laporanSubsatker"
+              icon={() => <Award size={20} />}
+              active={location.pathname.startsWith("/laporanSubsatker")}
+            >
+              Laporan & Hasil
+            </SidebarItem>
+            
           </SidebarItemGroup>
         </SidebarItems>
 

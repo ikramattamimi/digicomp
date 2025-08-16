@@ -148,9 +148,7 @@ const AccountTable = () => {
       </div>
       <div className="flex flex-col mx-13 my-5">
         <div className="flex flex-col mb-3">
-          <p className="font-medium text-gray-900 dark:text-white">
-            Name
-          </p>
+          <p className="font-medium text-gray-900 dark:text-white">Name</p>
           <p className="font-medium text-gray-600 dark:text-white">
             {account.name}
           </p>
@@ -162,17 +160,19 @@ const AccountTable = () => {
           </p>
         </div>
         <div className="flex flex-col mb-3">
-          <p className="font-medium text-gray-900 dark:text-white">
-            Rank
+          <p className="font-medium text-gray-900 dark:text-white">Pangkat</p>
+          <p className="font-medium text-gray-600 dark:text-white">
+            {account.rank}
           </p>
+        </div>
+        <div className="flex flex-col mb-3">
+          <p className="font-medium text-gray-900 dark:text-white">Jabatan</p>
           <p className="font-medium text-gray-600 dark:text-white">
             {account.position}
           </p>
         </div>
         <div className="flex flex-col mb-3">
-          <p className="font-medium text-gray-900 dark:text-white">
-            Position
-          </p>
+          <p className="font-medium text-gray-900 dark:text-white">Position</p>
           <p className="font-medium text-gray-600 dark:text-white">
             {account.position_type}
           </p>
@@ -185,7 +185,10 @@ const AccountTable = () => {
             {setToNameSubdirectorate(account.subdirectorat_id)}
           </p>
         </div>
-        <div id="supervisorDetail" className={supervisorsDetail + " flex flex-col"}>
+        <div
+          id="supervisorDetail"
+          className={supervisorsDetail + " flex flex-col"}
+        >
           <p className="font-medium text-gray-900 dark:text-white">
             Supervisors
           </p>

@@ -31,6 +31,9 @@ import LoginPage from "./components/layouts/LoginPage.jsx";
 import SupervisorAssessmentDetailPage from "./pages/staff/SupervisorAssessmentDetailPage.jsx";
 import AssessmentResultPage from './pages/AssessmentResultPage';
 
+import LaporanPage from "./pages/LaporanPage.jsx";
+import LaporanSubsatkerPage from "./pages/LaporanSubsatkerPage.jsx";
+
 function App() {
   const [authenticatedUser, setAuthenticatedUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -87,6 +90,9 @@ function App() {
             <Route path="penilaian/:id/self" element={<SelfAssessmentFormPage />} />
             <Route path="penilaian/:id/supervisor/:subjectId" element={<SupervisorAssessmentFormPage />} />
 
+            <Route path="laporanIndividu" element={<LaporanPage />} />
+            <Route path="laporanSubsatker" element={<LaporanSubsatkerPage />} />
+            
           </Route>
           <Route path="login" element={<LoginPage />} />
           <Route path="*" element={<NotFoundPage />} />

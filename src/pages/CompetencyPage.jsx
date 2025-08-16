@@ -45,9 +45,9 @@ const CompetencyPage = () => {
         <PageHeader
           breadcrumbs={[
             { label: "Dashboard", href: "/", icon: Home },
-            { label: "Kompetensi", href: "/kompetensi", icon: Award }
+            { label: "Profil Kompetensi", href: "/kompetensi", icon: Award }
           ]}
-          title="Kompetensi"
+          title="Profil Kompetensi"
           customActions={[
             {
               type: 'button',

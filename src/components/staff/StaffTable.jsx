@@ -34,7 +34,7 @@ import StaffModal from "./StaffModal";
 import ErrorModal from "./ErrorModal";
 
 const StaffTable = forwardRef((props, ref) => {
-  const [subDirektoratS, setSubDirektoratS] = useState();
+  const [subDirektoratS, setSubDirektoratS] = useState(0);
   const [subDirektorat, setSubDirektorat] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
@@ -193,11 +193,12 @@ const StaffTable = forwardRef((props, ref) => {
     try {
       if (modalType === "add") {
         await AuthService.registerStaff({
-          email: setNameToUsername(currentSupervisor.name) + myDomain,
+          email: currentSupervisor.nrp + myDomain,
           password: currentSupervisor.password,
           profile: {
             name: currentSupervisor.name,
             nrp: currentSupervisor.nrp,
+            rank: currentSupervisor.rank,
             position: currentSupervisor.position,
             position_type: currentSupervisor.position_type,
             subdirectorat_id: currentSupervisor.subdirectorat_id,
@@ -217,6 +218,7 @@ const StaffTable = forwardRef((props, ref) => {
         await ProfileService.update(currentSupervisor.id, {
           name: currentSupervisor.name,
           nrp: currentSupervisor.nrp,
+          rank: currentSupervisor.rank,
           email: currentSupervisor.email,
           position: currentSupervisor.position,
           position_type: currentSupervisor.position_type,
@@ -263,11 +265,6 @@ const StaffTable = forwardRef((props, ref) => {
       const words2 = words1.replace(",", "");
       return words2.toLowerCase();
     }
-  };
-
-  const handleTabClick = (tab) => {
-    setSubDirektoratS(tab);
-    // Perform actions specific to the clicked tab
   };
 
   return (
@@ -347,8 +344,8 @@ const StaffTable = forwardRef((props, ref) => {
                               />
                             </TableHeadCell>
                             <TableHeadCell>Name</TableHeadCell>
-                            <TableHeadCell>Username</TableHeadCell>
                             <TableHeadCell>NRP</TableHeadCell>
+                            <TableHeadCell>Pangkat</TableHeadCell>
                             <TableHeadCell>Position</TableHeadCell>
                             <TableHeadCell>Position Type</TableHeadCell>
                             <TableHeadCell>Supervisor</TableHeadCell>
@@ -377,10 +374,8 @@ const StaffTable = forwardRef((props, ref) => {
                                   <TableCell className="font-medium text-gray-900 dark:text-white">
                                     {sup.name}
                                   </TableCell>
-                                  <TableCell>
-                                    {setEmailToUsername(sup.email)}
-                                  </TableCell>
                                   <TableCell>{sup.nrp}</TableCell>
+                                  <TableCell>{sup.rank}</TableCell>
                                   <TableCell>{sup.position}</TableCell>
                                   <TableCell>{sup.position_type}</TableCell>
                                   <TableCell>

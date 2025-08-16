@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Label, TextInput, S
 const  SubDirektoratModal = ({ show, onClose, modalType, subDirektorat, onChange, onSave, error }) => (
   <Modal show={show} onClose={onClose}>
     <ModalHeader>
-      {modalType === 'add' ? 'Add New Subsatker' : 'Edit Subsatker'}
+      {modalType === 'add' ? 'Add New Sub Direktorat' : 'Edit Sub Direktorat'}
     </ModalHeader>
     <ModalBody>
       {error && (
@@ -21,7 +21,7 @@ const  SubDirektoratModal = ({ show, onClose, modalType, subDirektorat, onChange
             id="name"
             value={subDirektorat.name}
             onChange={e => onChange({ ...subDirektorat, name: e.target.value })}
-            placeholder="Enter Subsatker name"
+            placeholder="Enter sub direktorat name"
             required
           />
         </div>
@@ -43,7 +43,7 @@ const  SubDirektoratModal = ({ show, onClose, modalType, subDirektorat, onChange
     </ModalBody>
     <ModalFooter>
       <Button onClick={onSave}>
-        {modalType === 'add' ? 'Add Subsatker' : 'Update Subsatker'}
+        {modalType === 'add' ? 'Add sub direktorat' : 'Update sub direktorat'}
       </Button>
       <Button color="alternative" onClick={onClose}>
         Cancel

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  BarChart3, 
-  Building, 
-  Award, 
-  Target, 
+  BarChart3,
+  Building,
+  Award,
+  Target,
   Users,
-  ClipboardCheck, 
+  ClipboardCheck,
   RefreshCw,
   TrendingUp,
-  ArrowUpRight 
-} from 'lucide-react';
-import { LoadingSpinner, ErrorAlert } from '../components/common';
-import { Card } from 'flowbite-react';
+  ArrowUpRight,
+} from "lucide-react";
+import { LoadingSpinner, ErrorAlert } from "../components/common";
+import { Card } from "flowbite-react";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ const Dashboard = () => {
     totalSubDir: 0,
     totalKompetensi: 0,
     totalIndikator: 0,
-    totalStaff: 0
+    totalStaff: 0,
   });
 
   useEffect(() => {
@@ -31,16 +31,16 @@ const Dashboard = () => {
     try {
       setLoading(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setStats({
         totalSubDir: 12,
         totalKompetensi: 45,
         totalIndikator: 89,
-        totalStaff: 156
+        totalStaff: 156,
       });
     } catch {
-      setError('Failed to load dashboard data');
+      setError("Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
@@ -51,10 +51,10 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="page">
+    <div className="h-lvh p-5 bg-amber-300">
       <div className="max-w-7xl mx-auto">
         {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
-        
+
         {/* Header */}
         <Card className="mb-6 bg-white dark:bg-gray-800">
           <div className="flex justify-between items-center">
@@ -63,7 +63,9 @@ const Dashboard = () => {
                 <BarChart3 className="mr-3 text-blue-600 dark:text-blue-400" />
                 Dashboard
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome to your admin panel</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                Welcome to your admin panel
+              </p>
             </div>
             <button
               onClick={loadDashboardData}
@@ -113,10 +115,10 @@ const Dashboard = () => {
 
 const StatsCard = ({ title, value, icon: Icon, color, growth }) => {
   const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-    orange: 'bg-orange-50 text-orange-600'
+    blue: "bg-blue-50 text-blue-600",
+    green: "bg-green-50 text-green-600",
+    purple: "bg-purple-50 text-purple-600",
+    orange: "bg-orange-50 text-orange-600",
   };
 
   const isPositiveGrowth = growth > 0;
@@ -127,17 +129,23 @@ const StatsCard = ({ title, value, icon: Icon, color, growth }) => {
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-600">{title}</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-          
+
           {growth !== 0 && (
-            <div className={`flex items-center mt-2 text-xs ${
-              isPositiveGrowth ? 'text-green-600' : 'text-red-600'
-            }`}>
-              <ArrowUpRight className={`h-3 w-3 mr-1 ${!isPositiveGrowth ? 'rotate-90' : ''}`} />
+            <div
+              className={`flex items-center mt-2 text-xs ${
+                isPositiveGrowth ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              <ArrowUpRight
+                className={`h-3 w-3 mr-1 ${
+                  !isPositiveGrowth ? "rotate-90" : ""
+                }`}
+              />
               <span>{Math.abs(growth).toFixed(1)}% vs last month</span>
             </div>
           )}
         </div>
-        
+
         <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
           <Icon className="h-6 w-6" />
         </div>
