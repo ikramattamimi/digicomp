@@ -84,11 +84,6 @@ const LaporanStaffTable = forwardRef((props, ref) => {
     setFilteredSupervisors(filtered);
   }, [supervisors, searchTerm]);
 
-  const handleDetail = async (id) => {
-    
-  };
-
-
   return (
     <div className="space-y-5 mt-5">
       {/* Main Form */}
@@ -133,7 +128,7 @@ const LaporanStaffTable = forwardRef((props, ref) => {
                 <TableBody className="divide-y">
                   {filteredSupervisors.map((sup) => {
                     if (
-                      sup.subdirectorat_id == userData.subdirectorat_id &&
+                      sup.subdirectorat_id == props.subsatkerId &&
                       sup.position_type == "BAWAHAN"
                     ) {
                       return (

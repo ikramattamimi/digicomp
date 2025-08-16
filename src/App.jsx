@@ -33,6 +33,7 @@ import AssessmentResultPage from './pages/AssessmentResultPage';
 
 import LaporanPage from "./pages/LaporanPage.jsx";
 import LaporanSubsatkerPage from "./pages/LaporanSubsatkerPage.jsx";
+import LaporanSubsatkerPageAdmin from "./pages/LaporanSubsatkerPageAdmin.jsx";
 
 function App() {
   const [authenticatedUser, setAuthenticatedUser] = useState({});
@@ -90,6 +91,7 @@ function App() {
 
             <Route path="laporanIndividu" element={<LaporanPage />} />
             <Route path="laporanSubsatker" element={<LaporanSubsatkerPage />} />
+            <Route path="laporanSubsatkerAdmin" element={<LaporanSubsatkerPageAdmin />} />
             
           </Route>
           <Route path="login" element={<LoginPage />} />
