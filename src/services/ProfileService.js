@@ -4,7 +4,7 @@ class ProfileService {
   async getAll(filters = {}) {
     let query = supabase
       .from('profiles')
-      .select('*, subdirectorats(name)')
+      .select('*, subdirectorats(name), supervisor_id(name)')
       .order('name', { ascending: true });
 
     // Apply filters

@@ -108,9 +108,9 @@ const ParticipantTable = ({
                 subject_nrp: profile.nrp,
                 subject_position: profile.position,
                 supervisor_id: profile.supervisor_id,
-                supervisor_name: profile.supervisor?.name || null,
-                supervisor_email: profile.supervisor?.email || null,
-                supervisor_avatar: profile.supervisor?.avatar || null,
+                supervisor_name: profile.supervisor_id?.name || null,
+                supervisor_email: profile.supervisor_id?.email || null,
+                supervisor_avatar: profile.supervisor_id?.avatar || null,
                 subdirectorate_name: profile.subdirectorats?.name || null,
                 self_assessment: selfStatus ? {
                   status: selfStatus,
@@ -132,9 +132,9 @@ const ParticipantTable = ({
                 subject_nrp: profile.nrp,
                 subject_position: profile.position,
                 supervisor_id: profile.supervisor_id,
-                supervisor_name: profile.supervisor?.name || null,
-                supervisor_email: profile.supervisor?.email || null,
-                supervisor_avatar: profile.supervisor?.avatar || null,
+                supervisor_name: profile.supervisor_id?.name || null,
+                supervisor_email: profile.supervisor_id?.email || null,
+                supervisor_avatar: profile.supervisor_id?.avatar || null,
                 subdirectorate_name: profile.subdirectorats?.name || null,
                 self_assessment: null,
                 supervisor_assessment: null,
@@ -561,9 +561,6 @@ const ParticipantTable = ({
                       <div>
                         <div className="font-medium">
                           {participant.subject_name}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {participant.subject_email}
                         </div>
                       </div>
                     </div>
