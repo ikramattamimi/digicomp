@@ -13,6 +13,8 @@ import {
 import { LoadingSpinner, ErrorAlert } from "../components/common";
 import { Card } from "flowbite-react";
 
+import myImage from "../assets/bg.png"
+
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,69 +48,10 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner message="Loading dashboard..." />;
-  }
-
   return (
-    <div className="h-lvh p-5 bg-amber-300">
-      <div className="max-w-7xl mx-auto">
-        {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
-
-        {/* Header */}
-        <Card className="mb-6 bg-white dark:bg-gray-800">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                <BarChart3 className="mr-3 text-blue-600 dark:text-blue-400" />
-                Dashboard
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Welcome to your admin panel
-              </p>
-            </div>
-            <button
-              onClick={loadDashboardData}
-              className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </button>
-          </div>
-        </Card>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <StatsCard
-            title="Sub Direktorat"
-            value={stats.totalSubDir}
-            icon={Building}
-            color="blue"
-            growth={12.5}
-          />
-          <StatsCard
-            title="Kompetensi"
-            value={stats.totalKompetensi}
-            icon={Award}
-            color="green"
-            growth={8.2}
-          />
-          <StatsCard
-            title="Indikator"
-            value={stats.totalIndikator}
-            icon={Target}
-            color="purple"
-            growth={15.3}
-          />
-          <StatsCard
-            title="Total Staff"
-            value={stats.totalStaff}
-            icon={Users}
-            color="orange"
-            growth={-2.1}
-          />
-        </div>
-      </div>
+    <div className="h-fit  bg-amber-300">
+      <img className=" w-lvw h-lvh" src={myImage}></img>
+      
     </div>
   );
 };
