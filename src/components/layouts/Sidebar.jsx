@@ -41,9 +41,9 @@ const Sidebar = ({ collapsed }) => {
           setAdmin("show");
         } else if (checkUser.position_type == "ATASAN") {
           setStaffAtasan("show");
-        }else if (checkUser.position_type == "BAWAHAN") {
+        } else if (checkUser.position_type == "BAWAHAN") {
           setStaffBawahan("show");
-        }else if (checkUser.position_type == "TOP MANAGEMENT") {
+        } else if (checkUser.position_type == "TOP MANAGEMENT") {
           setTop("show");
         }
       } catch (err) {
@@ -104,22 +104,6 @@ const Sidebar = ({ collapsed }) => {
             </SidebarItem>
           </SidebarItemGroup>
           <SidebarItemGroup>
-            <div className="uppercase text-xs font-bold text-gray-500 dark:text-gray-400 px-3 py-2">
-              Main Menu
-            </div>
-            <SidebarItem
-              as={NavLink}
-              to="/penilaian"
-              icon={() => <ClipboardCheck size={20} />}
-              active={location.pathname.startsWith("/penilaian")}
-            >
-              Penilaian
-            </SidebarItem>
-          </SidebarItemGroup>
-          <SidebarItemGroup>
-            <div className="uppercase text-xs font-bold text-gray-500 dark:text-gray-400 px-3 py-2">
-              Master Data
-            </div>
             <SidebarItem
               className={admin}
               as={NavLink}
@@ -132,15 +116,6 @@ const Sidebar = ({ collapsed }) => {
             <SidebarItem
               className={admin}
               as={NavLink}
-              to="/kompetensi"
-              icon={() => <Award size={20} />}
-              active={location.pathname.startsWith("/kompetensi")}
-            >
-              Profil Kompetensi
-            </SidebarItem>
-            <SidebarItem
-              className={admin}
-              as={NavLink}
               to="/staff"
               icon={() => <UserCheck size={20} />}
               active={location.pathname.startsWith("/staff")}
@@ -148,25 +123,22 @@ const Sidebar = ({ collapsed }) => {
               Personel
             </SidebarItem>
             <SidebarItem
-              className={top}
+              className={admin}
               as={NavLink}
-              to="/admin"
-              icon={() => <UserCheck size={20} />}
-              active={location.pathname.startsWith("/admin")}
+              to="/kompetensi"
+              icon={() => <Award size={20} />}
+              active={location.pathname.startsWith("/kompetensi")}
             >
-              Admin
+              Profil Kompetensi
             </SidebarItem>
             <SidebarItem
               as={NavLink}
-              to="/akun"
-              icon={() => <UserCheck size={20} />}
-              active={location.pathname.startsWith("/Akun")}
+              to="/penilaian"
+              icon={() => <ClipboardCheck size={20} />}
+              active={location.pathname.startsWith("/penilaian")}
             >
-              Akun
+              Penilaian
             </SidebarItem>
-            <div className="uppercase text-xs font-bold text-gray-500 dark:text-gray-400 px-3 py-2">
-              Laporan
-            </div>
             <SidebarItem
               className={staffBawahan}
               as={NavLink}
@@ -194,7 +166,24 @@ const Sidebar = ({ collapsed }) => {
             >
               Laporan & Hasil
             </SidebarItem>
-            
+
+            <SidebarItem
+              className={top}
+              as={NavLink}
+              to="/admin"
+              icon={() => <UserCheck size={20} />}
+              active={location.pathname.startsWith("/admin")}
+            >
+              Admin
+            </SidebarItem>
+            <SidebarItem
+              as={NavLink}
+              to="/Akun"
+              icon={() => <UserCheck size={20} />}
+              active={location.pathname.startsWith("/Akun")}
+            >
+              Akun
+            </SidebarItem>
           </SidebarItemGroup>
         </SidebarItems>
 

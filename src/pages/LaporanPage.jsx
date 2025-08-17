@@ -12,13 +12,32 @@ import BawahanPage from "../components/laporan/BawahanPage.jsx";
 const LaporanPage = () => {
   const [subsatkerPage, setSubsatkerPage] = useState(); // nilai dari mentor
 
-  const handleChange = (id) => {
-    if (subsatkerPage == null) {
-      setSubsatkerPage(<BawahanPage assasmentId={id} />);
-    } else {
+  const handleChange = (index) => {
+    const assdetail = assassement[index];
+
+    if (subsatkerPage == null && assdetail) {
+      console.log(assdetail.self_weight);
+      const myArray = [];
+      setSubsatkerPage(
+        <BawahanPage
+          assasmentId={assdetail.id}
+          sw={assdetail.self_weight}
+          aw={assdetail.supervisor_weight}
+          cntId={myArray}
+        />
+      );
+    } else if (subsatkerPage != null && assdetail) {
       setSubsatkerPage(<div></div>);
       setTimeout(function () {
-        setSubsatkerPage(<BawahanPage assasmentId={id} />);
+        const myArray = [];
+        setSubsatkerPage(
+          <BawahanPage
+            assasmentId={assdetail.id}
+            sw={assdetail.self_weight}
+            aw={assdetail.supervisor_weight}
+            cntId={myArray}
+          />
+        );
       }, 100);
     }
   };
@@ -44,8 +63,7 @@ const LaporanPage = () => {
       }
 
       const dataResponse = await AssessmentResponseService.getAssesment();
-      console.log('dataResponse', dataResponse);
-      handleChange(dataResponse[0].assessment_id.id);
+      handleChange(0);
 
       dataResponse.map((sup) => {
         if (
@@ -56,9 +74,13 @@ const LaporanPage = () => {
             showComp.push(sup.assessment_id.id);
             setAssassement((prevArray1) => [
               ...prevArray1,
-              { id: sup.assessment_id.id, nama: sup.assessment_id.name },
+              {
+                id: sup.assessment_id.id,
+                nama: sup.assessment_id.name,
+                self_weight: sup.assessment_id.self_weight,
+                supervisor_weight: sup.assessment_id.supervisor_weight,
+              },
             ]);
-            console.log(assassement);
           }
         }
       });
@@ -91,8 +113,9 @@ const LaporanPage = () => {
           onChange={(e) => handleChange(e.target.value)}
           className="m-4 w-100"
         >
-          {assassement.map((sub) => (
-            <option value={sub.id}>{sub.nama}</option>
+          <option value={-1}>PILIH PENILAIAN</option>
+          {assassement.map((sub, index) => (
+            <option value={index}>{sub.nama}</option>
           ))}
         </Select>
 

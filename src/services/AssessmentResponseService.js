@@ -243,7 +243,7 @@ const AssessmentResponseService = {
   async getKompetensi(subjectid, assid) {
     const { data, error } = await supabase
       .from("assessment_responses")
-      .select("*,indicator_id(competency_id(name))")
+      .select("*,indicator_id(competency_id(name)),assessment_id(self_weight,supervisor_weight)")
       .eq("assessment_id", assid)
       .eq("subject_profile_id", subjectid);
     if (error) throw error;
@@ -263,7 +263,7 @@ const AssessmentResponseService = {
     const { data, error } = await supabase
       .from("assessment_responses")
       .select(
-        "*, subject_profile_id(subdirectorat_id,id), assessment_id(id,name)"
+        "*, subject_profile_id(subdirectorat_id,id), assessment_id(id,name,self_weight,supervisor_weight)"
       );
     if (error) throw error;
     return data;

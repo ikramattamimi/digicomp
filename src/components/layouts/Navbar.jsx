@@ -78,7 +78,7 @@ const TopNavbar = ({ collapsed, setCollapsed }) => {
 
         <NavbarBrand href="/">
           <span className="self-center whitespace-nowrap text-xl font-semibold text-gray-900 dark:text-white">
-            Profesi Ditpamobvit
+            PROFESI DITPAMOBVIT
           </span>
         </NavbarBrand>
       </div>

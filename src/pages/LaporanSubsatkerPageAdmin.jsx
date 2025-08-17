@@ -28,11 +28,13 @@ const LaporanSubsatkerPageAdmin = () => {
   const [show, setShow] = useState();
   const [message, setMessage] = useState("0");
 
-  const [assasmentId, setassasmentId] = useState(5); // nilai dari mentor
-  const [subsatkerPage, setSubsatkerPage] = useState(); // nilai dari mentor
+  const [assasmentId, setassasmentId] = useState(5);
+  const [subsatkerPage, setSubsatkerPage] = useState(
+    <strong>Pilih penilaian untuk ditampilkan</strong>
+  );
 
-  const [subsatkers, setSubsatkers] = useState([]); // nilai dari mentor
-  const [selsubsatker, setselSubsatkers] = useState(); // nilai dari mentor
+  const [subsatkers, setSubsatkers] = useState([])
+  const [selsubsatker, setselSubsatkers] = useState();
 
   const [page, setPage] = useState("hidden");
   let showComp = [];
@@ -49,7 +51,6 @@ const LaporanSubsatkerPageAdmin = () => {
       setSubsatkers(subsatkerData);
 
       const dataResponse = await AssessmentResponseService.getAssesment();
-
       dataResponse.map((sup) => {
         if (sup.subject_profile_id.subdirectorat_id == subsatkers[0].id) {
           if (showComp.includes(sup.assessment_id.id)) {
@@ -57,7 +58,12 @@ const LaporanSubsatkerPageAdmin = () => {
             showComp.push(sup.assessment_id.id);
             setassa((prevArray1) => [
               ...prevArray1,
-              { id: sup.assessment_id.id, nama: sup.assessment_id.name },
+              {
+                id: sup.assessment_id.id,
+                nama: sup.assessment_id.name,
+                self_weight: sup.assessment_id.self_weight,
+                supervisor_weight: sup.assessment_id.supervisor_weight,
+              },
             ]);
             console.log(assa);
           }
@@ -67,17 +73,21 @@ const LaporanSubsatkerPageAdmin = () => {
     fetchUserData();
   }, []);
 
-  const forceReRender2 = (id) => {
+  const closePage = (id) => {
     setMessage("");
     setShow();
   };
 
   const forceReRender = (id) => {
+    const myArray = [];
     setShow(
       <LaporanAnggotaPage
         id={id}
-        userData={forceReRender2}
-        assasmentId={assasmentId}
+        userData={closePage}
+        assasmentId={assasmentId.id}
+        sw={assasmentId.self_weight}
+        aw={assasmentId.supervisor_weight}
+        cntId={myArray}
       />
     );
     setMessage("hidden");
@@ -93,21 +103,40 @@ const LaporanSubsatkerPageAdmin = () => {
     }
   };
 
-  const handleChange = (assaid) => {
-    setassasmentId(assaid)
-    forceReRender2()
-    if (subsatkerPage == null && assaid != 0) {
+  const handleChange = (index) => {
+    closePage();
+    const assdetail = assa[index];
+    if (assdetail) {
+      setassasmentId(assdetail);
+      console.log(assdetail);
+    }
+
+    if (subsatkerPage == null && assdetail) {
+      const myArray = [];
       setSubsatkerPage(
-        <SubsatkerPageAdmin assasmentId={assaid} subsatkerId={selsubsatker} />
+        <SubsatkerPageAdmin
+          assasmentId={assdetail.id}
+          sw={assdetail.self_weight}
+          aw={assdetail.supervisor_weight}
+          subsatkerId={selsubsatker}
+          cntId={myArray}
+        />
       );
-    } else if (subsatkerPage != null && assaid != 0) {
+    } else if (subsatkerPage != null && assdetail) {
       setSubsatkerPage(<div></div>);
       setTimeout(function () {
+        const myArray = [];
         setSubsatkerPage(
-          <SubsatkerPageAdmin assasmentId={assaid} subsatkerId={selsubsatker} />
+          <SubsatkerPageAdmin
+            assasmentId={assdetail.id}
+            sw={assdetail.self_weight}
+            aw={assdetail.supervisor_weight}
+            subsatkerId={selsubsatker}
+            cntId={myArray}
+          />
         );
       }, 100);
-    } else{
+    } else {
       setSubsatkerPage(<strong>Pilih penilaian untuk ditampilkan</strong>);
     }
   };
@@ -117,7 +146,7 @@ const LaporanSubsatkerPageAdmin = () => {
     setselSubsatkers(subsatid);
     fetchSubsatkerAssasment(subsatid);
 
-    handleChange(0);
+    handleChange(-1);
     setSubsatkerPage(<strong>Pilih penilaian untuk ditampilkan</strong>);
   };
 
@@ -131,7 +160,12 @@ const LaporanSubsatkerPageAdmin = () => {
           showComp.push(sup.assessment_id.id);
           setassa((prevArray1) => [
             ...prevArray1,
-            { id: sup.assessment_id.id, nama: sup.assessment_id.name },
+            {
+              id: sup.assessment_id.id,
+              nama: sup.assessment_id.name,
+              self_weight: sup.assessment_id.self_weight,
+              supervisor_weight: sup.assessment_id.supervisor_weight,
+            },
           ]);
           console.log(assa);
         }
@@ -190,9 +224,11 @@ const LaporanSubsatkerPageAdmin = () => {
                 onChange={(e) => handleChange(e.target.value)}
                 className="my-1 w-100"
               >
-                <option value={0}><strong>PILIH PENILAIAN</strong></option>
-                {assa.map((sub) => (
-                  <option value={sub.id}>{sub.nama}</option>
+                <option value={-1}>
+                  <strong>PILIH PENILAIAN</strong>
+                </option>
+                {assa.map((sub, index) => (
+                  <option value={index}>{sub.nama}</option>
                 ))}
               </Select>
             </div>
