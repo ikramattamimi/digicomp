@@ -11,6 +11,7 @@ import {
   Avatar,
   TextInput,
   Select,
+  Card,
 } from "flowbite-react";
 import { 
   Search, 
@@ -32,6 +33,19 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Load subordinates data
   useEffect(() => {
@@ -196,6 +210,83 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
     }
   };
 
+  // Mobile Card Component - Show all data without expand/collapse
+  const MobileCard = ({ subordinate }) => {
+    return (
+      <Card className="mb-3">
+        <div className="space-y-3">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center flex-1">
+              <Avatar
+                img={subordinate.avatar}
+                alt={subordinate.name}
+                size="sm"
+                className="mr-3"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm">
+                  {subordinate.name}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {subordinate.nrp || 'No NRP'}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center">
+              {getStatusBadge(subordinate.overallStatus)}
+            </div>
+          </div>
+
+          {/* Position */}
+          <div>
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Posisi</p>
+            <p className="text-sm">{subordinate.position || '-'}</p>
+            {subordinate.subdirectorats?.name && (
+              <p className="text-xs text-gray-500">{subordinate.subdirectorats.name}</p>
+            )}
+          </div>
+
+          {/* Assessment Status */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                Penilaian Diri
+              </p>
+              {getAssessmentStatusBadge(subordinate.selfAssessment, 'self')}
+            </div>
+            <div>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                Penilaian Atasan
+              </p>
+              {getAssessmentStatusBadge(subordinate.supervisorAssessment, 'supervisor')}
+            </div>
+          </div>
+
+          {/* Action */}
+          <div className="flex justify-end">
+            <Link
+              to={`/penilaian/${assessmentId}/${subordinate.id}`}
+              className="w-full"
+            >
+              {!subordinate.supervisorAssessment ? (
+                <Button size="sm" color="blue" className="w-full">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Nilai
+                </Button>
+              ) : (                            
+                <Button size="sm" color="gray" className="w-full">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Lihat
+                </Button>
+              )}
+            </Link>
+          </div>
+        </div>
+      </Card>
+    );
+  };
+
   if (loading) {
     return (
       <div className="animate-pulse">
@@ -226,55 +317,55 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
   return (
     <div className="space-y-4">
       {/* Statistics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-2 lg:p-3 rounded-lg">
           <div className="flex items-center">
-            <Users className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
+            <Users className="w-4 h-4 lg:w-5 lg:h-5 text-blue-600 dark:text-blue-400 mr-1 lg:mr-2" />
             <div>
-              <p className="text-sm text-blue-600 dark:text-blue-400">Total Bawahan</p>
-              <p className="text-lg font-semibold text-blue-900 dark:text-blue-300">
+              <p className="text-xs lg:text-sm text-blue-600 dark:text-blue-400">Total</p>
+              <p className="text-sm lg:text-lg font-semibold text-blue-900 dark:text-blue-300">
                 {subordinates.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+        <div className="bg-green-50 dark:bg-green-900/20 p-2 lg:p-3 rounded-lg">
           <div className="flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-2" />
+            <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-green-600 dark:text-green-400 mr-1 lg:mr-2" />
             <div>
-              <p className="text-sm text-green-600 dark:text-green-400">
+              <p className="text-xs lg:text-sm text-green-600 dark:text-green-400">
                 Selesai
               </p>
-              <p className="text-lg font-semibold text-green-900 dark:text-green-300">
+              <p className="text-sm lg:text-lg font-semibold text-green-900 dark:text-green-300">
                 {subordinates.filter(sub => sub.overallStatus === "submitted").length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 lg:p-3 rounded-lg">
           <div className="flex items-center">
-            <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" />
+            <Clock className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-600 dark:text-yellow-400 mr-1 lg:mr-2" />
             <div>
-              <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                Sedang Berjalan
+              <p className="text-xs lg:text-sm text-yellow-600 dark:text-yellow-400">
+                Berjalan
               </p>
-              <p className="text-lg font-semibold text-yellow-900 dark:text-yellow-300">
+              <p className="text-sm lg:text-lg font-semibold text-yellow-900 dark:text-yellow-300">
                 {subordinates.filter(sub => sub.overallStatus === "in_progress").length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+        <div className="bg-red-50 dark:bg-red-900/20 p-2 lg:p-3 rounded-lg">
           <div className="flex items-center">
-            <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 mr-2" />
+            <XCircle className="w-4 h-4 lg:w-5 lg:h-5 text-red-600 dark:text-red-400 mr-1 lg:mr-2" />
             <div>
-              <p className="text-sm text-red-600 dark:text-red-400">
-                Belum Mulai
+              <p className="text-xs lg:text-sm text-red-600 dark:text-red-400">
+                Belum
               </p>
-              <p className="text-lg font-semibold text-red-900 dark:text-red-300">
+              <p className="text-sm lg:text-lg font-semibold text-red-900 dark:text-red-300">
                 {subordinates.filter(sub => sub.overallStatus === "not_started").length}
               </p>
             </div>
@@ -283,20 +374,22 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+      <div className="space-y-3 lg:space-y-0 lg:flex lg:gap-4 lg:items-center">
         <div className="flex-1">
           <TextInput
             icon={Search}
             placeholder="Cari bawahan..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            sizing="sm"
           />
         </div>
 
-        <div className="flex gap-2">
+        <div className="lg:flex-none">
           <Select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
+            sizing="sm"
           >
             <option value="all">Semua Status</option>
             <option value="not_started">Belum Mulai</option>
@@ -306,110 +399,127 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="table-container">
-        <Table hoverable>
-          <TableHead>
-            <TableHeadCell>Nama Bawahan</TableHeadCell>
-            <TableHeadCell>NRP</TableHeadCell>
-            <TableHeadCell>Posisi</TableHeadCell>
-            <TableHeadCell>Status Keseluruhan</TableHeadCell>
-            <TableHeadCell>Penilaian Diri</TableHeadCell>
-            <TableHeadCell>Penilaian Atasan</TableHeadCell>
-            <TableHeadCell>Aksi</TableHeadCell>
-          </TableHead>
-          <TableBody className="divide-y">
-            {filteredSubordinates.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
-                  <div className="flex flex-col items-center text-gray-500 dark:text-gray-400">
-                    <Users className="w-8 h-8 mb-2 opacity-50" />
-                    <p>Tidak ada bawahan ditemukan</p>
-                    {searchTerm && (
-                      <p className="text-sm">
-                        Coba ubah kriteria pencarian Anda
-                      </p>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredSubordinates.map((subordinate) => (
-                <TableRow
-                  key={subordinate.id}
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                >
-                  {/* Nama Bawahan */}
-                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    <div className="flex items-center">
-                      <Avatar
-                        img={subordinate.avatar}
-                        alt={subordinate.name}
-                        size="sm"
-                        className="mr-3"
-                      />
-                      <div>
-                        <div className="font-medium">
-                          {subordinate.name}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  {/* NRP */}
-                  <TableCell>
-                    {subordinate.nrp || '-'}
-                  </TableCell>
-
-                  {/* Posisi */}
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{subordinate.position || '-'}</div>
-                      <div className="text-sm text-gray-500">{subordinate.subdirectorats?.name || '-'}</div>
-                    </div>
-                  </TableCell>
-
-                  {/* Status Keseluruhan */}
-                  <TableCell>
-                    {getStatusBadge(subordinate.overallStatus)}
-                  </TableCell>
-
-                  {/* Penilaian Diri */}
-                  <TableCell>
-                    {getAssessmentStatusBadge(subordinate.selfAssessment, 'self')}
-                  </TableCell>
-
-                  {/* Penilaian Atasan */}
-                  <TableCell>
-                    {getAssessmentStatusBadge(subordinate.supervisorAssessment, 'supervisor')}
-                  </TableCell>
-
-                  {/* Aksi */}
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Link
-                        to={`/penilaian/${assessmentId}/${subordinate.id}`}
-                      >
-                        {!subordinate.supervisorAssessment ? (
-                          <Button size="xs" color="blue">
-                            <Edit className="w-3 h-3 mr-1" />
-                            Nilai
-                          </Button>
-                        ) : (                            
-                          <Button size="xs" color="gray">
-                            <Eye className="w-3 h-3 mr-1" />
-                            Lihat
-                          </Button>
-                        )}
-                      </Link>
+      {/* Content - Mobile Cards or Desktop Table */}
+      {isMobile ? (
+        // Mobile Card View - Show all data directly
+        <div className="space-y-3">
+          {filteredSubordinates.length === 0 ? (
+            <Card>
+              <div className="flex flex-col items-center text-gray-500 dark:text-gray-400 py-8">
+                <Users className="w-8 h-8 mb-2 opacity-50" />
+                <p>Tidak ada bawahan ditemukan</p>
+                {searchTerm && (
+                  <p className="text-sm text-center mt-1">
+                    Coba ubah kriteria pencarian
+                  </p>
+                )}
+              </div>
+            </Card>
+          ) : (
+            filteredSubordinates.map((subordinate) => (
+              <MobileCard key={subordinate.id} subordinate={subordinate} />
+            ))
+          )}
+        </div>
+      ) : (
+        // Desktop Table View
+        <div className="table-container overflow-x-auto">
+          <Table hoverable>
+            <TableHead>
+              <TableHeadCell>Nama Bawahan</TableHeadCell>
+              <TableHeadCell>NRP</TableHeadCell>
+              <TableHeadCell>Posisi</TableHeadCell>
+              <TableHeadCell>Status Keseluruhan</TableHeadCell>
+              <TableHeadCell>Penilaian Diri</TableHeadCell>
+              <TableHeadCell>Penilaian Atasan</TableHeadCell>
+              <TableHeadCell>Aksi</TableHeadCell>
+            </TableHead>
+            <TableBody className="divide-y">
+              {filteredSubordinates.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="flex flex-col items-center text-gray-500 dark:text-gray-400">
+                      <Users className="w-8 h-8 mb-2 opacity-50" />
+                      <p>Tidak ada bawahan ditemukan</p>
+                      {searchTerm && (
+                        <p className="text-sm">
+                          Coba ubah kriteria pencarian Anda
+                        </p>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ) : (
+                filteredSubordinates.map((subordinate) => (
+                  <TableRow
+                    key={subordinate.id}
+                    className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  >
+                    <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      <div className="flex items-center">
+                        <Avatar
+                          img={subordinate.avatar}
+                          alt={subordinate.name}
+                          size="sm"
+                          className="mr-3"
+                        />
+                        <div>
+                          <div className="font-medium">
+                            {subordinate.name}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      {subordinate.nrp || '-'}
+                    </TableCell>
+
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{subordinate.position || '-'}</div>
+                        <div className="text-sm text-gray-500">{subordinate.subdirectorats?.name || '-'}</div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      {getStatusBadge(subordinate.overallStatus)}
+                    </TableCell>
+
+                    <TableCell>
+                      {getAssessmentStatusBadge(subordinate.selfAssessment, 'self')}
+                    </TableCell>
+
+                    <TableCell>
+                      {getAssessmentStatusBadge(subordinate.supervisorAssessment, 'supervisor')}
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/penilaian/${assessmentId}/${subordinate.id}`}
+                        >
+                          {!subordinate.supervisorAssessment ? (
+                            <Button size="xs" color="blue">
+                              <Edit className="w-3 h-3 mr-1" />
+                              Nilai
+                            </Button>
+                          ) : (                            
+                            <Button size="xs" color="gray">
+                              <Eye className="w-3 h-3 mr-1" />
+                              Lihat
+                            </Button>
+                          )}
+                        </Link>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Results Summary */}
       {filteredSubordinates.length > 0 && (
