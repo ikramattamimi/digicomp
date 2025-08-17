@@ -132,16 +132,18 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
 
   // Fungsi get kualif
   const GetKualifikasi = (nilai) => {
-    if (nilai >= 0 && nilai < 3) {
-      return "Sangat Kurang";
-    } else if (nilai >= 3 && nilai < 5) {
-      return "Kurang";
-    } else if (nilai >= 5 && nilai < 7) {
+    if (nilai >= 0 && nilai < 2) {
+      return "Belum Memadai";
+    } else if (nilai >= 2 && nilai < 3) {
+      return "Perlu Penguatan";
+    } else if (nilai >= 3 && nilai < 3.5) {
+      return "Cukup‎ ";
+    } else if (nilai >= 3.5 && nilai < 4) {
       return "Cukup";
-    } else if (nilai >= 7 && nilai < 9) {
+    } else if (nilai >= 4 && nilai < 5) {
       return "Baik";
-    } else if (nilai >= 9 && nilai <= 10) {
-      return "Istimewa";
+    } else if (nilai >= 5) {
+      return "Baik Sekali";
     }
   };
 
@@ -229,12 +231,11 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
             showTable == null
           ) {
             setTimeout(function () {
-              if(all){
+              if (all) {
                 setShowGrap(graphtml);
                 setShowTable(tablehtml);
                 setShowRec(rechtml);
               }
-              
             }, 100);
           }
         });
@@ -293,10 +294,41 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
     return bobId;
   };
 
+  const getColorbyValue = (value) => {
+    if (
+      value < 3.5 ||
+      value == "Belum Memadai" ||
+      value == "Perlu Penguatan" ||
+      value == "Cukup‎"
+    ) {
+      return "text-red-600 bg-red-300";
+    } else {
+      return "";
+    }
+  };
+
   const graphtml = () => {
+    let color = [];
+    for (let i = 0; i < all.length; i++) {
+      if (all[i] < 3.5) {
+        color.push("red");
+        console.log(color);
+      } else {
+        color.push("blue");
+        console.log(color);
+      }
+    }
     const bobId = (
       <BarChart
-        xAxis={[{ data: showComp }]}
+        xAxis={[
+          {
+            data: showComp,
+            colorMap: {
+              type: "ordinal",
+              colors: color, // Colors for values <0, 0-50, 50-100, and >100 respectively
+            },
+          },
+        ]}
         series={[
           {
             data: all,
@@ -329,36 +361,17 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
               <TableCell className="font-medium text-gray-900 dark:text-white">
                 {sup.from}
               </TableCell>
+              {sup.nilai.map((sub) => (
+                <TableCell className={getColorbyValue(sub)}>
+                  <strong>{sub}</strong>
+                </TableCell>
+              ))}
 
-              {sup.nilai.map((sub) => {
-                if (
-                  sub < 7 ||
-                  sub == "Cukup" ||
-                  sub == "Kurang" ||
-                  sub == "Sangat Kurang"
-                ) {
-                  return (
-                    <TableCell className="text-red-600">
-                      <strong>{sub}</strong>
-                    </TableCell>
-                  );
-                }
-                return <TableCell>{sub}</TableCell>;
-              })}
-
-              <TableCell>
-                {sup.sum < 7 ? (
-                  <strong className="text-red-600">{sup.sum}</strong>
-                ) : (
-                  <text>{sup.sum}</text>
-                )}
+              <TableCell className={getColorbyValue(sup.sum)}>
+                <strong>{sup.sum}</strong>
               </TableCell>
-              <TableCell>
-                {sup.sum < 7 ? (
-                  <strong className="text-red-600">{sup.kualifikasi}</strong>
-                ) : (
-                  <text>{sup.kualifikasi}</text>
-                )}
+              <TableCell className={getColorbyValue(sup.kualifikasi)}>
+                <strong>{sup.kualifikasi}</strong>
               </TableCell>
             </TableRow>
           ))}
@@ -397,11 +410,7 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
               if (claster.includes(clasKomp)) {
               } else {
                 claster.push(clasKomp);
-                if (
-                  sub == "Cukup" ||
-                  sub == "Kurang" ||
-                  sub == "Sangat Kurang"
-                ) {
+                if (sub < 3.5) {
                   return (
                     <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <p className="text-m text-blue-700 dark:text-blue-300">
@@ -427,7 +436,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
       return (
         <div>
           <strong>Kompetensi Integritas / Komitmen terhadap Organisasi</strong>{" "}
-          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          memiliki nilai{" "}
+          <strong className="text-red-700">kurang dari 3.5</strong>
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
@@ -451,7 +461,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           <strong>
             Kompetensi Orientasi Pada Pelayanan / Komunikasi Dan Perekat Bangsa
           </strong>{" "}
-          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          memiliki nilai{" "}
+          <strong className="text-red-700">kurang dari 3.5</strong>
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
@@ -475,7 +486,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           <strong>
             Kompetensi Pengambilan Keputusan / Perencanaan Dan Pengorganisasian
           </strong>
-          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          memiliki nilai{" "}
+          <strong className="text-red-700">kurang dari 3.5</strong>
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
@@ -493,7 +505,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
       return (
         <div>
           <strong>Kompetensi Kepemimpinan / Kerja Sama / Pengawasan</strong>
-          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          memiliki nilai{" "}
+          <strong className="text-red-700">kurang dari 3.5</strong>
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
@@ -507,7 +520,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
       return (
         <div>
           <strong>Kompetensi Mengelola Perubahan</strong>
-          memiliki nilai <strong className="text-red-700">kurang dari 7</strong>
+          memiliki nilai{" "}
+          <strong className="text-red-700">kurang dari 3.5</strong>
           <div className="ml-1">
             <p>Saran Penguatan</p>
             <p className="ml-2">
