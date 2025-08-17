@@ -50,7 +50,7 @@ const Dashboard = () => {
 
   return (
     <div className="">
-      <img className=" w-lvw h-fit opacity-75" src={myImage}></img>
+      <img className=" w-lvw h-fit opacity-100" src={myImage}></img>
     </div>
   );
 };
