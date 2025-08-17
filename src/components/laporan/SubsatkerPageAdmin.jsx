@@ -229,9 +229,12 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
             showTable == null
           ) {
             setTimeout(function () {
-              setShowGrap(graphtml);
-              setShowTable(tablehtml);
-              setShowRec(rechtml);
+              if(all){
+                setShowGrap(graphtml);
+                setShowTable(tablehtml);
+                setShowRec(rechtml);
+              }
+              
             }, 100);
           }
         });

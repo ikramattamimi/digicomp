@@ -28,11 +28,13 @@ const LaporanSubsatkerPageAdmin = () => {
   const [show, setShow] = useState();
   const [message, setMessage] = useState("0");
 
-  const [assasmentId, setassasmentId] = useState(5); // nilai dari mentor
-  const [subsatkerPage, setSubsatkerPage] = useState(); // nilai dari mentor
+  const [assasmentId, setassasmentId] = useState(5);
+  const [subsatkerPage, setSubsatkerPage] = useState(
+    <strong>Pilih penilaian untuk ditampilkan</strong>
+  );
 
-  const [subsatkers, setSubsatkers] = useState([]); // nilai dari mentor
-  const [selsubsatker, setselSubsatkers] = useState(); // nilai dari mentor
+  const [subsatkers, setSubsatkers] = useState([])
+  const [selsubsatker, setselSubsatkers] = useState();
 
   const [page, setPage] = useState("hidden");
   let showComp = [];
@@ -144,7 +146,7 @@ const LaporanSubsatkerPageAdmin = () => {
     setselSubsatkers(subsatid);
     fetchSubsatkerAssasment(subsatid);
 
-    handleChange(0);
+    handleChange(-1);
     setSubsatkerPage(<strong>Pilih penilaian untuk ditampilkan</strong>);
   };
 
@@ -222,7 +224,7 @@ const LaporanSubsatkerPageAdmin = () => {
                 onChange={(e) => handleChange(e.target.value)}
                 className="my-1 w-100"
               >
-                <option value={0}>
+                <option value={-1}>
                   <strong>PILIH PENILAIAN</strong>
                 </option>
                 {assa.map((sub, index) => (

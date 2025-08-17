@@ -92,6 +92,8 @@ const LaporanSubsatkerPage = () => {
           />
         );
       }, 100);
+    } else {
+      setSubsatkerPage(<strong>Pilih penilaian untuk ditampilkan</strong>);
     }
   };
 
