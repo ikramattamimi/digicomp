@@ -26,7 +26,7 @@ import AssessmentParticipantService from "../services/AssessmentParticipantServi
 import AssessmentStatusBadge from "../components/assessment/AssessmentStatusBadge";
 import ParticipantTable from "../components/assessment/ParticipantTable";
 import { formatAssessmentPeriod } from "../utils/assessmentUtils";
-import { ASSESSMENT_STATUS } from "../constants/assessmentConstants";
+import { ASSESSMENT_STATUS, ASSESSMENT_WEIGHTS } from "../constants/assessmentConstants";
 import { LoadingSpinner, ErrorAlert } from "../components/common";
 import { PageHeader } from "../components/common";
 import { useUserContext } from "../contexts/UserContext";
@@ -282,7 +282,7 @@ const AssessmentDetailPage = () => {
                 </Link>
               )}
 
-              <Link to={`/penilaian/${id}/participants`}>
+              {/* <Link to={`/penilaian/${id}/participants`}>
                 <Button
                   size="sm"
                   color="gray"
@@ -291,7 +291,7 @@ const AssessmentDetailPage = () => {
                   <Users className="w-4 h-4" />
                   Peserta
                 </Button>
-              </Link>
+              </Link> */}
 
               {/* Dropdown Menu for Additional Actions */}
               {isAdmin() && (
@@ -596,14 +596,14 @@ const AssessmentDetailPage = () => {
                           </div>
                           <div className="flex items-baseline gap-1">
                             <span className="text-2xl font-bold text-green-900 dark:text-green-100">
-                              {((assessment?.self_weight || 0.3) * 100).toFixed(0)}
+                              {((assessment?.self_weight || ASSESSMENT_WEIGHTS.SELF) * 100).toFixed(0)}
                             </span>
                             <span className="text-lg text-green-700 dark:text-green-300">%</span>
                           </div>
                           <div className="mt-3 bg-green-200 dark:bg-green-800 rounded-full h-2">
                             <div 
                               className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${((assessment?.self_weight || 0.3) * 100)}%` }}
+                              style={{ width: `${((assessment?.self_weight || ASSESSMENT_WEIGHTS.SELF) * 100)}%` }}
                             ></div>
                           </div>
                         </div>

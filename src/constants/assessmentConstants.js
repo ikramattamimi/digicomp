@@ -65,8 +65,8 @@ export const RATING_SCALE = [
 
 // Bobot untuk perhitungan skor akhir
 export const ASSESSMENT_WEIGHTS = {
-  SELF: 0.3,      // Self assessment: 30%
-  SUPERVISOR: 0.7  // Supervisor assessment: 70%
+  SELF: 0.4,      // Self assessment: 40%
+  SUPERVISOR: 0.6  // Supervisor assessment: 60%
 };
 
 // User roles untuk permission control

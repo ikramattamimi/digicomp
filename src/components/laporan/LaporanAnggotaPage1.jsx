@@ -22,6 +22,7 @@ import { BarChart } from "@mui/x-charts";
 
 import AuthService from "../../services/AuthService";
 import ProfileService from "../../services/ProfileService";
+import { ASSESSMENT_WEIGHTS } from "../../constants/assessmentConstants";
 
 const LaporanAnggotaPage = forwardRef((props, ref) => {
   const [userData, setUserData] = useState([]);
@@ -37,8 +38,8 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   const [nPeserta, setnPeserta] = useState([8, 6, 3]); // nilai dari peserta
   const [nMentor, setnMentor] = useState([9, 8, 5]); // nilai dari mentor
 
-  const bBawahan = 0.3;
-  const bAtasan = 0.7;
+  const bBawahan = ASSESSMENT_WEIGHTS.SELF;
+  const bAtasan = ASSESSMENT_WEIGHTS.SUPERVISOR;
 
   useEffect(() => {
     const fetchSupervisors = async () => {
