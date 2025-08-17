@@ -165,7 +165,7 @@ const AssessmentCreatePage = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, shouldPublish = false) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -177,10 +177,10 @@ const AssessmentCreatePage = () => {
       setLoading(true);
       setError(null);
 
-      // Create assessment
+      // Create assessment with appropriate status
       const assessmentData = {
         ...formData,
-        status: ASSESSMENT_STATUS.DRAFT,
+        status: shouldPublish ? ASSESSMENT_STATUS.IN_PROGRESS : ASSESSMENT_STATUS.DRAFT,
         is_active: true,
       };
 
@@ -202,6 +202,11 @@ const AssessmentCreatePage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle publish and create
+  const handlePublishAndCreate = (e) => {
+    handleSubmit(e, true);
   };
 
   // Handle back navigation
@@ -487,6 +492,7 @@ const AssessmentCreatePage = () => {
                     color="blue"
                     disabled={loading}
                     className="w-full flex items-center justify-center gap-2"
+                    onClick={handleSubmit}
                   >
                     {loading ? (
                       <>
@@ -496,7 +502,27 @@ const AssessmentCreatePage = () => {
                     ) : (
                       <>
                         <Save className="w-4 h-4" />
-                        Buat Penilaian
+                        Simpan Draft
+                      </>
+                    )}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    color="green"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={handlePublishAndCreate}
+                  >
+                    {loading ? (
+                      <>
+                        <Spinner size="sm" />
+                        Mempublikasi...
+                      </>
+                    ) : (
+                      <>
+                        <ClipboardCheck className="w-4 h-4" />
+                        Buat & Publikasi
                       </>
                     )}
                   </Button>
@@ -510,6 +536,16 @@ const AssessmentCreatePage = () => {
                   >
                     Batal
                   </Button>
+                </div>
+
+                {/* Info box */}
+                <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
+                    <strong>Draft:</strong> Penilaian dapat diedit sebelum dipublikasi
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                    <strong>Publikasi:</strong> Penilaian langsung aktif dan dapat diakses peserta
+                  </p>
                 </div>
               </Card>
             </div>

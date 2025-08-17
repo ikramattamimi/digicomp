@@ -51,9 +51,9 @@ const SupervisorAssessmentFormPage = () => {
   }, [subjectId]);
 
   const InfoRow = ({ label, value }) => (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-gray-500">{label}</span>
-      <span className="text-sm text-gray-900 dark:text-white">{value ?? '-'}</span>
+    <div className="flex flex-col gap-2">
+      <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">{label}</span>
+      <span className="text-base text-gray-900 dark:text-white">{value ?? '-'}</span>
     </div>
   );
 
@@ -63,7 +63,7 @@ const SupervisorAssessmentFormPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center py-16">
             <Spinner size="lg" />
-            <span className="ml-2">Memuat data...</span>
+            <span className="ml-3 text-base">Memuat data...</span>
           </div>
         </div>
       </div>
@@ -95,27 +95,27 @@ const SupervisorAssessmentFormPage = () => {
         />
 
         {error && (
-          <Alert color="failure" className="mb-6" onDismiss={() => setError(null)}>
+          <Alert color="failure" className="mb-6 text-base" onDismiss={() => setError(null)}>
             {error} 
           </Alert>
         )}
 
         {/* Informasi Supervisor & Subject */}
         <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 my-6">
-          <div className="space-y-6">
+          <div className="space-y-8 p-2">
             {/* Subject Information */}
             {subject && (
               <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Informasi Personel yang Dinilai
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <InfoRow label="Nama Personel" value={subject?.name} />
                   <InfoRow label="NRP" value={subject?.nrp} />
                   <InfoRow label="Posisi" value={subject?.position} />
                   <InfoRow 
                     label="Sub Direktorat" 
-                    value={subject?.subdirectorats?.name || subject?.subdirectorat_name} 
+                    value={subject?.subdirectorats?.name || subject?.subdirektorat_name} 
                   />
                 </div>
               </div>
@@ -123,25 +123,25 @@ const SupervisorAssessmentFormPage = () => {
 
             {/* Supervisor Information */}
             {supervisor && (
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-3">
+              <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Informasi Penilai (Atasan)
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <InfoRow label="Nama Atasan" value={supervisor?.name} />
                   <InfoRow label="NRP" value={supervisor?.nrp} />
                   <InfoRow label="Posisi" value={supervisor?.position} />
                   <InfoRow 
                     label="Sub Direktorat" 
-                    value={supervisor?.subdirectorats?.name || supervisor?.subdirectorat_name} 
+                    value={supervisor?.subdirectorats?.name || supervisor?.subdirektorat_name} 
                   />
                 </div>
               </div>
             )}
 
             {!subject && (
-              <div className="text-center py-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-center py-6">
+                <p className="text-base text-gray-500 dark:text-gray-400">
                   Data personel yang dinilai tidak ditemukan
                 </p>
               </div>

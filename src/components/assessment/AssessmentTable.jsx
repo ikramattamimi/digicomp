@@ -13,9 +13,13 @@ import {
   Button,
   Alert,
   Spinner,
+  Card,
+  Select,
 } from "flowbite-react";
 import {
   Calendar,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import AssessmentStatusBadge from "./AssessmentStatusBadge.jsx";
 import AdminActionButtons from "./AssessmentActionButtons.jsx";
@@ -31,6 +35,7 @@ const AssessmentTable = ({
 }) => {
   const [sortField, setSortField] = useState("created_at");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [isMobileView, setIsMobileView] = useState(false);
 
   const { position_type: role } = useUserContext();
 
@@ -68,6 +73,64 @@ const AssessmentTable = ({
     }
   });
 
+  // Mobile Card Component
+  const AssessmentCard = ({ assessment }) => (
+    <Card className="mb-4 hover:shadow-lg transition-shadow bg-white">
+      <div className="space-y-3">
+        {/* Header */}
+        <div className="flex justify-between items-start">
+          <div className="flex-1 min-w-0">
+            <Link
+              to={`/penilaian/${assessment.id}`}
+              className="text-lg font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 truncate block"
+            >
+              {assessment.name}
+            </Link>
+          </div>
+          <AssessmentStatusBadge size="sm" status={assessment.status} />
+        </div>
+
+        {/* Details */}
+        <div className="grid grid-cols-1 gap-2 text-sm">
+          {/* Period */}
+          <div className="flex items-center text-gray-600 dark:text-gray-400">
+            <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span>{formatAssessmentPeriod(assessment.start_date, assessment.end_date)}</span>
+          </div>
+
+          {/* Created Date */}
+          <div className="text-gray-500 dark:text-gray-400">
+            Dibuat: {new Date(assessment.created_at).toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+          {role === "ADMIN" && (
+            <AdminActionButtons
+              assessment={assessment}
+              onDelete={onDelete}
+              onPublish={onPublish}
+              onComplete={onComplete}
+            />
+          )}
+
+          {role === "BAWAHAN" && (
+            <SubordinateActionButtons
+              assessment={assessment}
+              onDelete={onDelete}
+              onComplete={onComplete}
+            />
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+
   // Render loading state
   if (loading) {
     return (
@@ -83,7 +146,7 @@ const AssessmentTable = ({
   // Render empty state
   if (assessments.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 px-4">
         <div className="mx-auto h-12 w-12 text-gray-400">
           <svg
             fill="none"
@@ -107,7 +170,9 @@ const AssessmentTable = ({
         </p>
         <div className="mt-6">
           <Link to="/penilaian/create">
-            <Button color="blue">Buat Penilaian</Button>
+            <Button color="blue" size="sm" className="w-full sm:w-auto">
+              Buat Penilaian
+            </Button>
           </Link>
         </div>
       </div>
@@ -115,148 +180,178 @@ const AssessmentTable = ({
   }
 
   return (
-    <div className="table-container">
-      <Table hoverable>
-        <TableHead>
-          <TableRow className="bg-gray-400 border-b border-gray-600 dark:bg-gray-700">
-            {/* Assessment Name */}
-            <TableHeadCell
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-              onClick={() => handleSort("name")}
+    <div className="assessment-table-container">
+      {/* Mobile Sort Controls */}
+      <div className="block md:hidden mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Urutkan berdasarkan:
+          </span>
+          <div className="flex items-center gap-2">
+            <Select
+              value={sortField}
+              onChange={(e) => setSortField(e.target.value)}
+              className="text-sm border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
-              <div className="flex items-center">
-                Nama Penilaian
-                {sortField === "name" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </div>
-            </TableHeadCell>
+              <option value="name">Nama</option>
+              <option value="status">Status</option>
+              <option value="created_at">Tanggal Dibuat</option>
+            </Select>
+          </div>
+        </div>
+      </div>
 
-            {/* Status */}
-            <TableHeadCell
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-              onClick={() => handleSort("status")}
-            >
-              <div className="flex items-center">
-                Status
-                {sortField === "status" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </div>
-            </TableHeadCell>
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-4">
+        {sortedAssessments.map((assessment) => (
+          <AssessmentCard key={assessment.id} assessment={assessment} />
+        ))}
+      </div>
 
-            {/* Period */}
-            <TableHeadCell>
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
-                Periode
-              </div>
-            </TableHeadCell>
-
-            {/* Created Date */}
-            <TableHeadCell
-              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-              onClick={() => handleSort("created_at")}
-            >
-              <div className="flex items-center">
-                Tanggal Dibuat
-                {sortField === "created_at" && (
-                  <span className="ml-1">
-                    {sortDirection === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </div>
-            </TableHeadCell>
-
-            {/* Actions */}
-            <TableHeadCell>Aksi</TableHeadCell>
-          </TableRow>
-        </TableHead>
-
-        <TableBody className="divide-y">
-          {sortedAssessments.map((assessment) => (
-            <TableRow
-              key={assessment.id}
-              className="hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-200"
-            >
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto table-container">
+        <Table hoverable>
+          <TableHead>
+            <TableRow className="bg-gray-400 border-b border-gray-600 dark:bg-gray-700">
               {/* Assessment Name */}
-              <TableCell className="font-medium text-gray-900 dark:text-white">
-                <div>
-                  <Link
-                    to={`/penilaian/${assessment.id}`}
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                  >
-                    {assessment.name}
-                  </Link>
+              <TableHeadCell
+                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                onClick={() => handleSort("name")}
+              >
+                <div className="flex items-center">
+                  Nama Penilaian
+                  {sortField === "name" && (
+                    <span className="ml-1">
+                      {sortDirection === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
                 </div>
-              </TableCell>
+              </TableHeadCell>
 
               {/* Status */}
-              <TableCell>
-                <AssessmentStatusBadge size="sm" status={assessment.status} />
-              </TableCell>
+              <TableHeadCell
+                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                onClick={() => handleSort("status")}
+              >
+                <div className="flex items-center">
+                  Status
+                  {sortField === "status" && (
+                    <span className="ml-1">
+                      {sortDirection === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </div>
+              </TableHeadCell>
 
               {/* Period */}
-              <TableCell>
-                <div className="text-sm">
-                  {formatAssessmentPeriod(
-                    assessment.start_date,
-                    assessment.end_date
-                  )}
+              <TableHeadCell>
+                <div className="flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  Periode
                 </div>
-              </TableCell>
+              </TableHeadCell>
 
               {/* Created Date */}
-              <TableCell>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {new Date(assessment.created_at).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
+              <TableHeadCell
+                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                onClick={() => handleSort("created_at")}
+              >
+                <div className="flex items-center">
+                  Tanggal Dibuat
+                  {sortField === "created_at" && (
+                    <span className="ml-1">
+                      {sortDirection === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
                 </div>
-              </TableCell>
+              </TableHeadCell>
 
               {/* Actions */}
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  {role === "ADMIN" && (
-                    <AdminActionButtons
-                      assessment={assessment}
-                      onDelete={onDelete}
-                      onPublish={onPublish}
-                      onComplete={onComplete}
-                    />
-                  )}
-
-                  {role === "BAWAHAN" && (
-                    <SubordinateActionButtons
-                      assessment={assessment}
-                      onDelete={onDelete}
-                      onComplete={onComplete}
-                    />
-                  )}
-                </div>
-              </TableCell>
+              <TableHeadCell>Aksi</TableHeadCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
 
-      {/* Table Footer with Summary */}
+          <TableBody className="divide-y">
+            {sortedAssessments.map((assessment) => (
+              <TableRow
+                key={assessment.id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-200"
+              >
+                {/* Assessment Name */}
+                <TableCell className="font-medium text-gray-900 dark:text-white">
+                  <div>
+                    <Link
+                      to={`/penilaian/${assessment.id}`}
+                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      {assessment.name}
+                    </Link>
+                  </div>
+                </TableCell>
+
+                {/* Status */}
+                <TableCell>
+                  <AssessmentStatusBadge size="sm" status={assessment.status} />
+                </TableCell>
+
+                {/* Period */}
+                <TableCell>
+                  <div className="text-sm">
+                    {formatAssessmentPeriod(
+                      assessment.start_date,
+                      assessment.end_date
+                    )}
+                  </div>
+                </TableCell>
+
+                {/* Created Date */}
+                <TableCell>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {new Date(assessment.created_at).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </div>
+                </TableCell>
+
+                {/* Actions */}
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    {role === "ADMIN" && (
+                      <AdminActionButtons
+                        assessment={assessment}
+                        onDelete={onDelete}
+                        onPublish={onPublish}
+                        onComplete={onComplete}
+                      />
+                    )}
+
+                    {role === "BAWAHAN" && (
+                      <SubordinateActionButtons
+                        assessment={assessment}
+                        onDelete={onDelete}
+                        onComplete={onComplete}
+                      />
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Footer */}
       {assessments.length > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 gap-2">
           <div className="text-sm text-gray-700 dark:text-gray-300">
-            Showing <span className="font-medium">{assessments.length}</span>{" "}
-            assessments
+            Menampilkan <span className="font-medium">{assessments.length}</span>{" "}
+            penilaian
           </div>
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Last updated: {new Date().toLocaleTimeString("id-ID")}
+            Terakhir diperbarui: {new Date().toLocaleTimeString("id-ID")}
           </div>
         </div>
       )}

@@ -1,6 +1,3 @@
-// Assessment Detail Page - View assessment details and manage participants
-// Shows assessment info, competencies, participants, and actions
-
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Card, Button, Badge, Tabs, Alert, TabItem, Dropdown, DropdownItem, DropdownDivider } from "flowbite-react";
@@ -19,7 +16,7 @@ import {
   MoreHorizontal,
   Home,
   Trash2,
-  Pause, // Add Pause icon
+  Pause,
 } from "lucide-react";
 import AssessmentService from "../services/AssessmentService";
 import AssessmentParticipantService from "../services/AssessmentParticipantService";
@@ -64,8 +61,8 @@ const AssessmentDetailPage = () => {
       const stats = await AssessmentParticipantService.getParticipantStats(id);
       setParticipantStats(stats);
     } catch (err) {
-      console.error("Failed to load assessment data:", err);
-      setError(err.message || "Failed to load assessment data");
+      console.error("Gagal memuat data penilaian:", err);
+      setError(err.message || "Gagal memuat data penilaian");
     } finally {
       setLoading(false);
     }
@@ -80,20 +77,20 @@ const AssessmentDetailPage = () => {
 
   // Handle assessment workflow actions
   const handlePublish = async () => {
-    const confirmMessage = `Yakin ingin mempublikasikan assessment "${assessment.name}"?\n\nSetelah dipublikasikan, assessment akan aktif dan peserta dapat mulai mengisi penilaian.`;
-    
+    const confirmMessage = `Yakin ingin mempublikasikan penilaian "${assessment.name}"?\n\nSetelah dipublikasikan, penilaian akan aktif dan peserta dapat mulai mengisi penilaian.`;
+
     if (!window.confirm(confirmMessage)) return;
 
     try {
       await AssessmentService.publish(id);
       await loadAssessmentData(); // Refresh data
     } catch (err) {
-      setError(err.message || "Failed to publish assessment");
+      setError(err.message || "Gagal mempublikasikan penilaian");
     }
   };
 
   const handlePause = async () => {
-    const confirmMessage = `Yakin ingin menjedakan assessment "${assessment.name}"?\n\nSetelah dijeda, peserta tidak dapat mengisi atau melanjutkan penilaian sampai assessment dipublikasikan kembali.`;
+    const confirmMessage = `Yakin ingin menjeda penilaian "${assessment.name}"?\n\nSetelah dijeda, peserta tidak dapat mengisi atau melanjutkan penilaian sampai penilaian dipublikasikan kembali.`;
     
     if (!window.confirm(confirmMessage)) return;
 
@@ -101,12 +98,12 @@ const AssessmentDetailPage = () => {
       await AssessmentService.pause(id);
       await loadAssessmentData(); // Refresh data
     } catch (err) {
-      setError(err.message || "Failed to pause assessment");
+      setError(err.message || "Gagal menjeda penilaian");
     }
   };
 
   const handleComplete = async () => {
-    const confirmMessage = `Yakin ingin menyelesaikan assessment "${assessment.name}"?\n\nSetelah diselesaikan, assessment tidak dapat diubah lagi dan peserta tidak dapat mengisi penilaian.`;
+    const confirmMessage = `Yakin ingin menyelesaikan penilaian "${assessment.name}"?\n\nSetelah diselesaikan, penilaian tidak dapat diubah lagi dan peserta tidak dapat mengisi penilaian.`;
     
     if (!window.confirm(confirmMessage)) return;
 
@@ -114,12 +111,12 @@ const AssessmentDetailPage = () => {
       await AssessmentService.complete(id);
       await loadAssessmentData(); // Refresh data
     } catch (err) {
-      setError(err.message || "Failed to complete assessment");
+      setError(err.message || "Gagal menyelesaikan penilaian");
     }
   };
 
   const handleDelete = async () => {
-    const confirmMessage = `Yakin ingin menghapus assessment "${assessment.name}"?\n\nTindakan ini tidak dapat dibatalkan.`;
+    const confirmMessage = `Yakin ingin menghapus penilaian "${assessment.name}"?\n\nTindakan ini tidak dapat dibatalkan.`;
     
     if (!window.confirm(confirmMessage)) return;
 
@@ -127,7 +124,7 @@ const AssessmentDetailPage = () => {
       await AssessmentService.delete(id);
       navigate("/penilaian");
     } catch (err) {
-      setError(err.message || "Failed to delete assessment");
+      setError(err.message || "Gagal menghapus penilaian");
     }
   };
 
@@ -208,8 +205,6 @@ const AssessmentDetailPage = () => {
             { label: 'Penilaian', href: '/penilaian', icon: ClipboardCheck },
             { label: assessment?.name || 'Detail Penilaian', icon: Settings }
           ]}
-          // title={assessment?.name || 'Detail Penilaian'}
-          // subtitle={assessment ? formatAssessmentPeriod(assessment.start_date, assessment.end_date) : 'Informasi detail penilaian'}
           showExportButton={false}
         />
 
@@ -277,21 +272,10 @@ const AssessmentDetailPage = () => {
                     className="flex items-center gap-1"
                   >
                     <Edit className="w-4 h-4" />
-                    Edit
+                    Ubah
                   </Button>
                 </Link>
               )}
-
-              {/* <Link to={`/penilaian/${id}/participants`}>
-                <Button
-                  size="sm"
-                  color="gray"
-                  className="flex items-center gap-1"
-                >
-                  <Users className="w-4 h-4" />
-                  Peserta
-                </Button>
-              </Link> */}
 
               {/* Dropdown Menu for Additional Actions */}
               {isAdmin() && (
@@ -313,7 +297,7 @@ const AssessmentDetailPage = () => {
                       icon={Play}
                       onClick={handlePublish}
                     >
-                      Publikasikan Assessment
+                      Publikasikan Penilaian
                     </DropdownItem>
                   )}
 
@@ -322,7 +306,7 @@ const AssessmentDetailPage = () => {
                       icon={Pause}
                       onClick={handlePause}
                     >
-                      Jeda Assessment
+                      Jeda Penilaian
                     </DropdownItem>
                   )}
 
@@ -331,7 +315,7 @@ const AssessmentDetailPage = () => {
                       icon={CheckCircle}
                       onClick={handleComplete}
                     >
-                      Selesaikan Assessment
+                      Selesaikan Penilaian
                     </DropdownItem>
                   )}
 
@@ -350,7 +334,7 @@ const AssessmentDetailPage = () => {
                     className="text-red-600 dark:text-red-400"
                     onClick={handleDelete}
                   >
-                    Hapus Assessment
+                    Hapus Penilaian
                   </DropdownItem>
                 </Dropdown>
               )}
@@ -413,89 +397,18 @@ const AssessmentDetailPage = () => {
             icon={Eye}
           >
             <div className="space-y-6">
-              {/* Status & Progress Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4" hidden>
-                {/* Total Participants */}
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-700">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                        Total Peserta
-                      </p>
-                      <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                        {participantStats.totalParticipants || 0}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-blue-500 rounded-full">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Unique Subjects */}
-                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 border-purple-200 dark:border-purple-700">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-purple-600 dark:text-purple-400">
-                        Subjek Unik
-                      </p>
-                      <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-                        {participantStats.uniqueSubjects || 0}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-purple-500 rounded-full">
-                      <Award className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Self Assessments */}
-                <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 border-green-200 dark:border-green-700">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                        Penilaian Diri
-                      </p>
-                      <p className="text-2xl font-bold text-green-900 dark:text-green-100">
-                        {participantStats.selfAssessments || 0}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-green-500 rounded-full">
-                      <CheckCircle className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Supervisor Assessments */}
-                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 border-orange-200 dark:border-orange-700">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                        Penilaian Atasan
-                      </p>
-                      <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
-                        {participantStats.supervisorAssessments || 0}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-orange-500 rounded-full">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
               {/* Main Content Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Assessment Information */}
                 <div className="lg:col-span-2 space-y-6">
                   {/* Basic Info Card */}
-                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-none">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                         <ClipboardCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        Informasi Assessment
+                        Informasi Penilaian
                       </h3>
                     </div>
 
@@ -520,7 +433,7 @@ const AssessmentDetailPage = () => {
 
                         <div>
                           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                            Status Assessment
+                            Status Penilaian
                           </label>
                           <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <AssessmentStatusBadge status={assessment?.status} size="lg" />
@@ -575,7 +488,7 @@ const AssessmentDetailPage = () => {
                   </Card>
 
                   {/* Weight Configuration Card */}
-                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-none">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                         <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
@@ -651,7 +564,7 @@ const AssessmentDetailPage = () => {
                 {/* Progress & Analytics */}
                 <div className="space-y-6">
                   {/* Progress Card */}
-                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-none">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                         <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -721,7 +634,7 @@ const AssessmentDetailPage = () => {
                   </Card>
 
                   {/* Quick Actions Card */}
-                  <Card className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600">
+                  <Card className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600 shadow-none">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                       <Play className="mr-2 text-gray-600 dark:text-gray-400" />
                       Aksi Cepat
@@ -748,7 +661,7 @@ const AssessmentDetailPage = () => {
                         <Link to={`/penilaian/${id}/edit`} className="block">
                           <Button color="yellow" className="w-full justify-start">
                             <Edit className="w-4 h-4 mr-2" />
-                            Edit Assessment
+                            Ubah Penilaian
                           </Button>
                         </Link>
                       )}
@@ -779,7 +692,7 @@ const AssessmentDetailPage = () => {
                       ac.competencies && (
                         <Card
                           key={ac.id}
-                          className="bg-gray-50 dark:bg-gray-700"
+                          className="bg-gray-50 dark:bg-gray-700 shadow-none"
                         >
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">

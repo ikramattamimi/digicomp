@@ -33,17 +33,17 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="m-10 flex items-center justify-center gap-10">
-      <div className="w-150 h-150">
-        <img className="object-cover w-150 h-150" src={myImage}></img>
+    <div className="m-4 md:m-10 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 min-h-screen md:min-h-0">
+      <div className="w-32 h-32 md:w-150 md:h-150">
+        <img className="object-cover w-full h-full" src={myImage} alt="Logo"></img>
       </div>
-      <Card className="w-fit h-fit bg-white dark:bg-gray-800">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+      <Card className="w-full max-w-md md:w-fit h-fit bg-white dark:bg-gray-800">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white flex items-center justify-center md:justify-start">
           <UserCheck className="mr-3 text-blue-600 dark:text-blue-400" />
           Login
         </h1>
 
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-gray-600 dark:text-gray-400 mt-1 text-center md:text-left">
           Login dengan akun yang sudah terdaftar
         </p>
 

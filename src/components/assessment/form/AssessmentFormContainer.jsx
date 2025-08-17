@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card, Button, Spinner, Alert } from 'flowbite-react';
+import { useNavigate } from 'react-router-dom';
 import AssessmentProgress from './AssessmentProgress';
 import CompetencySection from './CompetencySection';
 import { LoadingModal, ErrorModal, SuccessModal } from '../../common';
@@ -12,6 +13,7 @@ import AssessmentParticipantService from '../../../services/AssessmentParticipan
 import { useUserContext } from '../../../contexts/UserContext';
 
 const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -184,7 +186,14 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
       });
 
       hideLoading();
-      showSuccess('Draft berhasil disimpan');
+      showSuccess('Draft berhasil disimpan. Anda akan diarahkan ke halaman penilaian...');
+      
+      // Navigate back to penilaian page after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        navigate(-1);
+      }, 2000);
+
     } catch (err) {
       hideLoading();
       showFlowbiteErrorModal(err?.message || 'Gagal menyimpan draft');
@@ -213,13 +222,26 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
       });
       
       hideLoading();
-      showSuccess('Assessment berhasil disubmit');
+      showSuccess('Assessment berhasil disubmit. Anda akan diarahkan ke halaman penilaian...');
+      
+      // Navigate back to penilaian page after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        navigate('/penilaian');
+      }, 2000);
+
     } catch (err) {
       hideLoading();
       showFlowbiteErrorModal(err?.message || 'Gagal submit assessment');
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    // If modal was closed manually, still navigate to penilaian page
+    navigate('/penilaian');
   };
 
   if (loading) {
@@ -286,7 +308,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
 
       <SuccessModal
         show={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+        onClose={handleSuccessModalClose}
         title={modalTitle}
         message={modalMessage}
       />
