@@ -7,13 +7,7 @@ const StaffPage = () => {
   return (
     <div className="page">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        {/* <StaffHeader /> */}
-
-        {/* Content */}
-        <Card className="mb-6 bg-white dark:bg-gray-800">          
-          <AccountTable />
-        </Card>
+        <AccountTable />
       </div>
     </div>
   );

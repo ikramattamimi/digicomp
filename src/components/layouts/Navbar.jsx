@@ -69,8 +69,8 @@ const TopNavbar = ({ collapsed, setCollapsed, isMobile, showMobileSidebar, setSh
     name: account.name,
     email: account.email,
     role: account.position_type,
-    avatar: "https://flowbite.com/docs/images/people/profile-picture-5.jpg",
-    department: account.subdirectorat_id,
+    avatar: "/police.png",
+    department: account.subdirectorats?.name,
   };
 
   return (
@@ -142,9 +142,6 @@ const TopNavbar = ({ collapsed, setCollapsed, isMobile, showMobileSidebar, setSh
               <DropdownHeader>
                 <span className="block text-sm font-medium text-gray-900 dark:text-white truncate max-w-48">
                   {userProfile.name}
-                </span>
-                <span className="block truncate text-xs sm:text-sm text-gray-500 dark:text-gray-400 max-w-48">
-                  {userProfile.email}
                 </span>
                 <span className="block text-xs text-blue-600 dark:text-blue-400 mt-1 truncate max-w-48">
                   {userProfile.role} • {userProfile.department}
