@@ -13,7 +13,7 @@ import {
 import { LoadingSpinner, ErrorAlert } from "../components/common";
 import { Card } from "flowbite-react";
 
-import myImage from "../assets/bg.png"
+import myImage from "../assets/bg.png";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -49,9 +49,8 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="h-fit  bg-amber-300">
-      <img className=" w-lvw h-lvh" src={myImage}></img>
-      
+    <div className="">
+      <img className=" w-lvw h-fit opacity-75" src={myImage}></img>
     </div>
   );
 };
