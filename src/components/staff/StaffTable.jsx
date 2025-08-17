@@ -60,8 +60,21 @@ const StaffTable = forwardRef((props, ref) => {
         setSubDirektorat(dataSubDirektorat);
 
         const data = await ProfileService.getStaff();
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        
+        // Sort data immediately after fetching
+        const sortedData = data.sort((a, b) => {
+          if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
+            return -1; // a comes first
+          }
+          if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
+            return 1; // b comes first
+          }
+          // If both are same type, sort by name
+          return a.name.localeCompare(b.name);
+        });
+        
+        setSupervisors(sortedData);
+        setFilteredSupervisors(sortedData);
       } catch (err) {
         console.error("Failed to fetch supervisors:", err);
         setErrorMessage(err?.message || "Failed to load supervisors");
@@ -75,8 +88,20 @@ const StaffTable = forwardRef((props, ref) => {
   const handleRefresh = async () => {
     try {
       const data = await ProfileService.getStaff();
-      setSupervisors(data);
-      setFilteredSupervisors(data);
+      
+      // Sort data immediately
+      const sortedData = data.sort((a, b) => {
+        if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
+          return -1;
+        }
+        if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
+          return 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      
+      setSupervisors(sortedData);
+      setFilteredSupervisors(sortedData);
       setErrorMessage("");
       setShowErrorModal(false);
     } catch (err) {
@@ -90,8 +115,20 @@ const StaffTable = forwardRef((props, ref) => {
     try {
       if (id != "*") {
         const data = await ProfileService.getBySubDirectorat(id);
-        setSupervisors(data);
-        setFilteredSupervisors(data);
+        
+        // Sort data immediately
+        const sortedData = data.sort((a, b) => {
+          if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
+            return -1;
+          }
+          if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
+            return 1;
+          }
+          return a.name.localeCompare(b.name);
+        });
+        
+        setSupervisors(sortedData);
+        setFilteredSupervisors(sortedData);
         setErrorMessage("");
         setShowErrorModal(false);
       } else {
@@ -114,6 +151,18 @@ const StaffTable = forwardRef((props, ref) => {
           sup.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
+
+    // Sort: ATASAN first, then BAWAHAN
+    filtered = filtered.sort((a, b) => {
+      if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
+        return -1; // a comes first
+      }
+      if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
+        return 1; // b comes first
+      }
+      // If both are same type, sort by name
+      return a.name.localeCompare(b.name);
+    });
 
     setFilteredSupervisors(filtered);
   }, [supervisors, searchTerm]);
@@ -307,7 +356,7 @@ const StaffTable = forwardRef((props, ref) => {
                       <div className="flex-1">
                         <TextInput
                           icon={Search}
-                          placeholder="Search by name or email..."
+                          placeholder="Cari berdasarkan nama atau email..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -318,10 +367,10 @@ const StaffTable = forwardRef((props, ref) => {
                     {selectedRows.length > 0 && (
                       <div className="flex items-center gap-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                         <span className="text-sm text-blue-700 dark:text-blue-300">
-                          {selectedRows.length} item(s) selected
+                          {selectedRows.length} item dipilih
                         </span>
                         <Button size="xs" color="failure">
-                          Delete Selected
+                          Hapus Yang Dipilih
                         </Button>
                       </div>
                     )}
@@ -343,13 +392,12 @@ const StaffTable = forwardRef((props, ref) => {
                                 }
                               />
                             </TableHeadCell>
-                            <TableHeadCell>Name</TableHeadCell>
+                            <TableHeadCell>Nama</TableHeadCell>
                             <TableHeadCell>NRP</TableHeadCell>
                             <TableHeadCell>Pangkat</TableHeadCell>
-                            <TableHeadCell>Position</TableHeadCell>
-                            <TableHeadCell>Position Type</TableHeadCell>
-                            <TableHeadCell>Supervisor</TableHeadCell>
-                            <TableHeadCell>Actions</TableHeadCell>
+                            <TableHeadCell>Jabatan</TableHeadCell>
+                            <TableHeadCell>Tipe Posisi</TableHeadCell>
+                            <TableHeadCell>Aksi</TableHeadCell>
                           </TableRow>
                         </TableHead>
                         <TableBody className="divide-y">
@@ -379,9 +427,6 @@ const StaffTable = forwardRef((props, ref) => {
                                   <TableCell>{sup.position}</TableCell>
                                   <TableCell>{sup.position_type}</TableCell>
                                   <TableCell>
-                                    {setToNameSupervisor(sup.supervisor_id)}
-                                  </TableCell>
-                                  <TableCell>
                                     <div className="flex gap-2">
                                       <Button
                                         size="xs"
@@ -399,7 +444,7 @@ const StaffTable = forwardRef((props, ref) => {
                                         className="flex items-center gap-1"
                                       >
                                         <Trash2 className="w-3 h-3" />
-                                        Delete
+                                        Hapus
                                       </Button>
                                     </div>
                                   </TableCell>
@@ -412,7 +457,7 @@ const StaffTable = forwardRef((props, ref) => {
 
                       {filteredSupervisors.length === 0 && (
                         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                          No supervisors found.
+                          Tidak ada personel ditemukan.
                         </div>
                       )}
                     </div>
