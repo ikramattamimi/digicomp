@@ -29,6 +29,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   const [userData, setUserData] = useState([]);
   const [mentor, setMentor] = useState([]);
   const [subDirektorat, setSubDirektorat] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -45,6 +46,18 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   var showRow = [];
   const [showRec, setShowRec] = useState(); // nilai dari mentor
   const [showGrap, setShowGrap] = useState(); // nilai dari mentor
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   setTimeout(function () {
     if (props.cntId.length < 50) {
@@ -103,7 +116,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
                 ) {
                   return (
                     <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <p className="text-m text-blue-700 dark:text-blue-300">
+                      <p className="text-sm md:text-m text-blue-700 dark:text-blue-300">
                         {getSaran(showComp[index])}
                       </p>
                     </div>
@@ -135,7 +148,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
             data: showComp,
             colorMap: {
               type: "ordinal",
-              colors: color, // Colors for values <0, 0-50, 50-100, and >100 respectively
+              colors: color,
             },
           },
         ]}
@@ -145,7 +158,8 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
             label: "Nilai Rata Rata",
           },
         ]}
-        height={300}
+        height={isMobile ? 200 : 300}
+        margin={isMobile ? { left: 40, right: 10, top: 20, bottom: 60 } : undefined}
       />
     );
 
@@ -433,9 +447,37 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
     showRow = [peserta, mentor, rataan, kualifperkomp];
   }
 
+  // Mobile Card Component for Table Data - Grouped by Competency
+  const MobileCompetencyCard = ({ competencyIndex }) => {
+    const competencyName = showComp[competencyIndex];
+    
+    return (
+      <div className="bg-white border rounded-lg shadow-sm mb-4 p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm border-b pb-2">
+          {competencyName}
+        </h3>
+        <div className="space-y-2">
+          {showRow.map((row, rowIndex) => {
+            const nilai = row.nilai[competencyIndex];
+            return (
+              <div key={rowIndex} className="flex justify-between items-center py-1">
+                <span className="text-xs text-gray-600 dark:text-gray-400 flex-1 mr-2">
+                  {row.from}
+                </span>
+                <span className={`font-medium text-xs px-2 py-1 rounded ${getColorbyValue(nilai)}`}>
+                  {nilai}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="bg-white p-5 rounded-lg shadow-lg">
-      <div className="space-y-5 ">
+    <div className="bg-white p-3 md:p-5 rounded-lg shadow-lg">
+      <div className="space-y-5">
         <Button onClick={() => props.userData(0)}>{"<"}</Button>
 
         <PageHeader
@@ -443,71 +485,96 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
           title="Hasil Penilaian Anggota "
         />
 
-        <div className="flex flex-row w-full gap-4 ">
+        {/* Info Cards */}
+        <div className="flex flex-col md:flex-row w-full gap-4">
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
-            <p className="text-m dark:text-blue-300">
-              <strong>Nama Peserta :</strong> {userData.name}
+            <p className="text-xs md:text-sm dark:text-blue-300">
+              <strong>Nama Bawahan :</strong> {userData.name}
             </p>
-            <p className="text-m dark:text-blue-300">
+            <p className="text-xs md:text-sm dark:text-blue-300">
               <strong>NRP :</strong> {userData.nrp}
             </p>
-            <p className="text-m dark:text-blue-300">
+            <p className="text-xs md:text-sm dark:text-blue-300">
               <strong>Subsatker :</strong>{" "}
               {setToSubsatkerName(userData.subdirectorat_id)}
             </p>
           </div>
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
-            <p className="text-m dark:text-blue-300">
-              <strong>Nama Mentor :</strong> {mentor.name}
+            <p className="text-xs md:text-sm dark:text-blue-300">
+              <strong>Nama Atasan :</strong> {mentor.name}
             </p>
-            <p className="text-m dark:text-blue-300">
+            <p className="text-xs md:text-sm dark:text-blue-300">
               <strong>NRP :</strong> {mentor.nrp}
             </p>
-            <p className="text-m dark:text-blue-300">
+            <p className="text-xs md:text-sm dark:text-blue-300">
               <strong>Subsatker :</strong>{" "}
               {setToSubsatkerName(mentor.subdirectorat_id)}
             </p>
           </div>
         </div>
-        <div>{showGrap}</div>
-        {/* Table */}
-        <div className="table-container">
-          <Table>
-            <TableHead>
-              <TableRow className="bg-gray-50 dark:bg-gray-700">
-                <TableHeadCell></TableHeadCell>
-                {showComp.map((sub) => (
-                  <TableHeadCell>{sub}</TableHeadCell>
-                ))}
-                <TableHeadCell>Rata-Rata</TableHeadCell>
-                <TableHeadCell>Kualifikasi</TableHeadCell>
-              </TableRow>
-            </TableHead>
 
-            <TableBody className="divide-y">
-              {showRow.map((sup) => (
-                <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <TableCell className="font-medium text-gray-900 dark:text-white">
-                    {sup.from}
-                  </TableCell>
-                  {sup.nilai.map((sub) => (
-                    <TableCell className={getColorbyValue(sub)}>
-                      <strong>{sub}</strong>
-                    </TableCell>
-                  ))}
-
-                  <TableCell className={getColorbyValue(sup.sum)}>
-                    <strong>{sup.sum}</strong>
-                  </TableCell>
-                  <TableCell className={getColorbyValue(sup.kualifikasi)}>
-                    <strong>{sup.kualifikasi}</strong>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        {/* Chart */}
+        <div className="w-full overflow-x-auto">
+          {showGrap}
         </div>
 
+        {/* Table/Cards */}
+        {isMobile ? (
+          // Mobile View - Cards grouped by competency
+          <div className="space-y-4">
+            {/* Individual Competency Cards */}
+            <div className="border-t pt-4">
+              <h2 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
+                Detail per Kompetensi
+              </h2>
+              {showComp.map((competency, index) => (
+                <MobileCompetencyCard key={index} competencyIndex={index} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          // Desktop View - Table
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHead>
+                <TableRow className="bg-gray-50 dark:bg-gray-700">
+                  <TableHeadCell className="min-w-[150px]"></TableHeadCell>
+                  {showComp.map((sub, index) => (
+                    <TableHeadCell key={index} className="min-w-[120px]">
+                      <div className="text-xs break-words">{sub}</div>
+                    </TableHeadCell>
+                  ))}
+                  <TableHeadCell className="min-w-[100px]">Rata-Rata</TableHeadCell>
+                  <TableHeadCell className="min-w-[120px]">Kualifikasi</TableHeadCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody className="divide-y">
+                {showRow.map((sup, index) => (
+                  <TableRow key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <TableCell className="font-medium text-gray-900 dark:text-white text-sm">
+                      {sup.from}
+                    </TableCell>
+                    {sup.nilai.map((sub, subIndex) => (
+                      <TableCell key={subIndex} className={`text-sm ${getColorbyValue(sub)}`}>
+                        <strong>{sub}</strong>
+                      </TableCell>
+                    ))}
+
+                    <TableCell className={`text-sm ${getColorbyValue(sup.sum)}`}>
+                      <strong>{sup.sum}</strong>
+                    </TableCell>
+                    <TableCell className={`text-sm ${getColorbyValue(sup.kualifikasi)}`}>
+                      <strong>{sup.kualifikasi}</strong>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        {/* Recommendations */}
         <div>{showRec}</div>
 
         {/* Modal for Add/Edit */}
