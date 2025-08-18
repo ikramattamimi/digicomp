@@ -40,11 +40,11 @@ const LoginPage = () => {
       <Card className="w-full max-w-md md:w-fit h-fit bg-white dark:bg-gray-800">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white flex items-center justify-center md:justify-start">
           <UserCheck className="mr-3 text-blue-600 dark:text-blue-400" />
-          Login
+          Login Profesi
         </h1>
 
         <p className="text-gray-600 dark:text-gray-400 mt-1 text-center md:text-left">
-          Login dengan akun yang sudah terdaftar
+          Profil & Pemetaan Soft Competency Personel Ditpamobvit Polda Jabar
         </p>
 
         <div>
