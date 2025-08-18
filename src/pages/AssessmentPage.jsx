@@ -51,6 +51,12 @@ const AssessmentListPage = () => {
 
   // Filter assessments based on search term and status
   const filterAssessments = useCallback(() => {
+    // Ensure assessments is always an array
+    if (!Array.isArray(assessments)) {
+      setFilteredAssessments([]);
+      return;
+    }
+
     let filtered = [...assessments];
 
     // Apply search filter
@@ -103,10 +109,13 @@ const AssessmentListPage = () => {
         data = await AssessmentService.getByParticipant(user.id);
       }
 
-      setAssessments(data);
+      // Ensure data is always an array
+      setAssessments(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load assessments:', err);
       setError(err.message || 'Failed to load assessments');
+      // Set empty array on error
+      setAssessments([]);
     } finally {
       setLoading(false);
     }
