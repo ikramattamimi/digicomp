@@ -27,9 +27,9 @@ const HelpPage = () => {
 
   const documentationLinks = [
     {
-      title: "Panduan Penggunaan Umum",
-      description: "Cara dasar menggunakan aplikasi Profesi Ditpamobvit",
-      file: "/docs/test.pdf",
+      title: "Buku Panduan",
+      description: "Buku panduan penggunaan aplikasi profesi berbasis web",
+      file: "/docs/panduan.pdf",
       type: "PDF",
     },
   ];
