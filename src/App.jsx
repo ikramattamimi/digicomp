@@ -64,7 +64,7 @@ function App() {
     )
   );
 
-  if (authenticatedUser.position_type === "ADMIN") {
+  if (authenticatedUser.position_type === "ADMIN" || authenticatedUser.position_type === "TOP MANAGEMENT") {
     router = createBrowserRouter(
       createRoutesFromElements(
         <>
