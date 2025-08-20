@@ -12,7 +12,7 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
 
   // Determine which column is editable based on mode
   const isSelfMode = mode === 'self';
-  const isSupervisorMode = mode === 'supervisor';
+  const isSupervisorMode = mode === 'supervisor' || mode === 'admin';
   // const isAdminMode = mode === 'admin';
 
   return (

@@ -62,6 +62,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
   useEffect(() => {
     const load = async () => {
       try {
+        console.log({mode});
         setLoading(true);
         setError(null);
         
@@ -89,7 +90,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
         setParticipantStatus(participantStatus);
 
         // Load existing responses based on mode
-        // if (mode === 'self') {
+        if (mode === 'self') {
           // For self assessment, load user's own responses
           const existingSelfAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
             assessmentId,
@@ -107,24 +108,24 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
           if (existingSelfAssessment?.responses) setResponses(existingSelfAssessment.responses);
           if (existingSupervisorAssessment?.responses) setSupervisorResponses(existingSupervisorAssessment.responses);
           
-        // } else if (mode === 'supervisor') {
-        //   // For supervisor assessment, load supervisor's responses for the subject
-        //   const existingSupervisorAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
-        //     assessmentId,
-        //     subjectProfileId: resolvedSubjectId,
-        //     mode: 'supervisor'
-        //   });
+        } else if (mode === 'supervisor' || mode === 'admin') {
+          // For supervisor assessment, load supervisor's responses for the subject
+          const existingSupervisorAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
+            assessmentId,
+            subjectProfileId: resolvedSubjectId,
+            mode: 'supervisor'
+          });
           
-        //   // Also load self assessment responses for comparison (read-only)
-        //   const existingSelfAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
-        //     assessmentId,
-        //     subjectProfileId: resolvedSubjectId,
-        //     mode: 'self'
-        //   });
+          // Also load self assessment responses for comparison (read-only)
+          const existingSelfAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
+            assessmentId,
+            subjectProfileId: resolvedSubjectId,
+            mode: 'self'
+          });
 
-        //   if (existingSupervisorAssessment?.responses) setResponses(existingSupervisorAssessment.responses);
-        //   if (existingSelfAssessment?.responses) setSupervisorResponses(existingSelfAssessment.responses);
-        // }
+          if (existingSupervisorAssessment?.responses) setResponses(existingSupervisorAssessment.responses);
+          if (existingSelfAssessment?.responses) setSupervisorResponses(existingSelfAssessment.responses);
+        }
 
       } catch (err) {
         setError(err?.message || 'Gagal memuat form assessment');
@@ -273,7 +274,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
               supervisorResponses={supervisorResponses}
               onChange={handleChange}
               mode={mode}
-              disabled={saving || participantStatus?.status === 'submitted'}
+              disabled={saving || participantStatus?.status === 'submitted' || mode === 'admin'}
             />
           ))}
         </div>
@@ -297,26 +298,29 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
                 </span>
               </div>
               {/* Desktop action buttons */}
-              <div className="flex gap-2 w-full lg:w-auto">
-                <Button 
-                  color="gray" 
-                  onClick={handleSaveDraft} 
-                  disabled={saving}
-                  size="md"
-                  className="flex-2"
-                >
-                  {saving ? <Spinner size="md" /> : 'Simpan Draft'}
-                </Button>
-                <Button 
-                  color="blue" 
-                  onClick={handleSubmit} 
-                  disabled={saving || totalIndicators === 0}
-                  size="md"
-                  className="flex-1"
-                >
-                  {saving ? <Spinner size="md" /> : 'Submit'}
-                </Button>
-              </div>
+              {user && user.position_type !== 'ADMIN' && (
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="xs"
+                    color="gray"
+                    onClick={handleSaveDraft}
+                    disabled={saving}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Draft'}
+                  </Button>
+                  <Button
+                    size="xs"
+                    color="blue"
+                    onClick={handleSubmit}
+                    disabled={saving || totalIndicators === 0}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Submit'}
+                  </Button>
+                </div>
+              )}
+
             </div>
           </Card>
         </div>
@@ -334,7 +338,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
               supervisorResponses={supervisorResponses}
               onChange={handleChange}
               mode={mode}
-              disabled={saving || participantStatus?.status === 'submitted'}
+              disabled={(saving || participantStatus?.status === 'submitted') || mode === 'admin'}
             />
           ))}
         </div>
@@ -352,26 +356,28 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
               <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
               
               {/* Mobile action buttons */}
-              <div className="flex gap-2 mt-2">
-                <Button 
-                  size="xs" 
-                  color="gray" 
-                  onClick={handleSaveDraft} 
-                  disabled={saving}
-                  className="flex-1"
-                >
-                  {saving ? <Spinner size="sm" /> : 'Draft'}
-                </Button>
-                <Button 
-                  size="xs" 
-                  color="blue" 
-                  onClick={handleSubmit} 
-                  disabled={saving || totalIndicators === 0}
-                  className="flex-1"
-                >
-                  {saving ? <Spinner size="sm" /> : 'Submit'}
-                </Button>
-              </div>
+              {user && user.position_type !== 'ADMIN' && (
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="xs"
+                    color="gray"
+                    onClick={handleSaveDraft}
+                    disabled={saving}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Draft'}
+                  </Button>
+                  <Button
+                    size="xs"
+                    color="blue"
+                    onClick={handleSubmit}
+                    disabled={saving || totalIndicators === 0}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Submit'}
+                  </Button>
+                </div>
+              )}
             </div>
           </Card>
         </div>

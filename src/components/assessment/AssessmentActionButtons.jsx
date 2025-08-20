@@ -57,18 +57,6 @@ const AdminActionButtons = ({
           </Button>
         </Link>
       )}
-
-      <Link to={`/penilaian/${assessment.id}/participants`}>
-        <Button
-          size="xs"
-          color="gray"
-          className="flex items-center gap-1"
-          title="Manage Participants"
-        >
-          <Users className="w-3 h-3" />
-        </Button>
-      </Link>
-
       <Dropdown
         label=""
         dismissOnClick={false}
