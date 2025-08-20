@@ -43,7 +43,7 @@ const LaporanSubsatkerPageAdmin = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       const checkUser = await AuthService.checkUser();
-      if (checkUser.position_type == "ADMIN") {
+      if (checkUser.position_type == "ADMIN" || checkUser.position_type == "TOP MANAGEMENT") {
         setPage("show");
       }
 
@@ -186,7 +186,7 @@ const LaporanSubsatkerPageAdmin = () => {
   } else {
     return (
       <div className={"page " + page}>
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto">
           {/* Header */}
           <PageHeader
             breadcrumbs={[

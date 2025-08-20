@@ -58,17 +58,15 @@ const AdminLayout = () => {
     container: "min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300",
     navbar: "fixed top-0 left-0 right-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700",
     sidebar: isMobile 
-      ? `fixed top-16 left-0 h-[calc(100vh-4rem)] z-30 transition-transform duration-300 w-64 ${
+      ? `fixed top-16 left-0 h-[calc(100vh-4rem)] z-30 transition-transform duration-300 ${
           showMobileSidebar ? "translate-x-0" : "-translate-x-full"
         }`
-      : `fixed top-16 left-0 h-[calc(100vh-4rem)] z-20 transition-all duration-300 ${
-          collapsed ? "w-16" : "w-64"
-        }`,
+      : `fixed top-16 left-0 h-[calc(100vh-4rem)] z-20 transition-all duration-300 `,
     content: "flex pt-16 min-h-screen",
-    contentSpacer: isMobile ? "" : (collapsed ? "w-16" : "w-64"),
+    contentSpacer: isMobile ? "" : (collapsed ? "" : "w-64"),
     mainContent: isMobile 
-      ? "flex-1 w-full min-w-0 p-4 sm:p-6 overflow-x-hidden"
-      : "flex-1 min-w-0 p-6 overflow-x-hidden"
+      ? "flex-1 w-full min-w-0 p-4 sm:p-6"
+      : "flex-1 min-w-0 p-6"
   }), [collapsed, isMobile, showMobileSidebar]);
 
   // Enhanced authentication check with better error handling

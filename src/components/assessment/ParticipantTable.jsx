@@ -34,6 +34,7 @@ import {
   Target,
   Award,
   FileText,
+  Trash2,
 } from "lucide-react";
 import { ASSESSMENT_STATUS } from "../../constants/assessmentConstants";
 import AssessmentStatusBadge from "./AssessmentStatusBadge";
@@ -66,97 +67,70 @@ const ParticipantTable = ({
 
   // Load all active profiles and their assessment status
   useEffect(() => {
-    const loadParticipants = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const loadParticipants = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // Get all active profiles (bawahan)
-        const allProfiles = await ProfileService.getAll({ 
-          position_type: 'BAWAHAN', 
-          is_active: true 
-        });
+      // Get all active profiles (bawahan)
+      const allProfiles = await ProfileService.getAll({ 
+        position_type: 'BAWAHAN', 
+        is_active: true 
+      });
 
-        // Get assessment participation status for each profile
-        const participantsWithStatus = await Promise.all(
-          allProfiles.map(async (profile) => {
-            try {
-              // Check self assessment status
-              const selfStatusResult = await AssessmentParticipantService.getAssessmentStatus(
-                assessmentId, 
-                profile.id, 
-                profile.id
-              );
-              const selfStatus = selfStatusResult?.status || null;
+      // Ambil semua status assessment_participants untuk assessmentId
+      const allStatuses = await AssessmentParticipantService.getByAssessmentId(assessmentId);
 
-              // Check supervisor assessment status  
-              const supervisorStatusResult = profile.supervisor_id 
-                ? await AssessmentParticipantService.getAssessmentStatus(
-                    assessmentId, 
-                    profile.id, 
-                    profile.supervisor_id
-                  )
-                : null;
-              const supervisorStatus = supervisorStatusResult?.status || null;
+      // Buat map untuk lookup cepat
+      const statusMap = {};
+      allStatuses.forEach((p) => {
+        const key = `${p.subject_profile_id}_${p.assessor_profile_id}`;
+        statusMap[key] = p.status;
+      });
 
-              return {
-                id: profile.id,
-                subject_profile_id: profile.id,
-                subject_name: profile.name,
-                subject_email: profile.email,
-                subject_avatar: profile.avatar,
-                subject_nrp: profile.nrp,
-                subject_position: profile.position,
-                supervisor_id: profile.supervisor_id,
-                supervisor_name: profile.supervisor_id?.name || null,
-                supervisor_email: profile.supervisor_id?.email || null,
-                supervisor_avatar: profile.supervisor_id?.avatar || null,
-                subdirectorate_name: profile.subdirectorats?.name || null,
-                self_assessment: selfStatus ? {
-                  status: selfStatus,
-                  response_submitted: selfStatus === 'submitted'
-                } : null,
-                supervisor_assessment: supervisorStatus ? {
-                  status: supervisorStatus, 
-                  response_submitted: supervisorStatus === 'submitted'
-                } : null,
-                overall_status: getOverallStatus(selfStatus, supervisorStatus)
-              };
-            } catch (err) {
-              return {
-                id: profile.id,
-                subject_profile_id: profile.id,
-                subject_name: profile.name,
-                subject_email: profile.email,
-                subject_avatar: profile.avatar,
-                subject_nrp: profile.nrp,
-                subject_position: profile.position,
-                supervisor_id: profile.supervisor_id,
-                supervisor_name: profile.supervisor_id?.name || null,
-                supervisor_email: profile.supervisor_id?.email || null,
-                supervisor_avatar: profile.supervisor_id?.avatar || null,
-                subdirectorate_name: profile.subdirectorats?.name || null,
-                self_assessment: null,
-                supervisor_assessment: null,
-                overall_status: 'not_started'
-              };
-            }
-          })
-        );
+      const participantsWithStatus = allProfiles.map((profile) => {
+        const selfStatus = statusMap[`${profile.id}_${profile.id}`] || null;
+        const supervisorId = profile.supervisor_id?.id;
+        const supervisorStatus = supervisorId ? statusMap[`${profile.id}_${supervisorId}`] || null : null;
 
-        setParticipants(participantsWithStatus);
-      } catch (err) {
-        console.error("Failed to load participants:", err);
-        setError(err.message || "Failed to load participants");
-      } finally {
-        setLoading(false);
-      }
-    };
+        return {
+          id: profile.id,
+          subject_profile_id: profile.id,
+          subject_name: profile.name,
+          subject_email: profile.email,
+          subject_avatar: profile.avatar,
+          subject_nrp: profile.nrp,
+          subject_position: profile.position,
+          supervisor_id: profile.supervisor_id,
+          supervisor_name: profile.supervisor_id?.name || null,
+          supervisor_email: profile.supervisor_id?.email || null,
+          supervisor_avatar: profile.supervisor_id?.avatar || null,
+          subdirectorate_name: profile.subdirectorats?.name || null,
+          self_assessment: selfStatus ? {
+            status: selfStatus,
+            response_submitted: selfStatus === 'submitted'
+          } : null,
+          supervisor_assessment: supervisorStatus ? {
+            status: supervisorStatus, 
+            response_submitted: supervisorStatus === 'submitted'
+          } : null,
+          overall_status: getOverallStatus(selfStatus, supervisorStatus)
+        };
+      });
 
-    if (assessmentId) {
-      loadParticipants();
+      setParticipants(participantsWithStatus);
+    } catch (err) {
+      console.error("Failed to load participants:", err);
+      setError(err.message || "Failed to load participants");
+    } finally {
+      setLoading(false);
     }
-  }, [assessmentId, onRefresh]);
+  };
+
+  if (assessmentId) {
+    loadParticipants();
+  }
+}, [assessmentId, onRefresh]);
 
   // Get overall status for a participant
   const getOverallStatus = (selfStatus, supervisorStatus) => {
@@ -180,6 +154,23 @@ const ParticipantTable = ({
   const getParticipantStatus = useCallback((participant) => {
     return participant.overall_status;
   }, []);
+
+    // Handler reset peserta
+  const handleResetParticipant = async (participant) => {
+    if (!window.confirm(`Yakin ingin mereset penilaian untuk ${participant.subject_name}? Semua data penilaian akan dihapus.`)) return;
+    try {
+      setLoading(true);
+      await AssessmentParticipantService.deleteByAssessmentIdAndUserId(
+        assessmentId,
+        participant.subject_profile_id
+      );
+      if (onRefresh) await onRefresh();
+    } catch (err) {
+      setError(err.message || "Gagal mereset penilaian peserta");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Status badge configuration
   const getStatusBadge = (status) => {
@@ -516,9 +507,6 @@ const ParticipantTable = ({
             {/* Supervisor Assessment */}
             <TableHeadCell>Penilaian Atasan</TableHeadCell>
 
-            {/* Progress */}
-            <TableHeadCell>Progress</TableHeadCell>
-
             {/* Actions */}
             <TableHeadCell>
               <span className="sr-only">Actions</span>
@@ -552,12 +540,6 @@ const ParticipantTable = ({
                   {/* Nama Peserta */}
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                     <div className="flex items-center">
-                      <Avatar
-                        img={participant.subject_avatar}
-                        alt={participant.subject_name}
-                        size="sm"
-                        className="mr-3"
-                      />
                       <div>
                         <div className="font-medium">
                           {participant.subject_name}
@@ -575,12 +557,6 @@ const ParticipantTable = ({
                   <TableCell>
                     {participant.supervisor_name ? (
                       <div className="flex items-center">
-                        <Avatar
-                          img={participant.supervisor_avatar}
-                          alt={participant.supervisor_name}
-                          size="sm"
-                          className="mr-3"
-                        />
                         <div>
                           <div className="font-medium">
                             {participant.supervisor_name}
@@ -612,43 +588,26 @@ const ParticipantTable = ({
                     {getAssessmentStatusBadge(participant.supervisor_assessment, 'supervisor')}
                   </TableCell>
 
-                  {/* Progress */}
-                  <TableCell>
-                    <div className="w-full">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm text-gray-700 dark:text-gray-300">
-                          {getCompletionPercentage(participant)}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                        <div
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                          style={{
-                            width: `${getCompletionPercentage(participant)}%`,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  </TableCell>
-
                   {/* Actions */}
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {/* Hapus tombol "Nilai" untuk admin, hanya tampilkan tombol "Lihat" */}
-                      <Link to={`/penilaian/${assessmentId}/hasil?subject=${participant.id}`}>
+                      <Link to={`/penilaian/${assessmentId}/${participant.id}`}>
                         <Button size="xs" color="blue" className="flex items-center gap-1">
                           <Eye className="w-3 h-3" />
                           Lihat Hasil
                         </Button>
                       </Link>
                       
-                      {/* Opsional: Tambah tombol lihat detail profil */}
-                      <Link to={`/profil/${participant.id}`}>
-                        <Button size="xs" color="gray" className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          Profil
-                        </Button>
-                      </Link>
+                      <Button
+                        size="xs"
+                        color="red"
+                        className="flex items-center gap-1"
+                        onClick={() => handleResetParticipant(participant)}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Reset
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>

@@ -13,7 +13,7 @@ export const USER_POSITION = {
   ADMIN: 'ADMIN',
   ATASAN: 'ATASAN',
   BAWAHAN: 'BAWAHAN',
-  TOP_MANAGEMENT: 'TOP_MANAGEMENT'
+  TOP_MANAGEMENT: 'TOP MANAGEMENT'
 };
 
 // Response type untuk membedakan self vs supervisor assessment

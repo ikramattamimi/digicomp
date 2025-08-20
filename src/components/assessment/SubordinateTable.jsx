@@ -457,12 +457,12 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
                   >
                     <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                       <div className="flex items-center">
-                        <Avatar
+                        {/* <Avatar
                           img={subordinate.avatar}
                           alt={subordinate.name}
                           size="sm"
                           className="mr-3"
-                        />
+                        /> */}
                         <div>
                           <div className="font-medium">
                             {subordinate.name}

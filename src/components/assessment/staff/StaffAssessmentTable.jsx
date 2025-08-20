@@ -145,8 +145,12 @@ const StaffAssessmentTable = ({ assessments, loading }) => {
     if (userParticipation) {
       const self_completed = userParticipation.status;
 
-      if (self_completed) {
+      if (self_completed === "submitted") {
         return { status: "submitted", label: "Selesai", color: "success" };
+      }
+
+      if (self_completed === "draft") {
+        return { status: "partial", label: "Draft", color: "yellow" };
       }
     }
 
@@ -203,7 +207,7 @@ const StaffAssessmentTable = ({ assessments, loading }) => {
                 size="sm"
                 className="flex items-center gap-1 w-fit"
               >
-                {participationStatus.status === "completed" && <CheckCircle className="w-3 h-3" />}
+                {participationStatus.status === "submitted" && <CheckCircle className="w-3 h-3" />}
                 {participationStatus.status === "partial" && <Clock className="w-3 h-3" />}
                 {participationStatus.status === "not_started" && <Play className="w-3 h-3" />}
                 {participationStatus.label}
@@ -460,7 +464,7 @@ const StaffAssessmentTable = ({ assessments, loading }) => {
                         size="sm"
                         className="flex items-center gap-1 w-fit"
                       >
-                        {participationStatus.status === "completed" && (
+                        {participationStatus.status === "submitted" && (
                           <CheckCircle className="w-3 h-3" />
                         )}
                         {participationStatus.status === "partial" && (
