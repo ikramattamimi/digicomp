@@ -6,6 +6,7 @@ class SubDirectoratService {
     const { data, error } = await supabase
       .from('subdirectorats')
       .select('*')
+      .order('order', { ascending: true })
       .is('deleted_at', null)
     if (error) throw error
     return data
