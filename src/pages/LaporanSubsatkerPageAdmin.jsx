@@ -21,6 +21,8 @@ import LaporanStaffTableAdmin from "../components/laporan/LaporanStaffTableAdmin
 import LaporanAnggotaPage from "../components/laporan/LaporanAnggotaPage.jsx";
 import AssessmentResponseService from "../services/AssessmentResponseService.js";
 import SubdirectoratsService from "../services/SubdirectoratsService.js";
+
+import generatePDF from 'react-to-pdf';
 // ...existing code...
 const LaporanSubsatkerPageAdmin = () => {
   // Ref to access SubDirektoratTable's handlers
@@ -39,6 +41,8 @@ const LaporanSubsatkerPageAdmin = () => {
   const [page, setPage] = useState("hidden");
   let showComp = [];
   const [assa, setassa] = useState([]);
+
+  const targetRef = useRef();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -127,13 +131,19 @@ const LaporanSubsatkerPageAdmin = () => {
       setTimeout(function () {
         const myArray = [];
         setSubsatkerPage(
-          <SubsatkerPageAdmin
-            assasmentId={assdetail.id}
-            sw={assdetail.self_weight}
-            aw={assdetail.supervisor_weight}
-            subsatkerId={selsubsatker}
-            cntId={myArray}
-          />
+          <div>
+            <Button className="mb-4" onClick={() => generatePDF(targetRef, { filename: selsubsatker+"_"+assdetail.id })}>Download PDF</Button>
+            <div ref={targetRef}>
+              <SubsatkerPageAdmin
+                assasmentId={assdetail.id}
+                sw={assdetail.self_weight}
+                aw={assdetail.supervisor_weight}
+                subsatkerId={selsubsatker}
+                cntId={myArray}
+              />
+            </div>
+          </div>
+
         );
       }, 100);
     } else {
