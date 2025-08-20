@@ -337,7 +337,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
     } else if (nilai >= 2 && nilai < 3) {
       return "Perlu Penguatan";
     } else if (nilai >= 3 && nilai < 3.5) {
-      return "Cukup‎ ";
+      return "Cukup‎";
     } else if (nilai >= 3.5 && nilai < 4) {
       return "Cukup";
     } else if (nilai >= 4 && nilai < 5) {

@@ -91,7 +91,7 @@ const LaporanPage = () => {
   }, []);
 
   return (
-    <div className="page">
+    <div className="page overflow-x-auto">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
         {/* Mobile-responsive Header */}
         <div className="mb-4 sm:mb-6">

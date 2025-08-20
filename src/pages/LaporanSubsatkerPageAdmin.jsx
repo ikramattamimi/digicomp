@@ -185,7 +185,7 @@ const LaporanSubsatkerPageAdmin = () => {
     );
   } else {
     return (
-      <div className={"page " + page}>
+      <div className={"overflow-x-auto page " + page}>
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <PageHeader
