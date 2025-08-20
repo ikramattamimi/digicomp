@@ -21,6 +21,8 @@ import LaporanStaffTable from "../components/laporan/LaporanStaffTable.jsx";
 import LaporanAnggotaPage from "../components/laporan/LaporanAnggotaPage.jsx";
 import AssessmentResponseService from "../services/AssessmentResponseService.js";
 
+import generatePDF from 'react-to-pdf';
+
 const LaporanSubsatkerPage = () => {
   const subDirektoratTableRef = useRef();
   const [show, setShow] = useState();
@@ -30,6 +32,9 @@ const LaporanSubsatkerPage = () => {
 
   const [assasmentId, setassasmentId] = useState(5);
   const [subsatkerPage, setSubsatkerPage] = useState();
+
+  const targetRef = useRef();
+
 
   const closePage = (id) => {
     setMessage("");
@@ -72,35 +77,43 @@ const LaporanSubsatkerPage = () => {
     if (subsatkerPage == null && assdetail) {
       const myArray = [];
       setSubsatkerPage(
-        <SubsatkerPage
-          assasmentId={assdetail.id}
-          sw={assdetail.self_weight}
-          aw={assdetail.supervisor_weight}
-          cntId={myArray}
-        />
+        <div>
+            <Button className="mb-4" onClick={() => generatePDF(targetRef, { filename: assdetail.id })}>Download PDF</Button>
+            <div ref={targetRef}>
+              <SubsatkerPage
+                assasmentId={assdetail.id}
+                sw={assdetail.self_weight}
+                aw={assdetail.supervisor_weight}
+                cntId={myArray}
+              />
+            </div>
+          </div>
       );
     } else if (subsatkerPage != null && assdetail) {
       setSubsatkerPage(<div></div>);
       setTimeout(function () {
         const myArray = [];
         setSubsatkerPage(
-          <SubsatkerPage
-            assasmentId={assdetail.id}
-            sw={assdetail.self_weight}
-            aw={assdetail.supervisor_weight}
-            cntId={myArray}
-          />
+          <div>
+            <Button className="mb-4" onClick={() => generatePDF(targetRef, { filename: assdetail.id })}>Download PDF</Button>
+            <div ref={targetRef}>
+              <SubsatkerPage
+                assasmentId={assdetail.id}
+                sw={assdetail.self_weight}
+                aw={assdetail.supervisor_weight}
+                cntId={myArray}
+              />
+            </div>
+          </div>
         );
       }, 100);
-    } else {
-      setSubsatkerPage(<strong>Pilih penilaian untuk ditampilkan</strong>);
     }
   };
 
   const [page, setPage] = useState("hidden");
   let showComp = [];
   const [assa, setassa] = useState([]);
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
       const checkUser = await AuthService.checkUser();
@@ -154,7 +167,7 @@ const LaporanSubsatkerPage = () => {
   }
 
   return (
-    <div className="page">
+    <div className="page overflow-x-auto">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
         {/* Mobile-responsive Header */}
         <div className="mb-4 sm:mb-6">
@@ -185,7 +198,7 @@ const LaporanSubsatkerPage = () => {
                 Pilih Penilaian
               </label>
             </div>
-            
+
             {/* Desktop: Inline label */}
             <div className="hidden sm:block">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
@@ -232,7 +245,7 @@ const LaporanSubsatkerPage = () => {
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 <span className="font-medium">{assa.length}</span> penilaian tersedia
               </div>
-              
+
               {/* Mobile: Refresh button */}
               <div className="block sm:hidden">
                 <Button
@@ -250,7 +263,7 @@ const LaporanSubsatkerPage = () => {
         )}
 
         {/* Content Container - responsive */}
-        <div className="w-full">
+        <div className="w-fit">
           {/* Tabs - mobile responsive */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             <Tabs
@@ -302,7 +315,7 @@ const LaporanSubsatkerPage = () => {
                   )}
                 </div>
               </TabItem>
-              
+
               <TabItem title="Laporan Anggota" tabIndex={1}>
                 <div className="p-3 sm:p-4">
                   <div className={message}>
@@ -312,7 +325,7 @@ const LaporanSubsatkerPage = () => {
                     />
                     <LaporanStaffTable userData={forceReRender} />
                   </div>
-                  
+
                   <div className="mt-4">
                     {show}
                   </div>

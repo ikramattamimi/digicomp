@@ -2,6 +2,7 @@ import React, {
   useEffect,
   useState,
   forwardRef,
+  useRef,
   useImperativeHandle,
 } from "react";
 import {
@@ -24,6 +25,7 @@ import AuthService from "../../services/AuthService";
 import ProfileService from "../../services/ProfileService";
 import AssessmentResponseService from "../../services/AssessmentResponseService";
 import PageHeader from "../common/PageHeader";
+import generatePDF from 'react-to-pdf';
 
 const LaporanAnggotaPage = forwardRef((props, ref) => {
   const [userData, setUserData] = useState([]);
@@ -47,15 +49,17 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   const [showRec, setShowRec] = useState(); // nilai dari mentor
   const [showGrap, setShowGrap] = useState(); // nilai dari mentor
 
+  const targetRef = useRef();
+
   // Check if device is mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -337,7 +341,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
     } else if (nilai >= 2 && nilai < 3) {
       return "Perlu Penguatan";
     } else if (nilai >= 3 && nilai < 3.5) {
-      return "Cukup‎ ";
+      return "Cukup‎";
     } else if (nilai >= 3.5 && nilai < 4) {
       return "Cukup";
     } else if (nilai >= 4 && nilai < 5) {
@@ -450,7 +454,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   // Mobile Card Component for Table Data - Grouped by Competency
   const MobileCompetencyCard = ({ competencyIndex }) => {
     const competencyName = showComp[competencyIndex];
-    
+
     return (
       <div className="bg-white border rounded-lg shadow-sm mb-4 p-4">
         <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm border-b pb-2">
@@ -476,113 +480,115 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   };
 
   return (
-    <div className="bg-white p-3 md:p-5 rounded-lg shadow-lg">
-      <div className="space-y-5">
-        <Button onClick={() => props.userData(0)}>{"<"}</Button>
+    <div>
+      <Button className="mb-4" onClick={() => generatePDF(targetRef, { filename: userData.name + "_" + props.assasmentId })}>Download PDF</Button>
+      <Button onClick={() => props.userData(0)}>{"<"}</Button>
+      <div ref={targetRef} className="bg-white p-3 md:p-5 rounded-lg shadow-lg">
+        <div className="space-y-5">
+          <PageHeader
+            breadcrumbs={[{ label: "", href: "" }]}
+            title="Hasil Penilaian Anggota "
+          />
 
-        <PageHeader
-          breadcrumbs={[{ label: "", href: "" }]}
-          title="Hasil Penilaian Anggota "
-        />
-
-        {/* Info Cards */}
-        <div className="flex flex-col md:flex-row w-full gap-4">
-          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
-            <p className="text-xs md:text-sm dark:text-blue-300">
-              <strong>Nama Bawahan :</strong> {userData.name}
-            </p>
-            <p className="text-xs md:text-sm dark:text-blue-300">
-              <strong>NRP :</strong> {userData.nrp}
-            </p>
-            <p className="text-xs md:text-sm dark:text-blue-300">
-              <strong>Subsatker :</strong>{" "}
-              {setToSubsatkerName(userData.subdirectorat_id)}
-            </p>
-          </div>
-          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
-            <p className="text-xs md:text-sm dark:text-blue-300">
-              <strong>Nama Atasan :</strong> {mentor.name}
-            </p>
-            <p className="text-xs md:text-sm dark:text-blue-300">
-              <strong>NRP :</strong> {mentor.nrp}
-            </p>
-            <p className="text-xs md:text-sm dark:text-blue-300">
-              <strong>Subsatker :</strong>{" "}
-              {setToSubsatkerName(mentor.subdirectorat_id)}
-            </p>
-          </div>
-        </div>
-
-        {/* Chart */}
-        <div className="w-full overflow-x-auto">
-          {showGrap}
-        </div>
-
-        {/* Table/Cards */}
-        {isMobile ? (
-          // Mobile View - Cards grouped by competency
-          <div className="space-y-4">
-            {/* Individual Competency Cards */}
-            <div className="border-t pt-4">
-              <h2 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
-                Detail per Kompetensi
-              </h2>
-              {showComp.map((competency, index) => (
-                <MobileCompetencyCard key={index} competencyIndex={index} />
-              ))}
+          {/* Info Cards */}
+          <div className="flex flex-col md:flex-row w-full gap-4">
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
+              <p className="text-xs md:text-sm dark:text-blue-300">
+                <strong>Nama Bawahan :</strong> {userData.name}
+              </p>
+              <p className="text-xs md:text-sm dark:text-blue-300">
+                <strong>NRP :</strong> {userData.nrp}
+              </p>
+              <p className="text-xs md:text-sm dark:text-blue-300">
+                <strong>Subsatker :</strong>{" "}
+                {setToSubsatkerName(userData.subdirectorat_id)}
+              </p>
+            </div>
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
+              <p className="text-xs md:text-sm dark:text-blue-300">
+                <strong>Nama Atasan :</strong> {mentor.name}
+              </p>
+              <p className="text-xs md:text-sm dark:text-blue-300">
+                <strong>NRP :</strong> {mentor.nrp}
+              </p>
+              <p className="text-xs md:text-sm dark:text-blue-300">
+                <strong>Subsatker :</strong>{" "}
+                {setToSubsatkerName(mentor.subdirectorat_id)}
+              </p>
             </div>
           </div>
-        ) : (
-          // Desktop View - Table
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHead>
-                <TableRow className="bg-gray-50 dark:bg-gray-700">
-                  <TableHeadCell className="min-w-[150px]"></TableHeadCell>
-                  {showComp.map((sub, index) => (
-                    <TableHeadCell key={index} className="min-w-[120px]">
-                      <div className="text-xs break-words">{sub}</div>
-                    </TableHeadCell>
-                  ))}
-                  <TableHeadCell className="min-w-[100px]">Rata-Rata</TableHeadCell>
-                  <TableHeadCell className="min-w-[120px]">Kualifikasi</TableHeadCell>
-                </TableRow>
-              </TableHead>
 
-              <TableBody className="divide-y">
-                {showRow.map((sup, index) => (
-                  <TableRow key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <TableCell className="font-medium text-gray-900 dark:text-white text-sm">
-                      {sup.from}
-                    </TableCell>
-                    {sup.nilai.map((sub, subIndex) => (
-                      <TableCell key={subIndex} className={`text-sm ${getColorbyValue(sub)}`}>
-                        <strong>{sub}</strong>
-                      </TableCell>
-                    ))}
-
-                    <TableCell className={`text-sm ${getColorbyValue(sup.sum)}`}>
-                      <strong>{sup.sum}</strong>
-                    </TableCell>
-                    <TableCell className={`text-sm ${getColorbyValue(sup.kualifikasi)}`}>
-                      <strong>{sup.kualifikasi}</strong>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          {/* Chart */}
+          <div className="w-full overflow-x-auto">
+            {showGrap}
           </div>
-        )}
 
-        {/* Recommendations */}
-        <div>{showRec}</div>
+          {/* Table/Cards */}
+          {isMobile ? (
+            // Mobile View - Cards grouped by competency
+            <div className="space-y-4">
+              {/* Individual Competency Cards */}
+              <div className="border-t pt-4">
+                <h2 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm">
+                  Detail per Kompetensi
+                </h2>
+                {showComp.map((competency, index) => (
+                  <MobileCompetencyCard key={index} competencyIndex={index} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            // Desktop View - Table
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHead>
+                  <TableRow className="bg-gray-50 dark:bg-gray-700">
+                    <TableHeadCell className="min-w-[150px]"></TableHeadCell>
+                    {showComp.map((sub, index) => (
+                      <TableHeadCell key={index} className="min-w-[120px]">
+                        <div className="text-xs break-words">{sub}</div>
+                      </TableHeadCell>
+                    ))}
+                    <TableHeadCell className="min-w-[100px]">Rata-Rata</TableHeadCell>
+                    <TableHeadCell className="min-w-[120px]">Kualifikasi</TableHeadCell>
+                  </TableRow>
+                </TableHead>
 
-        {/* Modal for Add/Edit */}
-        <ErrorModal
-          show={showErrorModal}
-          message={errorMessage}
-          onClose={() => setShowErrorModal(false)}
-        />
+                <TableBody className="divide-y">
+                  {showRow.map((sup, index) => (
+                    <TableRow key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <TableCell className="font-medium text-gray-900 dark:text-white text-sm">
+                        {sup.from}
+                      </TableCell>
+                      {sup.nilai.map((sub, subIndex) => (
+                        <TableCell key={subIndex} className={`text-sm ${getColorbyValue(sub)}`}>
+                          <strong>{sub}</strong>
+                        </TableCell>
+                      ))}
+
+                      <TableCell className={`text-sm ${getColorbyValue(sup.sum)}`}>
+                        <strong>{sup.sum}</strong>
+                      </TableCell>
+                      <TableCell className={`text-sm ${getColorbyValue(sup.kualifikasi)}`}>
+                        <strong>{sup.kualifikasi}</strong>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+
+          {/* Recommendations */}
+          <div>{showRec}</div>
+
+          {/* Modal for Add/Edit */}
+          <ErrorModal
+            show={showErrorModal}
+            message={errorMessage}
+            onClose={() => setShowErrorModal(false)}
+          />
+        </div>
       </div>
     </div>
   );

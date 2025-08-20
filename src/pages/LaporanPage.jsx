@@ -8,10 +8,13 @@ import { useEffect, useState } from "react";
 
 import AssessmentResponseService from "../services/AssessmentResponseService.js";
 import BawahanPage from "../components/laporan/BawahanPage.jsx";
+import generatePDF from 'react-to-pdf';
 
 const LaporanPage = () => {
   const [subsatkerPage, setSubsatkerPage] = useState(); // nilai dari mentor
   const [selectedAssessment, setSelectedAssessment] = useState("");
+  const targetRef = useRef();
+
 
   const handleChange = (index) => {
     const assdetail = assassement[index];
@@ -21,24 +24,35 @@ const LaporanPage = () => {
       console.log(assdetail.self_weight);
       const myArray = [];
       setSubsatkerPage(
-        <BawahanPage
-          assasmentId={assdetail.id}
-          sw={assdetail.self_weight}
-          aw={assdetail.supervisor_weight}
-          cntId={myArray}
-        />
+        <div>
+            <Button className="m-4" onClick={() => generatePDF(targetRef, { filename: assdetail.id })}>Download PDF</Button>
+            <div ref={targetRef}>
+              <BawahanPage
+                assasmentId={assdetail.id}
+                sw={assdetail.self_weight}
+                aw={assdetail.supervisor_weight}
+                cntId={myArray}
+              />
+            </div>
+          </div>
       );
     } else if (subsatkerPage != null && assdetail) {
       setSubsatkerPage(<div></div>);
       setTimeout(function () {
         const myArray = [];
         setSubsatkerPage(
-          <BawahanPage
-            assasmentId={assdetail.id}
-            sw={assdetail.self_weight}
-            aw={assdetail.supervisor_weight}
-            cntId={myArray}
-          />
+          <div>
+            <Button className="m-4" onClick={() => generatePDF(targetRef, { filename: assdetail.id })}>Download PDF</Button>
+            <div ref={targetRef}>
+              <BawahanPage
+                assasmentId={assdetail.id}
+                sw={assdetail.self_weight}
+                aw={assdetail.supervisor_weight}
+                cntId={myArray}
+              />
+            </div>
+          </div>
+
         );
       }, 100);
     }
@@ -122,7 +136,7 @@ const LaporanPage = () => {
                 Pilih Penilaian
               </label>
             </div>
-            
+
             {/* Desktop: Inline label */}
             <div className="hidden sm:block">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
@@ -169,7 +183,7 @@ const LaporanPage = () => {
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 <span className="font-medium">{assassement.length}</span> penilaian tersedia
               </div>
-              
+
               {/* Mobile: Refresh button */}
               <div className="block sm:hidden">
                 <Button
@@ -187,7 +201,7 @@ const LaporanPage = () => {
         )}
 
         {/* Content Container - responsive */}
-        <div className="w-full">
+        <div className="w-fit">
           {subsatkerPage ? (
             // Content with mobile wrapper
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
@@ -206,7 +220,7 @@ const LaporanPage = () => {
                 <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 max-w-md mx-auto px-4">
                   Silakan pilih penilaian dari dropdown di atas untuk melihat laporan dan hasil
                 </p>
-                
+
                 {assassement.length === 0 && (
                   <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                     <p className="text-sm text-yellow-800 dark:text-yellow-200">
