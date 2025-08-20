@@ -17,6 +17,10 @@ import {
   Checkbox,
   Tabs,
   TabItem,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
 } from "flowbite-react";
 import {
   Search,
@@ -50,6 +54,8 @@ const StaffTable = forwardRef((props, ref) => {
   const [modalError, setModalError] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const myDomain = "@scprcjt.web.app";
 
@@ -62,6 +68,16 @@ const StaffTable = forwardRef((props, ref) => {
         const data = await ProfileService.getStaff();
         
         // Sort data immediately after fetching
+        const rankOrder = [
+          "AKBP",
+          "Kompol",
+          "AKP",
+          "IPTU",
+          "IPDA",
+          "AIPTU",
+          "AIPDA"
+        ];
+
         const sortedData = data.sort((a, b) => {
           if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
             return -1; // a comes first
@@ -69,7 +85,13 @@ const StaffTable = forwardRef((props, ref) => {
           if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
             return 1; // b comes first
           }
-          // If both are same type, sort by name
+          // Urutkan berdasarkan pangkat jika bukan ATASAN
+          const rankA = rankOrder.indexOf(a.rank);
+          const rankB = rankOrder.indexOf(b.rank);
+          if (rankA !== rankB) {
+            return rankA - rankB;
+          }
+          // Jika pangkat sama, urutkan berdasarkan nama
           return a.name.localeCompare(b.name);
         });
         
@@ -90,6 +112,16 @@ const StaffTable = forwardRef((props, ref) => {
       const data = await ProfileService.getStaff();
       
       // Sort data immediately
+      const rankOrder = [
+        "AKBP",
+        "Kompol",
+        "AKP",
+        "IPTU",
+        "IPDA",
+        "AIPTU",
+        "AIPDA"
+      ];
+
       const sortedData = data.sort((a, b) => {
         if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
           return -1;
@@ -97,6 +129,13 @@ const StaffTable = forwardRef((props, ref) => {
         if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
           return 1;
         }
+        // Urutkan berdasarkan pangkat jika bukan ATASAN
+        const rankA = rankOrder.indexOf(a.rank);
+        const rankB = rankOrder.indexOf(b.rank);
+        if (rankA !== rankB) {
+          return rankA - rankB;
+        }
+        // Jika pangkat sama, urutkan berdasarkan nama
         return a.name.localeCompare(b.name);
       });
       
@@ -117,6 +156,16 @@ const StaffTable = forwardRef((props, ref) => {
         const data = await ProfileService.getBySubDirectorat(id);
         
         // Sort data immediately
+        const rankOrder = [
+          "AKBP",
+          "Kompol",
+          "AKP",
+          "IPTU",
+          "IPDA",
+          "AIPTU",
+          "AIPDA"
+        ];
+
         const sortedData = data.sort((a, b) => {
           if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
             return -1;
@@ -124,6 +173,13 @@ const StaffTable = forwardRef((props, ref) => {
           if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
             return 1;
           }
+          // Urutkan berdasarkan pangkat jika bukan ATASAN
+          const rankA = rankOrder.indexOf(a.rank);
+          const rankB = rankOrder.indexOf(b.rank);
+          if (rankA !== rankB) {
+            return rankA - rankB;
+          }
+          // Jika pangkat sama, urutkan berdasarkan nama
           return a.name.localeCompare(b.name);
         });
         
@@ -142,6 +198,16 @@ const StaffTable = forwardRef((props, ref) => {
 
   // Filter and search functionality
   useEffect(() => {
+    const rankOrder = [
+      "AKBP",
+      "Kompol",
+      "AKP",
+      "IPTU",
+      "IPDA",
+      "AIPTU",
+      "AIPDA"
+    ];
+
     let filtered = supervisors;
 
     if (searchTerm) {
@@ -152,15 +218,21 @@ const StaffTable = forwardRef((props, ref) => {
       );
     }
 
-    // Sort: ATASAN first, then BAWAHAN
+    // Sort: ATASAN first, lalu urut pangkat, lalu nama
     filtered = filtered.sort((a, b) => {
       if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
-        return -1; // a comes first
+        return -1;
       }
       if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
-        return 1; // b comes first
+        return 1;
       }
-      // If both are same type, sort by name
+      // Urutkan berdasarkan pangkat
+      const rankA = rankOrder.indexOf(a.rank);
+      const rankB = rankOrder.indexOf(b.rank);
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      // Jika pangkat sama, urutkan berdasarkan nama
       return a.name.localeCompare(b.name);
     });
 
@@ -215,6 +287,19 @@ const StaffTable = forwardRef((props, ref) => {
     setShowModal(true);
   };
 
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteId) {
+      await handleDelete(deleteId);
+      setDeleteId(null);
+      setShowDeleteModal(false);
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       await ProfileService.delete(id);
@@ -224,6 +309,11 @@ const StaffTable = forwardRef((props, ref) => {
       setErrorMessage(err?.message || "Failed to delete supervisor");
       setShowErrorModal(true);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteId(null);
+    setShowDeleteModal(false);
   };
 
   const handleModalChange = (updated, element) => {
@@ -440,7 +530,7 @@ const StaffTable = forwardRef((props, ref) => {
                                       <Button
                                         size="xs"
                                         color="red"
-                                        onClick={() => handleDelete(sup.id)}
+                                        onClick={() => handleDeleteClick(sup.id)}
                                         className="flex items-center gap-1"
                                       >
                                         <Trash2 className="w-3 h-3" />
@@ -492,6 +582,23 @@ const StaffTable = forwardRef((props, ref) => {
         message={errorMessage}
         onClose={() => setShowErrorModal(false)}
       />
+      {/* Modal Konfirmasi Hapus */}
+      <Modal show={showDeleteModal} onClose={cancelDelete}>
+        <ModalHeader>Konfirmasi Hapus</ModalHeader>
+        <ModalBody>
+          <div className="space-y-6">
+            <p>Apakah Anda yakin ingin menghapus personel ini?</p>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="red" onClick={confirmDelete}>
+            Hapus
+          </Button>
+          <Button color="gray" onClick={cancelDelete}>
+            Batal
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 });

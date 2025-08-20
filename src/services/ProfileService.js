@@ -1,4 +1,4 @@
-import { supabase } from './SupabaseClient'
+import { supabase, supabaseAdmin } from './SupabaseClient'
 
 class ProfileService {
   async getAll(filters = {}) {
@@ -158,9 +158,14 @@ class ProfileService {
   async delete(id) {
     const { data, error } = await supabase
       .from('profiles')
-      .update({ deleted_at: new Date().toISOString(), is_active: false })
+      // .update({ deleted_at: new Date().toISOString(), is_active: false })
+      .delete()
       .eq('id', id)
       .select()
+    
+    // delete related auth.users
+    await supabaseAdmin.auth.admin.deleteUser(id)
+
     if (error) throw error
     return data[0]
   }
