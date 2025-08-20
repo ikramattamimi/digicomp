@@ -43,14 +43,7 @@ import ProfileService from "../../services/ProfileService";
 import AssessmentParticipantService from "../../services/AssessmentParticipantService";
 
 const ParticipantTable = ({
-  onView,
-  onEdit,
-  onDelete,
-  onSendReminder,
   loading: externalLoading = false,
-  canEdit = true,
-  canDelete = true,
-  showAssessmentInfo = true,
   assessmentId,
   onRefresh
 }) => {
@@ -285,15 +278,15 @@ const ParticipantTable = ({
   };
 
   // Calculate completion percentage
-  const getCompletionPercentage = (participant) => {
-    let completed = 0;
-    if (participant.self_assessment?.response_submitted) completed += 1;
-    if (participant.supervisor_assessment?.response_submitted) completed += 1;
-    return (completed / 2) * 100;
-  };
+  // const getCompletionPercentage = (participant) => {
+  //   let completed = 0;
+  //   if (participant.self_assessment?.response_submitted) completed += 1;
+  //   if (participant.supervisor_assessment?.response_submitted) completed += 1;
+  //   return (completed / 2) * 100;
+  // };
 
   // Get assessment status badge
-  const getAssessmentStatusBadge = (assessment, type) => {
+  const getAssessmentStatusBadge = (assessment) => {
     if (!assessment) {
       return (
         <Badge color="gray" size="sm" className="flex items-center gap-1">

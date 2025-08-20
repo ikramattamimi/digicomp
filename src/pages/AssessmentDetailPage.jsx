@@ -133,18 +133,6 @@ const AssessmentDetailPage = () => {
     navigate("/penilaian");
   };
 
-  const handleEdit = () => {
-    navigate(`/penilaian/${id}/edit`);
-  };
-
-  const handleManageParticipants = () => {
-    navigate(`/penilaian/${id}/participants`);
-  };
-
-  const handleViewReports = () => {
-    navigate(`/penilaian/${id}/reports`);
-  };
-
   // Check permissions for actions
   const canEdit = () => {
     return assessment && assessment.status === ASSESSMENT_STATUS.DRAFT;
@@ -162,7 +150,7 @@ const AssessmentDetailPage = () => {
   };
 
   const canComplete = () => {
-    console.log('can complete', assessment, assessment?.status === ASSESSMENT_STATUS.IN_PROGRESS);
+    // console.log('can complete', assessment, assessment?.status === ASSESSMENT_STATUS.IN_PROGRESS);
     return assessment && assessment.status === ASSESSMENT_STATUS.IN_PROGRESS;
   };
 

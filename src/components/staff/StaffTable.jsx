@@ -150,51 +150,51 @@ const StaffTable = forwardRef((props, ref) => {
   };
 
   // Fungsi filter by sub directorat
-  const handleFilterSubdirectorat = async (id) => {
-    try {
-      if (id != "*") {
-        const data = await ProfileService.getBySubDirectorat(id);
+  // const handleFilterSubdirectorat = async (id) => {
+  //   try {
+  //     if (id != "*") {
+  //       const data = await ProfileService.getBySubDirectorat(id);
         
-        // Sort data immediately
-        const rankOrder = [
-          "AKBP",
-          "Kompol",
-          "AKP",
-          "IPTU",
-          "IPDA",
-          "AIPTU",
-          "AIPDA"
-        ];
+  //       // Sort data immediately
+  //       const rankOrder = [
+  //         "AKBP",
+  //         "Kompol",
+  //         "AKP",
+  //         "IPTU",
+  //         "IPDA",
+  //         "AIPTU",
+  //         "AIPDA"
+  //       ];
 
-        const sortedData = data.sort((a, b) => {
-          if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
-            return -1;
-          }
-          if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
-            return 1;
-          }
-          // Urutkan berdasarkan pangkat jika bukan ATASAN
-          const rankA = rankOrder.indexOf(a.rank);
-          const rankB = rankOrder.indexOf(b.rank);
-          if (rankA !== rankB) {
-            return rankA - rankB;
-          }
-          // Jika pangkat sama, urutkan berdasarkan nama
-          return a.name.localeCompare(b.name);
-        });
+  //       const sortedData = data.sort((a, b) => {
+  //         if (a.position_type === "ATASAN" && b.position_type !== "ATASAN") {
+  //           return -1;
+  //         }
+  //         if (a.position_type !== "ATASAN" && b.position_type === "ATASAN") {
+  //           return 1;
+  //         }
+  //         // Urutkan berdasarkan pangkat jika bukan ATASAN
+  //         const rankA = rankOrder.indexOf(a.rank);
+  //         const rankB = rankOrder.indexOf(b.rank);
+  //         if (rankA !== rankB) {
+  //           return rankA - rankB;
+  //         }
+  //         // Jika pangkat sama, urutkan berdasarkan nama
+  //         return a.name.localeCompare(b.name);
+  //       });
         
-        setSupervisors(sortedData);
-        setFilteredSupervisors(sortedData);
-        setErrorMessage("");
-        setShowErrorModal(false);
-      } else {
-        handleRefresh();
-      }
-    } catch (err) {
-      setErrorMessage(err?.message || "Failed to load supervisors");
-      setShowErrorModal(true);
-    }
-  };
+  //       setSupervisors(sortedData);
+  //       setFilteredSupervisors(sortedData);
+  //       setErrorMessage("");
+  //       setShowErrorModal(false);
+  //     } else {
+  //       handleRefresh();
+  //     }
+  //   } catch (err) {
+  //     setErrorMessage(err?.message || "Failed to load supervisors");
+  //     setShowErrorModal(true);
+  //   }
+  // };
 
   // Filter and search functionality
   useEffect(() => {
@@ -239,12 +239,12 @@ const StaffTable = forwardRef((props, ref) => {
     setFilteredSupervisors(filtered);
   }, [supervisors, searchTerm]);
 
-  const setToNameSupervisor = (id) => {
-    const bobObject = supervisors.find((obj) => obj.id === id);
-    const bobId = bobObject ? bobObject.name : undefined;
+  // const setToNameSupervisor = (id) => {
+  //   const bobObject = supervisors.find((obj) => obj.id === id);
+  //   const bobId = bobObject ? bobObject.name : undefined;
 
-    return bobId;
-  };
+  //   return bobId;
+  // };
 
   // Handle row selection
   const handleSelectAll = (checked) => {
@@ -382,29 +382,29 @@ const StaffTable = forwardRef((props, ref) => {
   }));
 
   // Hide Email domain
-  const setEmailToUsername = (email) => {
-    const mDomain = "scprcjt.web.app";
+  // const setEmailToUsername = (email) => {
+  //   const mDomain = "scprcjt.web.app";
 
-    const words = email.split("@");
-    if (words[1] == mDomain) {
-      return words[0];
-    } else {
-      return email;
-    }
-  };
+  //   const words = email.split("@");
+  //   if (words[1] == mDomain) {
+  //     return words[0];
+  //   } else {
+  //     return email;
+  //   }
+  // };
 
-  const setNameToUsername = (name) => {
-    const words = name.split(" ");
-    if (words.length > 1) {
-      const words1 = words[0] + words[1];
-      const words2 = words1.replace(",", "");
-      return words2.toLowerCase();
-    } else {
-      const words1 = words[0];
-      const words2 = words1.replace(",", "");
-      return words2.toLowerCase();
-    }
-  };
+  // const setNameToUsername = (name) => {
+  //   const words = name.split(" ");
+  //   if (words.length > 1) {
+  //     const words1 = words[0] + words[1];
+  //     const words2 = words1.replace(",", "");
+  //     return words2.toLowerCase();
+  //   } else {
+  //     const words1 = words[0];
+  //     const words2 = words1.replace(",", "");
+  //     return words2.toLowerCase();
+  //   }
+  // };
 
   return (
     <div className="space-y-5 mt-5">
@@ -459,7 +459,7 @@ const StaffTable = forwardRef((props, ref) => {
                         <span className="text-sm text-blue-700 dark:text-blue-300">
                           {selectedRows.length} item dipilih
                         </span>
-                        <Button size="xs" color="failure">
+                        <Button size="xs" color="red">
                           Hapus Yang Dipilih
                         </Button>
                       </div>

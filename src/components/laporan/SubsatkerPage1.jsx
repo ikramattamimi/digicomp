@@ -99,7 +99,7 @@ const SubsatkerPage = forwardRef((props, ref) => {
     let total = 0;
     for (let i = 0; i < nilai.length; i++) {
       total = total + nilai[i];
-      console.log(total);
+      // console.log(total);
     }
     const sumNilai = total / nilai.length;
 

@@ -39,7 +39,6 @@ const StaffAssessmentTable = ({ assessments, loading }) => {
   const [sortDirection, setSortDirection] = useState("desc");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
 
   const user = useUserContext();
 
@@ -104,7 +103,7 @@ const StaffAssessmentTable = ({ assessments, loading }) => {
     if (now < startDate) {
       return { status: "upcoming", label: "Akan Dimulai", color: "warning" };
     } else if (now > endDate) {
-      return { status: "ended", label: "Berakhir", color: "failure" };
+      return { status: "ended", label: "Berakhir", color: "red" };
     } else {
       return { status: "active", label: "Berlangsung", color: "success" };
     }

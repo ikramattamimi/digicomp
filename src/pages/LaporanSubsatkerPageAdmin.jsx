@@ -69,7 +69,7 @@ const LaporanSubsatkerPageAdmin = () => {
                 supervisor_weight: sup.assessment_id.supervisor_weight,
               },
             ]);
-            console.log(assa);
+            // console.log(assa);
           }
         }
       });
@@ -112,7 +112,7 @@ const LaporanSubsatkerPageAdmin = () => {
     const assdetail = assa[index];
     if (assdetail) {
       setassasmentId(assdetail);
-      console.log(assdetail);
+      // console.log(assdetail);
     }
 
     if (subsatkerPage == null && assdetail) {
@@ -177,7 +177,7 @@ const LaporanSubsatkerPageAdmin = () => {
               supervisor_weight: sup.assessment_id.supervisor_weight,
             },
           ]);
-          console.log(assa);
+          // console.log(assa);
         }
       }
     });

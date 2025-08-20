@@ -143,7 +143,7 @@ const AccountTable = () => {
 
       {/* Error Alert */}
       {errorMessage && (
-        <Alert color="failure" onDismiss={() => setErrorMessage("")}>
+        <Alert color="red" onDismiss={() => setErrorMessage("")}>
           <span className="font-medium">Error!</span> {errorMessage}
         </Alert>
       )}

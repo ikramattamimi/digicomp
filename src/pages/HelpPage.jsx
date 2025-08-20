@@ -476,7 +476,7 @@ const HelpPage = () => {
         />
 
         {error && (
-          <Alert color="failure" icon={AlertCircle} className="mb-4">
+          <Alert color="red" icon={AlertCircle} className="mb-4">
             {error}
           </Alert>
         )}
@@ -510,11 +510,16 @@ const HelpPage = () => {
           
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {documentationLinks.map((doc, index) => (
-              <Card key={doc.id || index} className="hover:shadow-lg transition-all duration-200">
+              <Card key={doc.id || index} className="hover:shadow-lg transition-all duration-200"
+                theme={{
+                  root: {
+                    children: "justify-between"
+                  }
+                }}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <FileText className="w-4 h-4 text-blue-600" />
+                      {/* <FileText className="w-4 h-4 text-blue-600" /> */}
                       <h5 className="text-lg font-semibold text-gray-900 dark:text-white">
                         {doc.title}
                       </h5>
@@ -726,7 +731,7 @@ const HelpPage = () => {
           </ModalHeader>
           <ModalBody>
             {error && (
-              <Alert color="failure" icon={AlertCircle} className="mb-4">
+              <Alert color="red" icon={AlertCircle} className="mb-4">
                 {error}
               </Alert>
             )}
@@ -918,7 +923,7 @@ const HelpPage = () => {
             </div>
           </ModalBody>
           <ModalFooter className="justify-center">
-            <Button color="failure" onClick={handleDelete}>
+            <Button color="red" onClick={handleDelete}>
               Ya, Hapus
             </Button>
             <Button

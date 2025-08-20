@@ -365,7 +365,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
     if (showComp.includes(sup.indicator_id.competency_id.name)) {
     } else {
       showComp.push(sup.indicator_id.competency_id.name);
-      //console.log(showComp);
+      //// console.log(showComp);
     }
   });
 
@@ -387,7 +387,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
         } else {
           myResponse[indexByName].nilai.push(sup.response_value);
         }
-        //console.log(myResponse);
+        //// console.log(myResponse);
       } else if (
         sup.subject_profile_id == userData.id &&
         sup.assessor_profile_id != userData.id
@@ -402,7 +402,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
         } else {
           mentorResponse[indexByName].nilai.push(sup.response_value);
         }
-        //console.log(mentorResponse);
+        //// console.log(mentorResponse);
       }
     });
   }

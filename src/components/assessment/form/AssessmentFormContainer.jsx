@@ -256,7 +256,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
   return (
     <div className="min-h-screen">
       {error && (
-        <Alert color="failure" onDismiss={() => setError(null)}>
+        <Alert color="red" onDismiss={() => setError(null)}>
           {error}
         </Alert>
       )}

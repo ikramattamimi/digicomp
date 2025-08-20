@@ -57,7 +57,7 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
         // Get subordinates for this supervisor
         const subordinatesData = await ProfileService.getSubordinates(supervisorId);
 
-        // console.log('Subordinates Data:', subordinatesData);
+        // // console.log('Subordinates Data:', subordinatesData);
         // Get assessment participation status for each subordinate
         const subordinatesWithStatus = await Promise.all(
           subordinatesData.map(async (subordinate) => {
@@ -83,6 +83,7 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
                 overallStatus: getOverallStatus(selfParticipantStatus, supervisorParticipantStatus)
               };
             } catch (err) {
+              console.error(`Failed to get assessment status for ${subordinate.name}:`, err);
               return {
                 ...subordinate,
                 selfAssessment: null,
@@ -176,7 +177,7 @@ const SubordinateTable = ({ assessmentId, supervisorId, onRefresh }) => {
   };
 
   // Get assessment status badge
-  const getAssessmentStatusBadge = (assessmentStatus, type) => {
+  const getAssessmentStatusBadge = (assessmentStatus) => {
     if (!assessmentStatus) {
       return (
         <Badge color="gray" size="sm" className="flex items-center gap-1">

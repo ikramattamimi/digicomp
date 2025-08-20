@@ -45,7 +45,7 @@ const SubDirektoratTable = forwardRef((props, ref) => {
       try {
         const dataSupervisor = await SubdirectoratService.getSupervisor();
         setSupervisor(dataSupervisor)
-        console.log(dataSupervisor)
+        // console.log(dataSupervisor)
         
         const data = await SubdirectoratService.getAll();
         setSubDirektorat(data);
@@ -203,7 +203,7 @@ const SubDirektoratTable = forwardRef((props, ref) => {
           <span className="text-sm text-blue-700 dark:text-blue-300">
             {selectedRows.length} item(s) selected
           </span>
-          <Button size="xs" color="failure">
+          <Button size="xs" color="red">
             Delete Selected
           </Button>
         </div>

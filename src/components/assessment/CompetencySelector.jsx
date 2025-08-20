@@ -199,7 +199,7 @@ const CompetencySelector = ({
 
       {/* Error Display */}
       {error && (
-        <Alert color="failure">
+        <Alert color="red">
           {error}
         </Alert>
       )}

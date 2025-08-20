@@ -37,7 +37,6 @@ const SupervisorAssessmentDetailPage = () => {
   const [participantData, setParticipantData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const user = useUserContext();
@@ -62,7 +61,7 @@ const SupervisorAssessmentDetailPage = () => {
         setParticipantData(participantInfo);
       } catch (err) {
         // User might not be a participant yet
-        console.log("User not participating in this assessment:", err);
+        console.error("User not participating in this assessment:", err);
       }
     } catch (err) {
       console.error("Failed to load assessment data:", err);

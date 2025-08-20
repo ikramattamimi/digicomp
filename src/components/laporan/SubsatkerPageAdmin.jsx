@@ -61,17 +61,17 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           props.assasmentId
         );
       setdataResponse(dataResponse);
-      //console.log(dataResponse);
+      //// console.log(dataResponse);
 
       const mentorID = await AssessmentResponseService.getMentorIdasAdmin(
         props.assasmentId
       );
-      console.log(mentorID);
+      // console.log(mentorID);
 
       const getMentorData = async (id) => {
         const dataMentor = await ProfileService.getMyAccount(id);
         setMentor(dataMentor);
-        console.log(dataMentor);
+        // console.log(dataMentor);
       };
 
       mentorID.map((sup) => {
@@ -82,7 +82,7 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           if (m.includes(sup.assessor_profile_id.id)) {
           } else {
             m.push(sup.assessor_profile_id.id);
-            console.log(sup.assessor_profile_id.id);
+            // console.log(sup.assessor_profile_id.id);
 
             getMentorData(sup.assessor_profile_id.id);
           }
@@ -158,13 +158,13 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
       nilai,
       props.assasmentId
     );
-    //console.log(dataResponse);
+    //// console.log(dataResponse);
 
     dataResponse.map((sup) => {
       if (showComp.includes(sup.indicator_id.competency_id.name)) {
       } else {
         showComp.push(sup.indicator_id.competency_id.name);
-        //console.log(showComp);
+        //// console.log(showComp);
       }
     });
 
@@ -189,7 +189,7 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           } else {
             myResponse[indexByName].nilai.push(sup.response_value);
           }
-          //console.log(myResponse);
+          //// console.log(myResponse);
         } else if (
           sup.subject_profile_id == nilai &&
           sup.assessor_profile_id != nilai
@@ -204,25 +204,25 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           } else {
             mentorResponse[indexByName].nilai.push(sup.response_value);
           }
-          //console.log(mentorResponse);
+          //// console.log(mentorResponse);
         }
       });
 
       if (myResponse.length > 0 && mentorResponse.length > 0) {
         mentorResponse.map((sup) => {
           showNMentor.push(GetSum(sup.nilai));
-          //console.log(showNMentor);
+          //// console.log(showNMentor);
         });
 
         myResponse.map((sup) => {
           showNPeserta.push(GetSum(sup.nilai));
-          //console.log(showNPeserta);
+          //// console.log(showNPeserta);
         });
 
         merge(GetSumKomp(showNPeserta, showNMentor));
         all.length = 0;
         allsum.forEach((number) => {
-          //console.log(GetSum1(number));
+          //// console.log(GetSum1(number));
           all.push(GetSum1(number));
 
           if (
@@ -242,8 +242,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
 
         rowHandle();
 
-        //console.log(allsum);
-        //console.log(all);
+        //// console.log(allsum);
+        //// console.log(all);
       }
     }
   };
@@ -312,10 +312,10 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
     for (let i = 0; i < all.length; i++) {
       if (all[i] < 3.5) {
         color.push("red");
-        console.log(color);
+        // console.log(color);
       } else {
         color.push("blue");
-        console.log(color);
+        // console.log(color);
       }
     }
     const bobId = (

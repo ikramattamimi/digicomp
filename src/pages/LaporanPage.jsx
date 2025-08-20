@@ -21,7 +21,7 @@ const LaporanPage = () => {
     setSelectedAssessment(assdetail?.nama || "");
 
     if (subsatkerPage == null && assdetail) {
-      console.log(assdetail.self_weight);
+      // console.log(assdetail.self_weight);
       const myArray = [];
       setSubsatkerPage(
         <div>
