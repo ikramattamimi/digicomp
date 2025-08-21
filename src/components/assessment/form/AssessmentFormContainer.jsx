@@ -293,36 +293,13 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
                 <span className="text-sm text-gray-50 bg-blue-400 p-1 rounded-md">
                   Bobot: {Math.round((assessorTypeWeight || 0) * 100)}%
                 </span>
-                <span className="ps-4 w-52">
+                <span className="ms-6 w-52">
                   <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
                 </span>
               </div>
-              {/* Desktop action buttons */}
-              {user && user.position_type !== 'ADMIN' && (
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    size="xs"
-                    color="gray"
-                    onClick={handleSaveDraft}
-                    disabled={saving}
-                    className="flex-1"
-                  >
-                    {saving ? <Spinner size="sm" /> : 'Draft'}
-                  </Button>
-                  <Button
-                    size="xs"
-                    color="blue"
-                    onClick={handleSubmit}
-                    disabled={saving || totalIndicators === 0}
-                    className="flex-1"
-                  >
-                    {saving ? <Spinner size="sm" /> : 'Submit'}
-                  </Button>
-                </div>
-              )}
-
             </div>
-            <div className="text-sm">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="text-sm">
               <p className="font-semibold">Keterangan penilaian</p>
               <p>
                 <span className="ms-4">
@@ -341,6 +318,30 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
                   5 = Baik Sekali
                 </span>
               </p>
+            </div>
+              {/* Desktop action buttons */}
+              {user && user.position_type !== 'ADMIN' && (
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="md"
+                    color="gray"
+                    onClick={handleSaveDraft}
+                    disabled={saving}
+                    className="flex-2"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Simpan Draft'}
+                  </Button>
+                  <Button
+                    size="md"
+                    color="blue"
+                    onClick={handleSubmit}
+                    disabled={saving || totalIndicators === 0}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Submit'}
+                  </Button>
+                </div>
+              )}
             </div>
           </Card>
         </div>
