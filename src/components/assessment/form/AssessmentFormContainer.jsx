@@ -322,6 +322,26 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
               )}
 
             </div>
+            <div className="text-sm">
+              <p className="font-semibold">Keterangan penilaian</p>
+              <p>
+                <span className="ms-4">
+                  1 = Belum Memadai
+                </span>
+                <span className="ms-4">
+                  2 = Perlu Penguatan
+                </span>
+                <span className="ms-4">
+                  3 = Cukup
+                </span>
+                <span className="ms-4">
+                  4 = Baik
+                </span>
+                <span className="ms-4">
+                  5 = Baik Sekali
+                </span>
+              </p>
+            </div>
           </Card>
         </div>
       </div>
@@ -378,6 +398,26 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
                   </Button>
                 </div>
               )}
+            </div>
+            <div className="text-sm">
+              <p className="font-semibold">Keterangan penilaian</p>
+              <p>
+                <span className="ms-4">
+                  1 = Belum Memadai
+                </span>
+                <span className="ms-4">
+                  2 = Perlu Penguatan
+                </span>
+                <span className="ms-4">
+                  3 = Cukup
+                </span>
+                <span className="ms-4">
+                  4 = Baik
+                </span>
+                <span className="ms-4">
+                  5 = Baik Sekali
+                </span>
+              </p>
             </div>
           </Card>
         </div>
