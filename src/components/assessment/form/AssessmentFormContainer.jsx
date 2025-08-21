@@ -293,10 +293,12 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
                 <span className="text-sm text-gray-50 bg-blue-400 p-1 rounded-md">
                   Bobot: {Math.round((assessorTypeWeight || 0) * 100)}%
                 </span>
-                <span className="ms-6">
-                  <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
-                </span>
               </div>
+            </div>
+            <div>
+              <span className="ms-6 flex-2">
+                <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
+              </span>
             </div>
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div className="text-sm">
