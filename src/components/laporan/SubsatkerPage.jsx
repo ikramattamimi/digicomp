@@ -53,10 +53,10 @@ const SubsatkerPage = forwardRef((props, ref) => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -445,8 +445,8 @@ const SubsatkerPage = forwardRef((props, ref) => {
 
               if (claster.includes(clasKomp)) {
               } else {
-                claster.push(clasKomp);
                 if (sub < 3.5) {
+                  claster.push(clasKomp);
                   return (
                     <div key={index} className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <div className="text-xs sm:text-sm text-blue-700 dark:text-blue-300">
@@ -569,7 +569,7 @@ const SubsatkerPage = forwardRef((props, ref) => {
           title="Hasil Penilaian Subsatker"
         />
       </div>
-      
+
       <div className="space-y-4 sm:space-y-6">
         {/* Info Card - responsive */}
         <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
