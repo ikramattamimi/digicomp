@@ -386,13 +386,14 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
       1: { name: "Integritas", clas: 1 },
       2: { name: "Komitmen Terhadap Organisasi", clas: 1 },
       3: { name: "Orientasi Pada Pelayanan", clas: 2 },
-      4: { name: "Komunikasi Dan Perekat Bangsa", clas: 2 },
-      5: { name: "Pengambilan Keputusan", clas: 3 },
-      6: { name: "Perencanaan Dan Pengorganisasian", clas: 3 },
-      7: { name: "Kepemimpinan", clas: 4 },
-      8: { name: "Kerja Sama", clas: 4 },
-      9: { name: "Pengawasan", clas: 4 },
-      10: { name: "Mengelola Perubahan", clas: 5 },
+      4: { name: "Komunikasi", clas: 2 },
+      5: { name: "Perekat Bangsa", clas: 2 },
+      6: { name: "Pengambilan Keputusan", clas: 3 },
+      7: { name: "Perencanaan Dan Pengorganisasian", clas: 3 },
+      8: { name: "Kepemimpinan", clas: 4 },
+      9: { name: "Kerja Sama", clas: 4 },
+      10: { name: "Pengawasan", clas: 4 },
+      11: { name: "Mengelola Perubahan", clas: 5 },
     };
 
     const bobId = (
@@ -454,7 +455,8 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
       );
     } else if (
       kompetensi == "Orientasi Pada Pelayanan" ||
-      kompetensi == "Komunikasi Dan Perekat Bangsa"
+      kompetensi == "Komunikasi" ||
+      kompetensi == "Perekat Bangsa"
     ) {
       return (
         <div>
