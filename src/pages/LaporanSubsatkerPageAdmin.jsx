@@ -47,7 +47,7 @@ const LaporanSubsatkerPageAdmin = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       const checkUser = await AuthService.checkUser();
-      if (checkUser.position_type == "ADMIN") {
+      if (checkUser.position_type == "ADMIN" || checkUser.position_type == "TOP MANAGEMENT") {
         setPage("show");
       }
 
@@ -69,7 +69,7 @@ const LaporanSubsatkerPageAdmin = () => {
                 supervisor_weight: sup.assessment_id.supervisor_weight,
               },
             ]);
-            console.log(assa);
+            // console.log(assa);
           }
         }
       });
@@ -112,7 +112,7 @@ const LaporanSubsatkerPageAdmin = () => {
     const assdetail = assa[index];
     if (assdetail) {
       setassasmentId(assdetail);
-      console.log(assdetail);
+      // console.log(assdetail);
     }
 
     if (subsatkerPage == null && assdetail) {
@@ -177,7 +177,7 @@ const LaporanSubsatkerPageAdmin = () => {
               supervisor_weight: sup.assessment_id.supervisor_weight,
             },
           ]);
-          console.log(assa);
+          // console.log(assa);
         }
       }
     });
@@ -195,8 +195,8 @@ const LaporanSubsatkerPageAdmin = () => {
     );
   } else {
     return (
-      <div className={"overflow-x-auto page " + page}>
-        <div className="max-w-7xl mx-auto">
+      <div className={"page " + page}>
+        <div className="mx-auto">
           {/* Header */}
           <PageHeader
             breadcrumbs={[

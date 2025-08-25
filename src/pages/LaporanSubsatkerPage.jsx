@@ -150,7 +150,7 @@ const LaporanSubsatkerPage = () => {
   if (page == "hidden") {
     return (
       <div className="page">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="mb-6 bg-white dark:bg-gray-800">
             <div className="text-center py-8">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">

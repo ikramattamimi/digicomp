@@ -169,7 +169,7 @@ const AssessmentListPage = () => {
           dueSoon={stats.dueSoon}
           onCreateClick={() => navigate('/penilaian/create')}
           onFilterClick={() => setStatusFilter(statusFilter === 'all' ? 'draft' : 'all')}
-          onExportClick={() => console.log('Export clicked')}
+          // onExportClick={() => // console.log('Export clicked')}
           loading={loading}
         />
 
@@ -217,7 +217,7 @@ const AssessmentListPage = () => {
             onView={(assessment) => navigate(`/penilaian/${assessment.id}`)}
             onEdit={(assessment) => navigate(`/penilaian/${assessment.id}/edit`)}
             onDelete={handleDelete}
-            onDuplicate={(assessment) => console.log('Duplicate:', assessment)}
+            // onDuplicate={(assessment) => // console.log('Duplicate:', assessment)}
             loading={loading}
           />
         {/* </Card> */}

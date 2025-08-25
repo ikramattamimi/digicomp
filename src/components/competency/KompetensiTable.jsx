@@ -108,11 +108,11 @@ const KompetensiTable = forwardRef((props, ref) => {
     setShowModal(true);
   };
 
-  const handleEdit = (kompetensi) => {
-    setModalType("edit");
-    setCurrentKompetensi(kompetensi);
-    setShowModal(true);
-  };
+  // const handleEdit = (kompetensi) => {
+  //   setModalType("edit");
+  //   setCurrentKompetensi(kompetensi);
+  //   setShowModal(true);
+  // };
 
   const handleDelete = async (id, status) => {
     try {
@@ -184,7 +184,7 @@ const KompetensiTable = forwardRef((props, ref) => {
           <span className="text-sm text-blue-700 dark:text-blue-300">
             {selectedRows.length} item(s) selected
           </span>
-          <Button size="xs" color="failure">
+          <Button size="xs" color="red">
             Delete Selected
           </Button>
         </div>

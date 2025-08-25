@@ -133,18 +133,6 @@ const AssessmentDetailPage = () => {
     navigate("/penilaian");
   };
 
-  const handleEdit = () => {
-    navigate(`/penilaian/${id}/edit`);
-  };
-
-  const handleManageParticipants = () => {
-    navigate(`/penilaian/${id}/participants`);
-  };
-
-  const handleViewReports = () => {
-    navigate(`/penilaian/${id}/reports`);
-  };
-
   // Check permissions for actions
   const canEdit = () => {
     return assessment && assessment.status === ASSESSMENT_STATUS.DRAFT;
@@ -162,7 +150,7 @@ const AssessmentDetailPage = () => {
   };
 
   const canComplete = () => {
-    console.log('can complete', assessment, assessment?.status === ASSESSMENT_STATUS.IN_PROGRESS);
+    // console.log('can complete', assessment, assessment?.status === ASSESSMENT_STATUS.IN_PROGRESS);
     return assessment && assessment.status === ASSESSMENT_STATUS.IN_PROGRESS;
   };
 
@@ -252,18 +240,6 @@ const AssessmentDetailPage = () => {
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
-              {/* Primary Actions */}
-              <Link to={`/penilaian/${id}`}>
-                <Button
-                  size="sm"
-                  color="gray"
-                  className="flex items-center gap-1"
-                >
-                  <Eye className="w-4 h-4" />
-                  Detail
-                </Button>
-              </Link>
-              
               {canEdit() && (
                 <Link to={`/penilaian/${id}/edit`}>
                   <Button
@@ -402,7 +378,13 @@ const AssessmentDetailPage = () => {
                 {/* Assessment Information */}
                 <div className="lg:col-span-2 space-y-6">
                   {/* Basic Info Card */}
-                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-none">
+                  <Card className="bg-white h-full dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-none"
+                    theme={{
+                      root: {
+                        children: "justify-start items-stretch",
+                      },
+                    }}
+                  >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                         <ClipboardCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -412,7 +394,7 @@ const AssessmentDetailPage = () => {
                       </h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 justify-stretch md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <div>
                           <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
@@ -487,78 +469,6 @@ const AssessmentDetailPage = () => {
                     )}
                   </Card>
 
-                  {/* Weight Configuration Card */}
-                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-none">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                        <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        Konfigurasi Bobot
-                      </h3>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="relative">
-                        <div className="bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 p-4 rounded-lg border border-green-200 dark:border-green-700">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                              Penilaian Diri
-                            </span>
-                            <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                          </div>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-green-900 dark:text-green-100">
-                              {((assessment?.self_weight || ASSESSMENT_WEIGHTS.SELF) * 100).toFixed(0)}
-                            </span>
-                            <span className="text-lg text-green-700 dark:text-green-300">%</span>
-                          </div>
-                          <div className="mt-3 bg-green-200 dark:bg-green-800 rounded-full h-2">
-                            <div 
-                              className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${((assessment?.self_weight || ASSESSMENT_WEIGHTS.SELF) * 100)}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="relative">
-                        <div className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                              Penilaian Atasan
-                            </span>
-                            <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                          </div>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                              {((assessment?.supervisor_weight || 0.7) * 100).toFixed(0)}
-                            </span>
-                            <span className="text-lg text-blue-700 dark:text-blue-300">%</span>
-                          </div>
-                          <div className="mt-3 bg-blue-200 dark:bg-blue-800 rounded-full h-2">
-                            <div 
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${((assessment?.supervisor_weight || 0.7) * 100)}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {assessment?.configuration && (
-                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600" hidden>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                          Konfigurasi Teknis
-                        </label>
-                        <div className="p-4 bg-gray-900 dark:bg-gray-800 rounded-lg border">
-                          <code className="text-sm text-green-400 font-mono">
-                            {assessment.configuration}
-                          </code>
-                        </div>
-                      </div>
-                    )}
-                  </Card>
                 </div>
 
                 {/* Progress & Analytics */}
@@ -633,39 +543,77 @@ const AssessmentDetailPage = () => {
                     </div>
                   </Card>
 
-                  {/* Quick Actions Card */}
-                  <Card className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600 shadow-none">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <Play className="mr-2 text-gray-600 dark:text-gray-400" />
-                      Aksi Cepat
-                    </h3>
-
-                    <div className="space-y-3">
-                      <Link to={`/penilaian/${id}/participants`} className="block">
-                        <Button color="gray" className="w-full justify-start">
-                          <Users className="w-4 h-4 mr-2" />
-                          Kelola Peserta
-                        </Button>
-                      </Link>
-
-                      {assessment?.status === ASSESSMENT_STATUS.DONE && (
-                        <Link to={`/penilaian/${id}/reports`} className="block">
-                          <Button color="blue" className="w-full justify-start">
-                            <FileText className="w-4 h-4 mr-2" />
-                            Lihat Laporan
-                          </Button>
-                        </Link>
-                      )}
-
-                      {canEdit() && (
-                        <Link to={`/penilaian/${id}/edit`} className="block">
-                          <Button color="yellow" className="w-full justify-start">
-                            <Edit className="w-4 h-4 mr-2" />
-                            Ubah Penilaian
-                          </Button>
-                        </Link>
-                      )}
+                  {/* Weight Configuration Card */}
+                  <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-none">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                        <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Konfigurasi Bobot
+                      </h3>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="relative">
+                        <div className="bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 p-4 rounded-lg border border-green-200 dark:border-green-700">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                              Penilaian Bawahan
+                            </span>
+                            <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
+                          </div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-green-900 dark:text-green-100">
+                              {((assessment?.self_weight || ASSESSMENT_WEIGHTS.SELF) * 100).toFixed(0)}
+                            </span>
+                            <span className="text-lg text-green-700 dark:text-green-300">%</span>
+                          </div>
+                          <div className="mt-3 bg-green-200 dark:bg-green-800 rounded-full h-2">
+                            <div 
+                              className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${((assessment?.self_weight || ASSESSMENT_WEIGHTS.SELF) * 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <div className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                              Penilaian Atasan
+                            </span>
+                            <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                              {((assessment?.supervisor_weight || 0.7) * 100).toFixed(0)}
+                            </span>
+                            <span className="text-lg text-blue-700 dark:text-blue-300">%</span>
+                          </div>
+                          <div className="mt-3 bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                            <div 
+                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${((assessment?.supervisor_weight || 0.7) * 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {assessment?.configuration && (
+                      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600" hidden>
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                          Konfigurasi Teknis
+                        </label>
+                        <div className="p-4 bg-gray-900 dark:bg-gray-800 rounded-lg border">
+                          <code className="text-sm text-green-400 font-mono">
+                            {assessment.configuration}
+                          </code>
+                        </div>
+                      </div>
+                    )}
                   </Card>
                 </div>
               </div>

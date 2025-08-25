@@ -6,7 +6,7 @@ const AssessmentProgress = ({ total, filled }) => {
   return (
     <div>
       <div className="flex justify-between text-sm mb-1">
-        <span>Progress</span>
+        <span>Progress &nbsp;</span>
         <span>{filled}/{total} ({percent}%)</span>
       </div>
       <Progress progress={percent} size="sm" />

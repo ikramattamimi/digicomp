@@ -193,7 +193,7 @@ export const BulkParticipantSelector = ({
             
             {/* Error Alert */}
             {error && (
-              <Alert color="failure" icon={AlertCircle}>
+              <Alert color="red" icon={AlertCircle}>
                 {error}
               </Alert>
             )}

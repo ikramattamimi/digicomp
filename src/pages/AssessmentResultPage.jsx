@@ -45,7 +45,7 @@ const AssessmentResultPage = () => {
             });
             setSelfResponse(selfData);
           } catch (err) {
-            console.log('No self assessment found');
+            console.error('No self assessment found', err);
           }
 
           // Load supervisor assessment response
@@ -58,7 +58,7 @@ const AssessmentResultPage = () => {
               });
               setSupervisorResponse(supervisorData);
             } catch (err) {
-              console.log('No supervisor assessment found');
+              console.error('No supervisor assessment found', err);
             }
           }
         }

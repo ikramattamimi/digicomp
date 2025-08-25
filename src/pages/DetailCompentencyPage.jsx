@@ -29,7 +29,7 @@ const DetailCompetencyPage = () => {
       try {
         const data = await CompetencyService.getById(id);
         setKompetensi(data);
-        console.log(data);
+        // console.log(data);
       } catch (err) {
         console.error("Failed to fetch kompetensi:", err);
         setErrorMessage(err?.message || "Failed to load kompetensi");

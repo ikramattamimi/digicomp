@@ -62,6 +62,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
   useEffect(() => {
     const load = async () => {
       try {
+        console.log({mode});
         setLoading(true);
         setError(null);
         
@@ -107,7 +108,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
           if (existingSelfAssessment?.responses) setResponses(existingSelfAssessment.responses);
           if (existingSupervisorAssessment?.responses) setSupervisorResponses(existingSupervisorAssessment.responses);
           
-        } else if (mode === 'supervisor') {
+        } else if (mode === 'supervisor' || mode === 'admin') {
           // For supervisor assessment, load supervisor's responses for the subject
           const existingSupervisorAssessment = await AssessmentResponseService.getByAssessmentAndAssessor({
             assessmentId,
@@ -191,7 +192,7 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
       // Navigate back to penilaian page after 2 seconds
       setTimeout(() => {
         setShowSuccessModal(false);
-        navigate(-1);
+        navigate("/penilaian");
       }, 2000);
 
     } catch (err) {
@@ -254,51 +255,176 @@ const AssessmentFormContainer = ({ assessmentId, mode = 'self', subjectProfileId
   }
 
   return (
-    <div className="space-y-4">
+    <div className="min-h-screen">
       {error && (
-        <Alert color="failure" onDismiss={() => setError(null)}>
+        <Alert color="red" onDismiss={() => setError(null)}>
           {error}
         </Alert>
       )}
 
-      <div className="lg:col-span-1 sticky top-32 self-start z-10">
-        <Card>
-          <div className="flex flex-col gap-2">
-            <h3 className="text-lg font-semibold">
-              {assessment?.name} • {isSelf ? 'Penilaian Diri' : 'Penilaian Atasan'}
-            </h3>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Bobot: {Math.round((assessorTypeWeight || 0) * 100)}%
-            </div>
-            <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
-          </div>
-        </Card>
-      </div>
-
-      <div className="space-y-4">
-        {competencies.map((c) => (
-          <CompetencySection
-            key={c.id}
-            competency={c}
-            responses={responses}
-            supervisorResponses={supervisorResponses}
-            onChange={handleChange}
-            mode={mode}
-            disabled={saving || participantStatus?.status === 'submitted'}
-          />
-        ))}
-      </div>
-
-      {participantStatus?.status !== 'submitted' && (
-        <div className="flex gap-2 justify-end">
-          <Button color="gray" onClick={handleSaveDraft} disabled={saving}>
-            {saving ? <Spinner size="sm" /> : 'Simpan Draft'}
-          </Button>
-          <Button color="blue" onClick={handleSubmit} disabled={saving || totalIndicators === 0}>
-            {saving ? <Spinner size="sm" /> : 'Submit Assessment'}
-          </Button>
+      {/* Desktop Layout */}
+      <div className="hidden lg:block space-y-6">
+        {/* Desktop Content Area */}
+        <div className="space-y-6">
+          {competencies.map((c) => (
+            <CompetencySection
+              key={c.id}
+              competency={c}
+              responses={responses}
+              supervisorResponses={supervisorResponses}
+              onChange={handleChange}
+              mode={mode}
+              disabled={saving || participantStatus?.status === 'submitted' || mode === 'admin'}
+            />
+          ))}
         </div>
-      )}
+
+        {/* Desktop Progress Card - Sticky at bottom */}
+        <div className="sticky bottom-4 z-30">
+          <Card className="shadow-lg border border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-800 px-4 py-3">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                <span className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                  {assessment?.name}
+                </span>
+                <span className="text-sm text-gray-50 bg-green-400 p-1 rounded-md">
+                  Penilaian {isSelf ? 'Diri' : 'Atasan'}
+                </span>
+                <span className="text-sm text-gray-50 bg-blue-400 p-1 rounded-md">
+                  Bobot: {Math.round((assessorTypeWeight || 0) * 100)}%
+                </span>
+              </div>
+            </div>
+            <div>
+              <span className="ms-6 flex-2">
+                <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
+              </span>
+            </div>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="text-sm">
+              <p className="font-semibold">Keterangan penilaian</p>
+              <p>
+                <span className="ms-4">
+                  1 = Belum Memadai
+                </span>
+                <span className="ms-4">
+                  2 = Perlu Penguatan
+                </span>
+                <span className="ms-4">
+                  3 = Cukup
+                </span>
+                <span className="ms-4">
+                  4 = Baik
+                </span>
+                <span className="ms-4">
+                  5 = Baik Sekali
+                </span>
+              </p>
+            </div>
+              {/* Desktop action buttons */}
+              {user && user.position_type !== 'ADMIN' && (
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="md"
+                    color="gray"
+                    onClick={handleSaveDraft}
+                    disabled={saving}
+                    className="flex-2"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Simpan Draft'}
+                  </Button>
+                  <Button
+                    size="md"
+                    color="blue"
+                    onClick={handleSubmit}
+                    disabled={saving || totalIndicators === 0}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Submit'}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Mobile Layout */}
+      <div className="lg:hidden space-y-4">
+        {/* Mobile Content */}
+        <div className="space-y-4">
+          {competencies.map((c) => (
+            <CompetencySection
+              key={c.id}
+              competency={c}
+              responses={responses}
+              supervisorResponses={supervisorResponses}
+              onChange={handleChange}
+              mode={mode}
+              disabled={(saving || participantStatus?.status === 'submitted') || mode === 'admin'}
+            />
+          ))}
+        </div>
+
+        {/* Mobile Progress Card - Sticky at bottom */}
+        <div className="sticky bottom-4 z-30">
+          <Card className="shadow-lg border-2 border-blue-100 dark:border-blue-800 bg-white dark:bg-gray-800">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                {assessment?.name} • {isSelf ? 'Penilaian Diri' : 'Penilaian Atasan'}
+              </h3>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Bobot: {Math.round((assessorTypeWeight || 0) * 100)}%
+              </div>
+              <AssessmentProgress total={totalIndicators} filled={filledIndicators} />
+              
+              {/* Mobile action buttons */}
+              {user && user.position_type !== 'ADMIN' && (
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="xs"
+                    color="gray"
+                    onClick={handleSaveDraft}
+                    disabled={saving}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Draft'}
+                  </Button>
+                  <Button
+                    size="xs"
+                    color="blue"
+                    onClick={handleSubmit}
+                    disabled={saving || totalIndicators === 0}
+                    className="flex-1"
+                  >
+                    {saving ? <Spinner size="sm" /> : 'Submit'}
+                  </Button>
+                </div>
+              )}
+            </div>
+            <div className="text-sm">
+              <p className="font-semibold">Keterangan penilaian</p>
+              <p>
+                <span className="ms-4">
+                  1 = Belum Memadai
+                </span>
+                <span className="ms-4">
+                  2 = Perlu Penguatan
+                </span>
+                <span className="ms-4">
+                  3 = Cukup
+                </span>
+                <span className="ms-4">
+                  4 = Baik
+                </span>
+                <span className="ms-4">
+                  5 = Baik Sekali
+                </span>
+              </p>
+            </div>
+          </Card>
+        </div>
+      </div>
 
       {/* Modals */}
       <LoadingModal

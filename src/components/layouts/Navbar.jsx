@@ -56,7 +56,7 @@ const TopNavbar = ({ collapsed, setCollapsed, isMobile, showMobileSidebar, setSh
   };
 
   const handleSidebarToggle = () => {
-    console.log('Toggle clicked:', { isMobile, showMobileSidebar }); // Debug log
+    // console.log('Toggle clicked:', { isMobile, showMobileSidebar }); // Debug log
     if (isMobile) {
       setShowMobileSidebar(!showMobileSidebar);
     } else {

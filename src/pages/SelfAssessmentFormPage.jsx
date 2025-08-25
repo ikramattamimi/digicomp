@@ -83,7 +83,7 @@ const SelfAssessmentFormPage = () => {
         />
 
         {error && (
-          <Alert color="failure" className="mb-6 text-base" onDismiss={() => setError(null)}>
+          <Alert color="red" className="mb-6 text-base" onDismiss={() => setError(null)}>
             {error} 
           </Alert>
         )}

@@ -12,7 +12,8 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
 
   // Determine which column is editable based on mode
   const isSelfMode = mode === 'self';
-  // const isSupervisorMode = mode === 'supervisor';
+  const isSupervisorMode = mode === 'supervisor' || mode === 'admin';
+  // const isAdminMode = mode === 'admin';
 
   return (
     <div className="space-y-6">
@@ -39,10 +40,10 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                     <TableHeadCell className="min-w-40 text-base font-semibold py-4">Sub Dimensi</TableHeadCell>
                     <TableHeadCell className="min-w-96 text-base font-semibold py-4">Indikator</TableHeadCell>
                     <TableHeadCell className="w-32 text-center text-base font-semibold py-4">
-                      {isSelfMode ? 'Penilaian Anda' : 'Penilaian Personel'}
+                      {isSelfMode ? 'Penilaian Anda' : isSupervisorMode ? 'Penilaian Personel' : 'Penilaian Personel'}
                     </TableHeadCell>
                     <TableHeadCell className="w-32 text-center text-base font-semibold py-4">
-                      {isSelfMode ? 'Penilaian Atasan' : 'Penilaian Anda'}
+                      {isSelfMode ? 'Penilaian Atasan' : isSupervisorMode ? 'Penilaian Anda' : 'Penilaian Atasan'}
                     </TableHeadCell>
                   </TableRow>
                 </TableHead>
@@ -74,7 +75,6 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                         {/* First Column - Editable for current mode */}
                         <TableCell className="py-6">
                           {isSelfMode ? (
-                            // Self mode: User can edit their own assessment
                             <Input
                               type="number"
                               value={currentResponse.value || ''}
@@ -87,12 +87,22 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                               className="text-center text-lg h-12"
                               size="md"
                             />
-                          ) : (
-                            // Supervisor mode: Show self assessment as read-only
+                          ) : isSupervisorMode ? (
                             <div className="text-center">
                               {otherResponse.value ? (
                                 <span className="inline-flex items-center px-4 py-2 text-base font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
                                   {otherResponse.value}
+                                </span>
+                              ) : (
+                                <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
+                              )}
+                            </div>
+                          ) : (
+                            // Admin mode: show self assessment only
+                            <div className="text-center">
+                              {currentResponse.value ? (
+                                <span className="inline-flex items-center px-4 py-2 text-base font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                                  {currentResponse.value}
                                 </span>
                               ) : (
                                 <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
@@ -104,7 +114,6 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                         {/* Second Column - Different behavior based on mode */}
                         <TableCell className="py-6">
                           {isSelfMode ? (
-                            // Self mode: Show supervisor assessment as read-only
                             <div className="text-center">
                               {otherResponse.value ? (
                                 <span className="inline-flex items-center px-4 py-2 text-base font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">
@@ -114,8 +123,7 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                                 <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
                               )}
                             </div>
-                          ) : (
-                            // Supervisor mode: User can edit supervisor assessment
+                          ) : isSupervisorMode ? (
                             <Input
                               type="number"
                               value={currentResponse.value || ''}
@@ -128,6 +136,17 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                               className="text-center text-lg h-12"
                               size="md"
                             />
+                          ) : (
+                            // Admin mode: show supervisor assessment only
+                            <div className="text-center">
+                              {otherResponse.value ? (
+                                <span className="inline-flex items-center px-4 py-2 text-base font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">
+                                  {otherResponse.value}
+                                </span>
+                              ) : (
+                                <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
+                              )}
+                            </div>
                           )}
                         </TableCell>
                       </TableRow>
@@ -179,7 +198,7 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                       {/* First Assessment */}
                       <div className="space-y-3">
                         <label className="block text-base font-medium text-gray-700 dark:text-gray-300">
-                          {isSelfMode ? 'Penilaian Anda' : 'Penilaian Personel'}
+                          {isSelfMode ? 'Penilaian Anda' : isSupervisorMode ? 'Penilaian Personel' : 'Penilaian Personel'}
                         </label>
                         {isSelfMode ? (
                           <Input
@@ -194,11 +213,21 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                             className="text-center w-full text-lg h-12"
                             size="md"
                           />
-                        ) : (
+                        ) : isSupervisorMode ? (
                           <div className="text-center py-3">
                             {otherResponse.value ? (
                               <span className="inline-flex items-center px-4 py-2 text-base font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
                                 {otherResponse.value}
+                              </span>
+                            ) : (
+                              <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-center py-3">
+                            {currentResponse.value ? (
+                              <span className="inline-flex items-center px-4 py-2 text-base font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                                {currentResponse.value}
                               </span>
                             ) : (
                               <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
@@ -210,7 +239,7 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                       {/* Second Assessment */}
                       <div className="space-y-3">
                         <label className="block text-base font-medium text-gray-700 dark:text-gray-300">
-                          {isSelfMode ? 'Penilaian Atasan' : 'Penilaian Anda'}
+                          {isSelfMode ? 'Penilaian Atasan' : isSupervisorMode ? 'Penilaian Anda' : 'Penilaian Atasan'}
                         </label>
                         {isSelfMode ? (
                           <div className="text-center py-3">
@@ -222,7 +251,7 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                               <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
                             )}
                           </div>
-                        ) : (
+                        ) : isSupervisorMode ? (
                           <Input
                             type="number"
                             value={currentResponse.value || ''}
@@ -235,6 +264,16 @@ const CompetencySection = ({ competency, responses, supervisorResponses, onChang
                             className="text-center w-full text-lg h-12"
                             size="md"
                           />
+                        ) : (
+                          <div className="text-center py-3">
+                            {otherResponse.value ? (
+                              <span className="inline-flex items-center px-4 py-2 text-base font-medium text-green-800 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">
+                                {otherResponse.value}
+                              </span>
+                            ) : (
+                              <span className="text-base text-gray-500 dark:text-gray-400">Belum dinilai</span>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

@@ -21,7 +21,7 @@ const LaporanPage = () => {
     setSelectedAssessment(assdetail?.nama || "");
 
     if (subsatkerPage == null && assdetail) {
-      console.log(assdetail.self_weight);
+      // console.log(assdetail.self_weight);
       const myArray = [];
       setSubsatkerPage(
         <div>
@@ -105,8 +105,8 @@ const LaporanPage = () => {
   }, []);
 
   return (
-    <div className="page overflow-x-auto">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+    <div className="page">
+      <div className="mx-auto px-2 sm:px-4 lg:px-6">
         {/* Mobile-responsive Header */}
         <div className="mb-4 sm:mb-6">
           <PageHeader

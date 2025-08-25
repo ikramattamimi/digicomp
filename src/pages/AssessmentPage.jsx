@@ -103,7 +103,7 @@ const AssessmentListPage = () => {
       setError(null);
       let data = null;
 
-      if (user.position_type === USER_POSITION.ADMIN) {
+      if (user.position_type === USER_POSITION.ADMIN || user.position_type === USER_POSITION.TOP_MANAGEMENT) {
         data = await AssessmentService.getAll(true); // Include inactive
       } else if (user.position_type === USER_POSITION.ATASAN || user.position_type === USER_POSITION.BAWAHAN) {
         data = await AssessmentService.getByParticipant(user.id);
@@ -125,7 +125,7 @@ const AssessmentListPage = () => {
   const loadStatistics = async () => {
     try {
       let statistics;
-      if (user.position_type === USER_POSITION.ADMIN) {
+      if (user.position_type === USER_POSITION.ADMIN || user.position_type === USER_POSITION.TOP_MANAGEMENT) {
         statistics = await AssessmentService.getStatistics();
       } else {
         statistics = await AssessmentService.getMyStatistics(); // New method for staff stats
@@ -243,7 +243,7 @@ const AssessmentListPage = () => {
     <div className="page">
       <div className="max-w-7xl mx-auto">
         {/* Enhanced Header with Statistics */}
-        {user.position_type === USER_POSITION.ADMIN ? (
+        {user.position_type === USER_POSITION.ADMIN || user.position_type === USER_POSITION.TOP_MANAGEMENT ? (
           <AssessmentListHeader 
             totalAssessments={stats.total}
             activeAssessments={stats.active}
@@ -251,7 +251,7 @@ const AssessmentListPage = () => {
             dueSoon={stats.dueSoon}
             onCreateClick={() => navigate('/penilaian/create')}
             onFilterClick={() => setStatusFilter(statusFilter === 'all' ? 'draft' : 'all')}
-            onExportClick={() => console.log('Export clicked')}
+            // onExportClick={() => // console.log('Export clicked')}
             loading={loading}
           />
         ) : (
@@ -292,7 +292,7 @@ const AssessmentListPage = () => {
               onChange={handleStatusFilterChange}
               icon={Filter}
             >
-              {user.position_type === USER_POSITION.ADMIN ? (
+              {user.position_type === USER_POSITION.ADMIN || user.position_type === USER_POSITION.TOP_MANAGEMENT ? (
                 <>
                   <option value="all">All Status</option>
                   <option value={ASSESSMENT_STATUS.DRAFT}>Draft</option>
@@ -311,7 +311,7 @@ const AssessmentListPage = () => {
         </div>
 
         {/* Assessment Table */}
-        {user.position_type === USER_POSITION.ADMIN ? (
+        {user.position_type === USER_POSITION.ADMIN || user.position_type === USER_POSITION.TOP_MANAGEMENT ? (
           <AssessmentTable 
             assessments={filteredAssessments}
             onView={(assessment) => navigate(`/penilaian/${assessment.id}`)}
@@ -319,7 +319,7 @@ const AssessmentListPage = () => {
             onDelete={handleDelete}
             onPublish={handlePublish}
             onComplete={handleComplete}
-            onDuplicate={(assessment) => console.log('Duplicate:', assessment)}
+            // onDuplicate={(assessment) => // console.log('Duplicate:', assessment)}
             loading={loading}
           />
         ) : (

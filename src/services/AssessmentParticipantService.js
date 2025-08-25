@@ -347,6 +347,26 @@ class AssessmentParticipantService {
     return data;
   }
 
+  async deleteByAssessmentIdAndUserId(assessmentId, userId) {
+    const { data, error } = await supabase
+      .from('assessment_participants')
+      .delete()
+      .eq('assessment_id', assessmentId)
+      .eq('subject_profile_id', userId)
+      .select();
+    
+    const { data: response, error: respErr } = await supabase
+      .from('assessment_responses')
+      .delete()
+      .eq('assessment_id', assessmentId)
+      .eq('subject_profile_id', userId)
+      .select();
+    
+    if (error) throw error;
+    if (respErr) throw respErr;
+    return data;
+  }
+
   // Check if user is participant in assessment
   async isUserParticipant(assessmentId, userId) {
     const { data, error } = await supabase
@@ -419,7 +439,7 @@ class AssessmentParticipantService {
     return data;
   }
 
-    async getAssessmentStatus(assessmentId, subjectId, userId) {
+  async getAssessmentStatus(assessmentId, subjectId, userId) {
     const { data, error } = await supabase
       .from('assessment_participants')
       .select(`

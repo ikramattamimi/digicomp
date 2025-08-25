@@ -73,7 +73,7 @@ const ProductsPage = () => {
                     <TableCell>
                       <div className="flex gap-2">
                         <Button size="xs" color="info">Edit</Button>
-                        <Button size="xs" color="failure">Delete</Button>
+                        <Button size="xs" color="red">Delete</Button>
                       </div>
                     </TableCell>
                   </TableRow>

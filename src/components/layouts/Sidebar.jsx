@@ -13,6 +13,8 @@ import {
   Menu,
   ChevronLeft,
   Home,
+  UserCog,
+  UserCircle,
 } from "lucide-react";
 import {
   Sidebar as FlowbiteSidebar,
@@ -37,15 +39,14 @@ const Sidebar = ({ collapsed }) => {
     const fetchSupervisors = async () => {
       try {
         const checkUser = await AuthService.checkUser();
-        if (checkUser.position_type == "ADMIN") {
+        if (checkUser.position_type == "ADMIN" || checkUser.position_type == "TOP MANAGEMENT") {
           setAdmin("show");
+          if (checkUser.position_type == "TOP MANAGEMENT") setTop("show");
         } else if (checkUser.position_type == "ATASAN") {
           setStaffAtasan("show");
         } else if (checkUser.position_type == "BAWAHAN") {
           setStaffBawahan("show");
-        } else if (checkUser.position_type == "TOP MANAGEMENT") {
-          setTop("show");
-        }
+        } 
       } catch (err) {
         console.error("Failed to fetch supervisors:", err);
       }
@@ -117,7 +118,7 @@ const Sidebar = ({ collapsed }) => {
               className={admin}
               as={NavLink}
               to="/staff"
-              icon={() => <UserCheck size={20} />}
+              icon={() => <Users size={20} />}
               active={location.pathname.startsWith("/staff")}
             >
               Personel
@@ -171,7 +172,7 @@ const Sidebar = ({ collapsed }) => {
               className={top}
               as={NavLink}
               to="/admin"
-              icon={() => <UserCheck size={20} />}
+              icon={() => <UserCog size={20} />}
               active={location.pathname.startsWith("/admin")}
             >
               Admin
@@ -179,7 +180,7 @@ const Sidebar = ({ collapsed }) => {
             <SidebarItem
               as={NavLink}
               to="/Akun"
-              icon={() => <UserCheck size={20} />}
+              icon={() => <UserCircle size={20} />}
               active={location.pathname.startsWith("/Akun")}
             >
               Akun

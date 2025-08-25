@@ -287,7 +287,7 @@ const AssessmentEditPage = () => {
 
         {/* Error Alert */}
         {error && (
-          <Alert color="failure" className="mb-6">
+          <Alert color="red" className="mb-6">
             <span className="font-medium">Kesalahan!</span> {error}
           </Alert>
         )}
@@ -346,7 +346,7 @@ const AssessmentEditPage = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="Masukkan nama assessment"
-                        color={validationErrors.name ? "failure" : "gray"}
+                        color={validationErrors.name ? "red" : "gray"}
                         helperText={validationErrors.name}
                         className="mt-1"
                         disabled={!canModify()}
@@ -381,7 +381,7 @@ const AssessmentEditPage = () => {
                           type="date"
                           value={formData.start_date}
                           onChange={handleInputChange}
-                          color={validationErrors.start_date ? "failure" : "gray"}
+                          color={validationErrors.start_date ? "red" : "gray"}
                           helperText={validationErrors.start_date}
                           className="mt-1"
                           disabled={!canModify()}
@@ -398,7 +398,7 @@ const AssessmentEditPage = () => {
                           type="date"
                           value={formData.end_date}
                           onChange={handleInputChange}
-                          color={validationErrors.end_date ? "failure" : "gray"}
+                          color={validationErrors.end_date ? "red" : "gray"}
                           helperText={validationErrors.end_date}
                           className="mt-1"
                           disabled={!canModify()}
@@ -409,7 +409,7 @@ const AssessmentEditPage = () => {
 
                     {/* Date Validation Error */}
                     {validationErrors.dates && (
-                      <Alert color="failure" className="mt-2">
+                      <Alert color="red" className="mt-2">
                         {validationErrors.dates}
                       </Alert>
                     )}
@@ -431,7 +431,7 @@ const AssessmentEditPage = () => {
                             value={formData.self_weight}
                             onChange={handleInputChange}
                             color={
-                              validationErrors.self_weight ? "failure" : "gray"
+                              validationErrors.self_weight ? "red" : "gray"
                             }
                             helperText={validationErrors.self_weight}
                             className="mt-1"
@@ -458,7 +458,7 @@ const AssessmentEditPage = () => {
                             onChange={handleInputChange}
                             color={
                               validationErrors.supervisor_weight
-                                ? "failure"
+                                ? "red"
                                 : "gray"
                             }
                             helperText={validationErrors.supervisor_weight}
@@ -474,7 +474,7 @@ const AssessmentEditPage = () => {
 
                       {/* Weight Validation Error */}
                       {validationErrors.weights && (
-                        <Alert color="failure" className="mt-2">
+                        <Alert color="red" className="mt-2">
                           {validationErrors.weights}
                         </Alert>
                       )}
@@ -501,7 +501,7 @@ const AssessmentEditPage = () => {
                         name="configuration"
                         value={formData.configuration}
                         onChange={handleInputChange}
-                        color={validationErrors.configuration ? "failure" : "gray"}
+                        color={validationErrors.configuration ? "red" : "gray"}
                         className="mt-1"
                         disabled={!canModify()}
                       >
@@ -547,7 +547,7 @@ const AssessmentEditPage = () => {
                         required
                       />
                       {validationErrors.competencies && (
-                        <Alert color="failure" className="mt-2">
+                        <Alert color="red" className="mt-2">
                           {validationErrors.competencies}
                         </Alert>
                       )}

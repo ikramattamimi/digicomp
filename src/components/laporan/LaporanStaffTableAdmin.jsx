@@ -95,7 +95,7 @@ const LaporanStaffTable = forwardRef((props, ref) => {
                 <span className="text-sm text-blue-700 dark:text-blue-300">
                   {selectedRows.length} item(s) selected
                 </span>
-                <Button size="xs" color="failure">
+                <Button size="xs" color="red">
                   Delete Selected
                 </Button>
               </div>

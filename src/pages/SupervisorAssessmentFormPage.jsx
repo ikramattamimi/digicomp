@@ -25,21 +25,29 @@ const SupervisorAssessmentFormPage = () => {
         setLoading(true);
         setError(null);
 
-        // Get current user (supervisor)
         if (!currentUser) {
-          throw new Error('User not authenticated'); 
+          throw new Error('User not authenticated');
         }
 
-        // Load supervisor data (current user's profile)
-        const supervisorData = await ProfileService.getMyAccount(currentUser.id);
-        setSupervisor(supervisorData);
+        let supervisorData = null;
 
-        // Load subject data (person being assessed)
+        // Load subject 
         if (subjectId) {
           const subjectData = await ProfileService.getById(subjectId);
           setSubject(subjectData);
-          console.log(subjectData)
+
+          if (currentUser.position_type === "ADMIN" && subjectData.supervisor_id) {
+            supervisorData = await ProfileService.getById(subjectData.supervisor_id);
+          }
         }
+        
+        // Load supervisor/admin data
+        if (currentUser.position_type === "ATASAN") {
+          supervisorData = await ProfileService.getMyAccount(currentUser.id);
+        } 
+
+        setSupervisor(supervisorData);
+
       } catch (err) {
         setError(err?.message || 'Gagal memuat data');
       } finally {
@@ -48,7 +56,7 @@ const SupervisorAssessmentFormPage = () => {
     };
 
     loadData();
-  }, [subjectId]);
+  }, [subjectId, state, currentUser]);
 
   const InfoRow = ({ label, value }) => (
     <div className="flex flex-col gap-2">
@@ -80,22 +88,11 @@ const SupervisorAssessmentFormPage = () => {
             { label: 'Penilaian Atasan' }
           ]}
           title={`Penilaian Atasan`}
-          subtitle={subject ? `Menilai: ${subject.name}` : 'Penilaian Supervisor'}
-          customActions={[
-            {
-              type: 'button',
-              label: 'Penilaian Atasan',
-              icon: Users,
-              color: 'blue',
-              onClick: () => {},
-              disabled: true
-            }
-          ]}
           showExportButton={false}
         />
 
         {error && (
-          <Alert color="failure" className="mb-6 text-base" onDismiss={() => setError(null)}>
+          <Alert color="red" className="mb-6 text-base" onDismiss={() => setError(null)}>
             {error} 
           </Alert>
         )}
@@ -154,7 +151,7 @@ const SupervisorAssessmentFormPage = () => {
           <AssessmentFormContainer
             assessmentId={id}
             subjectProfileId={subjectId}
-            mode="supervisor"
+            mode={currentUser.position_type === "ATASAN" ? "supervisor" : "admin"}
           />
         )}
       </div>

@@ -50,7 +50,7 @@ const ErrorAlert = ({
   // Type configurations
   const typeConfig = {
     error: {
-      color: "failure",
+      color: "red",
       icon: XCircle,
       iconColor: "text-red-600 dark:text-red-400",
       bgColor: "bg-red-50 dark:bg-red-900/20",
