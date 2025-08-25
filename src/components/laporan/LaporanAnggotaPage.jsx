@@ -113,12 +113,12 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
 
               if (claster.includes(clasKomp)) {
               } else {
-                claster.push(clasKomp);
                 if (
                   sub == "Belum Memadai" ||
                   sub == "Perlu Penguatan" ||
                   sub == "Cukup‎"
                 ) {
+                  claster.push(clasKomp)
                   return (
                     <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <p className="text-sm md:text-m text-blue-700 dark:text-blue-300">
