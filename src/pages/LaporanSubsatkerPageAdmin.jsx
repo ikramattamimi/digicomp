@@ -54,25 +54,28 @@ const LaporanSubsatkerPageAdmin = () => {
       const subsatkerData = await SubdirectoratsService.getAll();
       setSubsatkers(subsatkerData);
 
-      const dataResponse = await AssessmentResponseService.getAssesment();
-      dataResponse.map((sup) => {
-        if (sup.subject_profile_id.subdirectorat_id == subsatkers[0].id) {
-          if (showComp.includes(sup.assessment_id.id)) {
-          } else {
-            showComp.push(sup.assessment_id.id);
-            setassa((prevArray1) => [
-              ...prevArray1,
-              {
+      // Pilih subsatker pertama sebagai default jika ada
+      if (subsatkerData && subsatkerData.length > 0) {
+        setselSubsatkers(subsatkerData[0].id);
+        // Fetch penilaian untuk subsatker default
+        const dataResponse = await AssessmentResponseService.getAssesment();
+        let tempAssa = [];
+        let tempShowComp = [];
+        dataResponse.forEach((sup) => {
+          if (sup.subject_profile_id.subdirectorat_id == subsatkerData[0].id) {
+            if (!tempShowComp.includes(sup.assessment_id.id)) {
+              tempShowComp.push(sup.assessment_id.id);
+              tempAssa.push({
                 id: sup.assessment_id.id,
                 nama: sup.assessment_id.name,
                 self_weight: sup.assessment_id.self_weight,
                 supervisor_weight: sup.assessment_id.supervisor_weight,
-              },
-            ]);
-            // console.log(assa);
+              });
+            }
           }
-        }
-      });
+        });
+        setassa(tempAssa);
+      }
     };
     fetchUserData();
   }, []);

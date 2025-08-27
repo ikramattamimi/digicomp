@@ -27,7 +27,7 @@ import PageHeader from "../common/PageHeader";
 
 const SubsatkerPageAdmin = forwardRef((props, ref) => {
   const [userData, setUserData] = useState([]);
-  const [mentor, setMentor] = useState([]);
+  const [mentor, setMentor] = useState(null);
   const [subDirektorat, setSubDirektorat] = useState([]);
 
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -63,31 +63,35 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
       setdataResponse(dataResponse);
       //// console.log(dataResponse);
 
-      const mentorID = await AssessmentResponseService.getMentorIdasAdmin(
-        props.assasmentId
-      );
+      // const mentorID = await AssessmentResponseService.getMentorIdasAdmin(
+      //   props.assasmentId
+      // );
       // console.log(mentorID);
 
-      const getMentorData = async (id) => {
-        const dataMentor = await ProfileService.getMyAccount(id);
-        setMentor(dataMentor);
-        // console.log(dataMentor);
-      };
+      const mentorData = await SubdirectoratService.getSupervisorById(props.subsatkerId);
+      setMentor(mentorData);
+      console.log(mentorData);
 
-      mentorID.map((sup) => {
-        if (
-          sup.assessor_profile_id.subdirectorat_id == props.subsatkerId &&
-          sup.assessor_profile_id.id != sup.subject_profile_id
-        ) {
-          if (m.includes(sup.assessor_profile_id.id)) {
-          } else {
-            m.push(sup.assessor_profile_id.id);
-            // console.log(sup.assessor_profile_id.id);
+      // const getMentorData = async (id) => {
+      //   const dataMentor = await ProfileService.getMyAccount(id);
+      //   setMentor(dataMentor);
+      //   console.log({dataMentor});
+      // };
 
-            getMentorData(sup.assessor_profile_id.id);
-          }
-        }
-      });
+      // mentorID.map((sup) => {
+      //   if (
+      //     sup.assessor_profile_id.subdirectorat_id == props.subsatkerId &&
+      //     sup.assessor_profile_id.id != sup.subject_profile_id
+      //   ) {
+      //     if (m.includes(sup.assessor_profile_id.id)) {
+      //     } else {
+      //       m.push(sup.assessor_profile_id.id);
+      //       // console.log(sup.assessor_profile_id.id);
+
+      //       getMentorData(sup.assessor_profile_id.id);
+      //     }
+      //   }
+      // });
     };
     fetchSupervisors();
   }, []);
@@ -548,14 +552,14 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
         <div className="flex flex-row w-full gap-4 ">
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg w-full">
             <p className="text-m dark:text-blue-300">
-              <strong>Nama Atasan :</strong> {mentor.name}
+              <strong>Nama Atasan :</strong> {mentor?.name}
             </p>
             <p className="text-m dark:text-blue-300">
-              <strong>NRP :</strong> {mentor.nrp}
+              <strong>NRP :</strong> {mentor?.nrp}
             </p>
             <p className="text-m dark:text-blue-300">
               <strong>Subsatker : </strong>
-              {setToSubsatkerName(mentor.subdirectorat_id)}
+              {setToSubsatkerName(mentor?.subdirectorat_id)}
             </p>
           </div>
         </div>
