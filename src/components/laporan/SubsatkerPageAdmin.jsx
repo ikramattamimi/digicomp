@@ -307,7 +307,7 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
     ) {
       return "text-red-600 bg-red-300";
     } else {
-      return "";
+      return "text-black";
     }
   };
 
@@ -353,17 +353,17 @@ const SubsatkerPageAdmin = forwardRef((props, ref) => {
           <TableRow className="bg-gray-50 dark:bg-gray-700">
             <TableHeadCell></TableHeadCell>
             {showComp.map((sub) => (
-              <TableHeadCell>{sub}</TableHeadCell>
+              <TableHeadCell className="text-black">{sub}</TableHeadCell>
             ))}
-            <TableHeadCell>Rata-Rata</TableHeadCell>
-            <TableHeadCell>Kualifikasi</TableHeadCell>
+            <TableHeadCell className="text-black">Rata-Rata</TableHeadCell>
+            <TableHeadCell className="text-black">Kualifikasi</TableHeadCell>
           </TableRow>
         </TableHead>
         <TableBody className="divide-y">
           {showRow.map((sup) => (
             <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-700">
-              <TableCell className="font-medium text-gray-900 dark:text-white">
-                {sup.from}
+              <TableCell className="font-medium text-black dark:text-white">
+                <strong>{sup.from}</strong>
               </TableCell>
               {sup.nilai.map((sub) => (
                 <TableCell className={getColorbyValue(sub)}>

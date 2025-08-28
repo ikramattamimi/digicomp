@@ -64,7 +64,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   }, []);
 
   setTimeout(function () {
-    if (props.cntId.length < 50) {
+    if (props.cntId.length < 100) {
       props.cntId.push(0);
       setShowRec(rechtml);
       setShowGrap(graphtml);
@@ -80,7 +80,7 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
     ) {
       return "text-red-600 bg-red-300";
     } else {
-      return "";
+      return "text-black";
     }
   };
 
@@ -422,14 +422,14 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
   if (showNMentor.length > 0 && showNPeserta.length > 0) {
     //ADD DATA DARI NILAI PESETA
     const peserta = {
-      from: "Peserta",
+      from: "Bawahan",
       nilai: showNPeserta,
       sum: GetSum(showNPeserta),
       kualifikasi: GetKualifikasi(GetSum(showNPeserta)),
     };
     //ADD DATA DARI NILAI MENTOR
     const mentor = {
-      from: "Mentor",
+      from: "Atasan",
       nilai: showNMentor,
       sum: GetSum(showNMentor),
       kualifikasi: GetKualifikasi(GetSum(showNMentor)),
@@ -547,20 +547,20 @@ const LaporanAnggotaPage = forwardRef((props, ref) => {
                   <TableRow className="bg-gray-50 dark:bg-gray-700">
                     <TableHeadCell className="min-w-[150px]"></TableHeadCell>
                     {showComp.map((sub, index) => (
-                      <TableHeadCell key={index} className="min-w-[120px]">
+                      <TableHeadCell key={index} className=" text-black min-w-[120px]">
                         <div className="text-xs break-words">{sub}</div>
                       </TableHeadCell>
                     ))}
-                    <TableHeadCell className="min-w-[100px]">Rata-Rata</TableHeadCell>
-                    <TableHeadCell className="min-w-[120px]">Kualifikasi</TableHeadCell>
+                    <TableHeadCell className="text-black min-w-[100px]">Rata-Rata</TableHeadCell>
+                    <TableHeadCell className="text-black min-w-[120px]">Kualifikasi</TableHeadCell>
                   </TableRow>
                 </TableHead>
 
                 <TableBody className="divide-y">
                   {showRow.map((sup, index) => (
                     <TableRow key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <TableCell className="font-medium text-gray-900 dark:text-white text-sm">
-                        {sup.from}
+                      <TableCell className="font-medium text-black dark:text-white text-sm">
+                        <strong>{sup.from}</strong>
                       </TableCell>
                       {sup.nilai.map((sub, subIndex) => (
                         <TableCell key={subIndex} className={`text-sm ${getColorbyValue(sub)}`}>
